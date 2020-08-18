@@ -1,0 +1,20 @@
+﻿@model IEnumerable<DigitalLearningIntegration.Application.Utils.FileInfo>
+
+<div class="demo-section k-content">
+    <h4>Uploaded files</h4>
+    @if (Model.Count() > 0)
+    {
+<div class="t-widget t-upload">
+    <ul class="t-upload-files t-reset">
+        @foreach (var attachment in Model)
+        {
+<li class="t-file"><span class="t-icon t-success"></span>@attachment.Name</li>}
+    </ul>
+</div> }
+else
+{
+<text>-- None --</text>}
+    <p style="margin-top: 1em;">
+        <a href='@Url.Action("Index", "Home")' class="k-button k-primary">Go back</a>
+    </p>
+</div>

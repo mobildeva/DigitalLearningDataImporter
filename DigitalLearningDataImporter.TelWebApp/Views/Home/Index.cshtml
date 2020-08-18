@@ -1,0 +1,56 @@
+﻿@using Kendo.Mvc.UI;
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row box">
+    <div class="col-10" style="text-align:left">
+        <h4>Información</h4>
+        <p>
+            Por favor, seleccione el archivo a importar:
+        </p>
+        <br />
+        <form method="post" action='@Url.Action("Submit","Upload")' style="text-align:left">
+            <div class="demo-section k-content">
+                @(Html.Kendo().Upload()
+            .Name("files")
+            .HtmlAttributes(new { aria_label = "files" })
+            .Validation(validation =>
+                {
+                    validation.AllowedExtensions("xls","xlsx");
+
+                    validation.MaxFileSize(3145728);
+                })
+        )
+                <p style="padding-top: 1em; text-align: right">
+                    <button type="submit" class="k-button k-primary">Submit</button>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <kendo-grid name="grid" height="550">
+            <columns>
+                <column field="OrderID" title="Order ID">
+                    <filterable enabled="false"></filterable>
+                </column>
+                <column field="Freight" title="Freight" />
+                <column field="OrderDate" title="Order Date" format="{0:MM/dd/yyyy}" />
+                <column field="ShipName" title="Ship Name" />
+                <column field="ShipCity" title="Ship City" />
+            </columns>
+            <scrollable enabled="true" />
+            <sortable enabled="true" />
+            <pageable enabled="true" />
+            <filterable enabled="true" />
+            <datasource type="DataSourceTagHelperType.Ajax" page-size="20">
+                <transport>
+                    <read url="@Url.Action("Orders_Read", "Grid")" />
+                </transport>
+            </datasource>
+        </kendo-grid>
+    </div>
+</div>
+

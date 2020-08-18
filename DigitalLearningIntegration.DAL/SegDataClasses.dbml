@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="HCMKomatsuSeg" Class="SegDataClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=.;Initial Catalog=HCMKomatsuSeg;Integrated Security=True" SettingsObjectName="DigitalLearningIntegration.DAL.Properties.Settings" SettingsPropertyName="HCMKomatsuSegConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Users" Member="Users">
+    <Type Name="User">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Nombres" Type="System.String" DbType="VarChar(255)" CanBeNull="true" />
+      <Column Name="Username" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Password" Type="System.String" DbType="NVarChar(550)" CanBeNull="true" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="PrimerIngreso" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="Activo" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="FechaUltimoIntento" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="NumeroIntentosFallidos" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Bloqueado" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="Token" Type="System.String" DbType="Char(50)" CanBeNull="true" />
+      <Column Name="FechaToken" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>
