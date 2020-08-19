@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.9.1" />
+    <PackageReference Include="Mindbox.Data.Linq" Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="1.0.0" />
+    <PackageReference Include="SSH.NET" Version="2016.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DigitalLearningDataImporter.DALstd\DigitalLearningDataImporter.DALstd.csproj" />
+    <ProjectReference Include="..\DigitalLearningIntegration.Infraestructure\DigitalLearningIntegration.Infraestructure.csproj" />
+  </ItemGroup>
+
+</Project>

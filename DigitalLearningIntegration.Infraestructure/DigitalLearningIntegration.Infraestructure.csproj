@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Repository\VirtualRoom\**" />
+    <EmbeddedResource Remove="Repository\VirtualRoom\**" />
+    <None Remove="Repository\VirtualRoom\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0-dev-00880" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Repository\Location\" />
+    <Folder Include="Repository\ConType\" />
+    <Folder Include="Repository\OcupLevel\" />
+    <Folder Include="Repository\Scolarity\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DigitalLearningDataImporter.DALstd\DigitalLearningDataImporter.DALstd.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Data.Linq">
+      <HintPath>..\..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.2\System.Data.Linq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

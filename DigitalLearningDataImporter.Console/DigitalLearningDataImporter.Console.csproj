@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DigitalLearningIntegration\DigitalLearningIntegration\DigitalLearningIntegration.Application\DigitalLearningIntegration.Application.csproj" />
     <ProjectReference Include="..\DigitalLearningDataImporter.DALstd\DigitalLearningDataImporter.DALstd.csproj" />
+    <ProjectReference Include="..\DigitalLearningIntegration.Application\DigitalLearningIntegration.Application.csproj" />
+    <ProjectReference Include="..\DigitalLearningIntegration.Infraestructure\DigitalLearningIntegration.Infraestructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
