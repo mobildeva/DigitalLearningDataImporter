@@ -5,6 +5,8 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
 {
     public interface ILocalRepository
     {
-        //ResultDto CreatedOrUpdate(DigitalLearningDataImporter.DALstd.ProdEntities.Local entity);
+        ResultDto CreatedOrUpdate(Locales entity);
+        Locales GetByCode(string code);
+        Locales GetByName(string name);
     }
 }

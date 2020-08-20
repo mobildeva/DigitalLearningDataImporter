@@ -7,5 +7,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Family
     public interface IFamilyRepository : IRepository<FamiliaCargo>
     {
         ResultDto CreatedOrUpdate(FamiliaCargo entity);
+        FamiliaCargo GetByName(string name, int societyId);
     }
 }

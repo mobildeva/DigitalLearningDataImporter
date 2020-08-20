@@ -66,6 +66,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             FechaNacimiento = ip.FechaNacimiento;
             EmailPersonal = ip.EmailPersonal;
             Direccion = ip.Direccion;
+            IdLocal = ip.IdLocal;
+            Activo = ip.Activo;
+            TallaPantalon = ip.TallaPantalon;
+            TallaCamisa = ip.TallaCamisa;
+            TallaZapatos = ip.TallaZapatos;
         }
     }
 }

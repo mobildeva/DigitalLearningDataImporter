@@ -2,18 +2,20 @@
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.Local
+namespace DigitalLearningIntegration.Infraestructure.Repository.CostCenter
 {
-    public class LocalRepository : Repository<Locales>, ILocalRepository
+    public class CostCenterRepository : Repository<CentroCosto>, ICostCenterRepository
     {
         private readonly HCMKomatsuProdContext _context;
-        public LocalRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        public CostCenterRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
         {
             _context = dataContext;
         }
-        public ResultDto CreatedOrUpdate(Locales entity)
+        public ResultDto CreatedOrUpdate(CentroCosto entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -43,19 +45,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
             return Result;
         }
 
-        public Locales GetByCode(string code)
+        public override CentroCosto GetById(int id)
         {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.CodigoLocal).ToUpper() == Utils.Utils.CleanString(code).ToUpper());
+            return _context.CentroCosto.FirstOrDefault(x => x.Id == id);
         }
 
-        public override Locales GetById(int id)
+        public CentroCosto GetByName(string name, int societyId)
         {
-            return _context.Locales.FirstOrDefault(x => x.Id == id);
-        }
-
-        public Locales GetByName(string name)
-        {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.NombreLocal).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            return _context.CentroCosto.AsEnumerable().FirstOrDefault(s => (s.IdSociedad == societyId) && (Utils.Utils.CleanString(s.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper()));
         }
     }
 }

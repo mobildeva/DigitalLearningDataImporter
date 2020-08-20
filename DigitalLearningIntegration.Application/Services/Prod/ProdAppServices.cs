@@ -14,6 +14,12 @@ using DigitalLearningIntegration.Infraestructure.Repository.BussUnit;
 using DigitalLearningIntegration.Infraestructure.Repository.OrgUnit;
 using DigitalLearningIntegration.Infraestructure.Repository.ContractType;
 using DigitalLearningIntegration.Infraestructure.Repository.Society;
+using DigitalLearningIntegration.Infraestructure.Repository.Family;
+using DigitalLearningIntegration.Infraestructure.Repository.CostCenter;
+using DigitalLearningIntegration.Infraestructure.Repository.Location;
+using DigitalLearningIntegration.Infraestructure.Repository.BloodG;
+using DigitalLearningIntegration.Infraestructure.Repository.Areas;
+using DigitalLearningIntegration.Infraestructure.Repository.Scholarship;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -29,6 +35,12 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly IOrgUnitRepository _ouRepository;
         private readonly IContractTypeRepository _contTypeRepository;
         private readonly ISocietyRepository _societyRepository;
+        private readonly IFamilyRepository _familyRepository;
+        private readonly ICostCenterRepository _costCentRepository;
+        private readonly ILocationRepository _locationRepository;
+        private readonly IBloodGRepository _bgRepository;
+        private readonly IAreaRepository _areaRepository;
+        private readonly IScholarshipRepository _schoRepository;
 
         public ProdAppServices(HCMKomatsuProdContext context)
         {
@@ -42,6 +54,22 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _ouRepository = new OrgUnitRepository(context);
             _contTypeRepository = new ContractTypeRepository(context);
             _societyRepository = new SocietyRepository(context);
+            _familyRepository = new FamilyRepository(context);
+            _costCentRepository = new CostCenterRepository(context);
+            _locationRepository = new LocationRepository(context);
+            _bgRepository = new BloodGRepository(context);
+            _areaRepository = new AreaRepository(context);
+            _schoRepository = new ScholarshipRepository(context);
+        }
+
+        public int AddArea(AreaDto area)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int AddBloodG(BloodGDto bg)
+        {
+            throw new NotImplementedException();
         }
 
         public int AddBussUnit(BussUnitDto piDto)
@@ -100,6 +128,26 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public int AddCostCenter(CostCenterDto costCenterDto)
+        {
+            try
+            {
+                var entity = new CentroCosto
+                {
+                    IdSociedad = costCenterDto.IdSociedad,
+                    Nombre = costCenterDto.Nombre,
+                    Activo = costCenterDto.Activo,
+                    Codigo = costCenterDto.Codigo
+                };
+                _costCentRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
         public int AddCountry(CountryDto piDto)
         {
             try
@@ -113,6 +161,25 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 };
                 _countryRepository.Add(entity);
                 return entity.IdPais;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
+        public int AddFamily(FamilyDto familyDto)
+        {
+            try
+            {
+                var entity = new FamiliaCargo
+                {
+                    IdSociedad = familyDto.IdSociedad,
+                    Nombre = familyDto.Nombre,
+                    Activo = familyDto.Activo
+                };
+                _familyRepository.Add(entity);
+                return entity.Id;
             }
             catch (Exception)
             {
@@ -154,6 +221,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 return -1;
             }
+        }
+
+        public int AddLocation(LocationDto loc)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int AddOcupLevel(OcupLevelDto ocupLevelDto)
+        {
+            throw new NotImplementedException();
         }
 
         public int AddOrgUnit(OrgUnitDto orgUnitDto)
@@ -225,6 +302,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public int AddScholarship(ScholarshipDto scholarship)
+        {
+            throw new NotImplementedException();
+        }
+
         public int AddSociety(SocietyDto societyDto)
         {
             try
@@ -242,6 +324,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 return -1;
             }
+        }
+
+        public AreaDto GetAreaByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public BloodGDto GetBloodGrByName(string name)
+        {
+            throw new NotImplementedException();
         }
 
         public BussUnitDto GetBussUnitByNameSociety(string name, int sociatyId)
@@ -274,6 +366,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public CostCenterDto GetCostCenterByNameSociety(string name, int societyId)
+        {
+            var aux = _costCentRepository.GetByName(name, societyId);
+            if (aux != null)
+                return new CostCenterDto(aux);
+            else return null;
+        }
+
         public CountryDto GetCountryByName(string name)
         {
             var aux = _countryRepository.GetByName(name);
@@ -281,6 +381,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 return new CountryDto(aux);
             }
+            else return null;
+        }
+
+        public FamilyDto GetFamilyByNameSociety(string name, int societyId)
+        {
+            var aux = _familyRepository.GetByName(name, societyId);
+            if (aux != null)
+                return new FamilyDto(aux);
             else return null;
         }
 
@@ -309,6 +417,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public LocationDto GetLocationByName(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public OcupLevelDto GetOcupLevelByNameSociety(string name, int societyId)
+        {
+            throw new NotImplementedException();
+        }
+
         public OrgUnitDto GetOrgUnitByNameSociety(string name, int sociatyId)
         {
             var aux = _ouRepository.GetByName(name, sociatyId);
@@ -333,6 +451,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             else
                 return null;
+        }
+
+        public ScholarshipDto GetScholarshipByName(string name)
+        {
+            throw new NotImplementedException();
         }
 
         public SocietyDto GetSocietyByName(string name)

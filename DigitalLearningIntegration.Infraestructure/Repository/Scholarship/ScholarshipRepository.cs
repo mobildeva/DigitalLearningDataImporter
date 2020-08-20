@@ -2,18 +2,21 @@
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.Local
+namespace DigitalLearningIntegration.Infraestructure.Repository.Scholarship
 {
-    public class LocalRepository : Repository<Locales>, ILocalRepository
+    public class ScholarshipRepository : Repository<EscolaridadSence>, IScholarshipRepository
     {
         private readonly HCMKomatsuProdContext _context;
-        public LocalRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        public ScholarshipRepository(HCMKomatsuProdContext context) : base(context)
         {
-            _context = dataContext;
+            _context = context;
         }
-        public ResultDto CreatedOrUpdate(Locales entity)
+
+        public ResultDto CreatedOrUpdate(EscolaridadSence entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -43,19 +46,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
             return Result;
         }
 
-        public Locales GetByCode(string code)
+        public override EscolaridadSence GetById(int id)
         {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.CodigoLocal).ToUpper() == Utils.Utils.CleanString(code).ToUpper());
+            return _context.EscolaridadSence.FirstOrDefault(x => x.Id == id);
         }
 
-        public override Locales GetById(int id)
+        public EscolaridadSence GetByName(string name)
         {
-            return _context.Locales.FirstOrDefault(x => x.Id == id);
-        }
-
-        public Locales GetByName(string name)
-        {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.NombreLocal).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            return _context.EscolaridadSence.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
         }
     }
 }

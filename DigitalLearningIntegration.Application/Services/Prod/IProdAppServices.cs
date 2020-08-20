@@ -1,6 +1,7 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
 using DigitalLearningIntegration.Application.Services.Prod.Dto;
 using DigitalLearningIntegration.Infraestructure.Repository.CivilStatus;
+using DocumentFormat.OpenXml.CustomXmlSchemaReferences;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,5 +31,19 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         int AddSociety(SocietyDto people);
         SocietyDto GetSocietyByName(string name);
         SocietyDto GetSocietyByUniqueId(string name);
+        int AddFamily(FamilyDto people);
+        FamilyDto GetFamilyByNameSociety(string name, int societyId);
+        int AddCostCenter(CostCenterDto costCenterDto);
+        CostCenterDto GetCostCenterByNameSociety(string name, int societyId);
+        int AddLocation(LocationDto loc);
+        LocationDto GetLocationByName(string name);
+        int AddOcupLevel(OcupLevelDto ocupLevelDto);
+        OcupLevelDto GetOcupLevelByNameSociety(string name, int societyId);
+        int AddArea(AreaDto area);
+        AreaDto GetAreaByName(string name);
+        int AddBloodG(BloodGDto bg);
+        BloodGDto GetBloodGrByName(string name);
+        int AddScholarship(ScholarshipDto scholarship);
+        ScholarshipDto GetScholarshipByName(string name);
     }
 }

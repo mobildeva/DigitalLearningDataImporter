@@ -2,18 +2,20 @@
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.Local
+namespace DigitalLearningIntegration.Infraestructure.Repository.Location
 {
-    public class LocalRepository : Repository<Locales>, ILocalRepository
+    public class LocationRepository : Repository<Ubicacion>, ILocationRepository
     {
         private readonly HCMKomatsuProdContext _context;
-        public LocalRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        public LocationRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
         {
             _context = dataContext;
         }
-        public ResultDto CreatedOrUpdate(Locales entity)
+        public ResultDto CreatedOrUpdate(Ubicacion entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -43,19 +45,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
             return Result;
         }
 
-        public Locales GetByCode(string code)
+        public override Ubicacion GetById(int id)
         {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.CodigoLocal).ToUpper() == Utils.Utils.CleanString(code).ToUpper());
+            return _context.Ubicacion.FirstOrDefault(x => x.Id == id);
         }
 
-        public override Locales GetById(int id)
+        public Ubicacion GetByName(string name)
         {
-            return _context.Locales.FirstOrDefault(x => x.Id == id);
-        }
-
-        public Locales GetByName(string name)
-        {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.NombreLocal).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            return _context.Ubicacion.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
         }
     }
 }

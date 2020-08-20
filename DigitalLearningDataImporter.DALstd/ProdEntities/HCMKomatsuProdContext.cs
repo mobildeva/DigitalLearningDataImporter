@@ -33,6 +33,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual DbSet<Pais> Pais { get; set; }
         public virtual DbSet<Personas> Personas { get; set; }
         public virtual DbSet<Cargos> Cargos { get; set; }
+        public virtual DbSet<Area> Area { get; set; }
+        public virtual DbSet<Locales> Locales { get; set; }
+        public virtual DbSet<NivelOcupacional> NivelOcupacional { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -628,6 +631,59 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .WithMany(p => p.Cargos)
                     .HasForeignKey(d => d.IdUnidadOrganizacional)
                     .HasConstraintName("FK_Cargos_UnidadesOrganizacional");
+            });
+
+            modelBuilder.Entity<Area>(entity =>
+            {
+                entity.Property(e => e.FechaCr)
+                    .HasColumnName("FechaCR")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.FechaUp).HasColumnType("datetime");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsuarioCr)
+                    .IsRequired()
+                    .HasColumnName("UsuarioCR")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsuarioUp)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Locales>(entity =>
+            {
+                entity.HasIndex(e => e.CodigoLocal)
+                    .HasName("unq_CodigoLocal")
+                    .IsUnique();
+
+                entity.HasIndex(e => e.NombreLocal)
+                    .HasName("unq_NombreLocal")
+                    .IsUnique();
+
+                entity.Property(e => e.CodigoLocal)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.NombreLocal)
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.IdFormatoNavigation)
+                    .WithMany(p => p.Locales)
+                    .HasForeignKey(d => d.IdFormato)
+                    .HasConstraintName("FK_Locales_UnidadesNegocio");
+            });
+
+            modelBuilder.Entity<NivelOcupacional>(entity =>
+            {
+                entity.Property(e => e.Nombre).HasMaxLength(250);
             });
 
             OnModelCreatingPartial(modelBuilder);
