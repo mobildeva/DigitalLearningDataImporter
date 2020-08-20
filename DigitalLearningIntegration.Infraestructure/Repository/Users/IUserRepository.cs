@@ -8,5 +8,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Users
     public interface IUserRepository : IRepository<DigitalLearningDataImporter.DALstd.Users>
     {
         ResultDto CreatedOrUpdate(DigitalLearningDataImporter.DALstd.Users entity);
+        DigitalLearningDataImporter.DALstd.Users GetUserByRUTUserName(string usernameRut);
     }
 }

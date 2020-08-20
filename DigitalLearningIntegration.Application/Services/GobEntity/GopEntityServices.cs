@@ -69,7 +69,8 @@ namespace DigitalLearningIntegration.Application.Services.GobEntity
                     FranchiseSence = r[33].ToString(),
                     ContractType = r[34].ToString(),
                     Health_company = r[38].ToString(),
-                    Phone = r[45].ToString()
+                    Phone = r[45].ToString(),
+                    BossRut = r[37].ToString()
                 };
                 result.Add(aux);
             }

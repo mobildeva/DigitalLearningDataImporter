@@ -10,5 +10,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Afp
     public interface IAfpRepository : IRepository<DigitalLearningDataImporter.DALstd.ProdEntities.Afp>
     {
         ResultDto CreatedOrUpdate(DigitalLearningDataImporter.DALstd.ProdEntities.Afp entity);
+        DigitalLearningDataImporter.DALstd.ProdEntities.Afp GetAfpByName(string name);
     }
 }

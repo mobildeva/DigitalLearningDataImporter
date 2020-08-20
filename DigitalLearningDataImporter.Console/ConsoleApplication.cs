@@ -12,6 +12,9 @@ using Serilog.Sinks.File;
 using Serilog.Sinks.SystemConsole;
 using DigitalLearningIntegration.Application.Services.GobEntity;
 using DigitalLearningIntegration.Infraestructure.Repository.Genre;
+using DigitalLearningIntegration.Application.GobEntity.Dto;
+using DigitalLearningIntegration.Application.Services.Prod.Dto;
+using DigitalLearningDataImporter.DALstd.ProdEntities;
 
 namespace DigitalLearningDataImporter.Console
 {
@@ -55,7 +58,7 @@ namespace DigitalLearningDataImporter.Console
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .WriteTo.Console()
-                    .WriteTo.File(logsPath)//, rollingInterval: RollingInterval.Day)
+                    .WriteTo.File(logsPath, rollingInterval: RollingInterval.Minute)
                     .CreateLogger();
 
                 Log.Information("------------------------------------------------");
@@ -72,13 +75,102 @@ namespace DigitalLearningDataImporter.Console
 
                 //20200731_Importador_Personas
 
-                //var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\" + DateTime.Now.Ticks + "_20200731_Importador_Personas.xlsx";
+                var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\" + DateTime.Now.Ticks + "_20200820_Importador_Personas.xlsx";
 
-                //var resultu = SftpManager.Get(excelFileName, sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
+                var resultu = SftpManager.Get(excelFileName, sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
 
-                //var dataTable = ReadWriteExcel.ReadExcelSheet(xlsDestFilePath, true);
+                var dataTable = ReadWriteExcel.ReadExcelSheet(xlsDestFilePath, true);
 
-                //var entities = _gopServ.GetEntities(dataTable);
+                var entities = _gopServ.GetEntities(dataTable);
+
+                foreach (GopEntityDto item in entities)
+                {
+                    var user = _segServ.GetUserByRUTUserName(item.Rut);
+
+                    if (user != null)
+                    {//Add
+
+                    }
+                    else
+                    {//Update
+                        var boosExist = entities.Any(e => e.Rut == item.BossRut);//_prodServ.GetPeopleByRUT(item.BossRut);
+
+                        if (boosExist)
+                        {
+                            var defaultValue = 0;
+                            var defaultTextValue = "Sin Información";
+
+                            var idGenre = defaultValue;
+                            GenreDto g;
+                            if (!string.IsNullOrEmpty(item.Gender))
+                            {
+                                g = _prodServ.GetGenreByName(item.Gender);
+                            }
+                            else
+                            {
+                                g = _prodServ.GetGenreByName(defaultTextValue);
+                            }
+                            if (g != null)
+                                idGenre = g.Id;
+
+                            var civilStatusId = defaultValue;
+                            CivilStatusDto cs;
+                            if (!string.IsNullOrEmpty(item.Civil_status))
+                            {
+                                cs = _prodServ.GetCivilStatusByName(item.Civil_status);
+                            }
+                            else
+                            {
+                                cs = _prodServ.GetCivilStatusByName(defaultTextValue);
+                            }
+                            if (cs != null)
+                                civilStatusId = cs.Id;
+
+                            var natId = defaultValue;
+                            CountryDto country;
+                            if (!string.IsNullOrEmpty(item.Country_code))
+                            {
+                                country = _prodServ.GetCountryByName(item.Country_code);
+                            }
+                            else
+                            {
+                                country = _prodServ.GetCountryByName(defaultTextValue);
+                            }
+                            if (country != null)
+                                civilStatusId = country.IdPais;
+
+                            var bloodId = defaultValue;
+                            BloodGDto bg;
+                            if (!string.IsNullOrEmpty(item.BloodG))
+                            {
+                                bg = _prodServ.GetBloodGrByName(item.BloodG);
+                            }
+                            else
+                            {
+                                bg = _prodServ.GetBloodGrByName(defaultTextValue);
+                            }
+                            if (bg != null)
+                                bloodId = bg.Id;
+
+                            var isapId = defaultValue;
+                            IsapreDto isapre;
+                            if (!string.IsNullOrEmpty(item.Isapre))
+                            {
+                                isapre = _prodServ.GetIsapreByName(item.BloodG);
+                            }
+                            else
+                            {
+                                isapre = _prodServ.GetIsapreByName(defaultTextValue);
+                            }
+                            if (isapre != null)
+                                isapId = isapre.Id;
+
+                            var afpId = defaultValue;
+                            Afp afp;
+
+                        }
+                    }
+                }
 
                 //var genre = _prodServ.GetGenreByName("Femeniñó");
 
@@ -93,7 +185,7 @@ namespace DigitalLearningDataImporter.Console
                 //pai = _prodServ.GetCountryByName("Venezuela");
 
 
-                //var pl = _prodServ.GetP
+                var pl = _prodServ.GetPersonalInfoByPersona(2);
 
                 //segServ.AddUser(new UserDto
                 //{

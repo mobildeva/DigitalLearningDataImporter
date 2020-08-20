@@ -24,6 +24,7 @@ using DigitalLearningIntegration.Infraestructure.Repository.Isapre;
 using DigitalLearningIntegration.Infraestructure.Repository.CurrentJob;
 using DigitalLearningIntegration.Infraestructure.Repository.SchedulesRule;
 using DigitalLearningIntegration.Infraestructure.Repository.WorkingDay;
+using DigitalLearningIntegration.Infraestructure.Repository.Afp;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -50,7 +51,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly ICurrentJobRepository _cuJobRepository;
         private readonly ISchedRuleRepository _schedRuleRepository;
         private readonly IWorkingDayRepository _workDayRepository;
-
+        private readonly IAfpRepository _afpRepository;
         public ProdAppServices(HCMKomatsuProdContext context)
         {
             _pInfoRepository = new PersonalInfoRepository(context);
@@ -74,6 +75,25 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _cuJobRepository = new CurrentJobRepository(context);
             _schedRuleRepository = new SchedRuleRepository(context);
             _workDayRepository = new WorkingDayRepository(context);
+            _afpRepository = new AfpRepository(context);
+        }
+
+        public int AddAfp(AfpDto afp)
+        {
+            try
+            {
+                var entity = new Afp
+                {
+                    Nombre = afp.Nombre,
+                    Activo = afp.Activo
+                };
+                _afpRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddArea(AreaDto area)
@@ -531,6 +551,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 return -1;
             }
+        }
+
+        public AfpDto GetAfpByName(string name)
+        {
+            var aux = _afpRepository.GetAfpByName(name);
+            if (aux != null)
+            {
+                return new AfpDto(aux);
+            }
+            else return null;
         }
 
         public AreaDto GetAreaByName(string name)

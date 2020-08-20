@@ -44,6 +44,11 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Afp
             return Result;
         }
 
+        public DigitalLearningDataImporter.DALstd.ProdEntities.Afp GetAfpByName(string name)
+        {
+            return _context.Afp.AsEnumerable().FirstOrDefault(a => Utils.Utils.CleanString(a.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+        }
+
         public override DigitalLearningDataImporter.DALstd.ProdEntities.Afp GetById(int id)
         {
             return _context.Afp.FirstOrDefault(x => x.Id == id);

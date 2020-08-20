@@ -61,6 +61,11 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Users
             return _context.Users.FirstOrDefault(x => x.Id == id);
         }
 
+        public DigitalLearningDataImporter.DALstd.Users GetUserByRUTUserName(string usernameRut)
+        {
+            return _context.Users.AsEnumerable().FirstOrDefault(u => Utils.Utils.CleanString(u.Username).ToUpper() == Utils.Utils.CleanString(usernameRut).ToUpper());
+        }
+
         public IEnumerable<DigitalLearningDataImporter.DALstd.Users> GetUsers()
         {
             return GetAll();

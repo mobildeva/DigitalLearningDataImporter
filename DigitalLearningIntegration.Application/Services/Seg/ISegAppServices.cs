@@ -8,7 +8,7 @@ namespace DigitalLearningIntegration.Application.Services.Seg
     public interface ISegAppServices
     {
         int AddUser(UserDto userDto);
-
         IEnumerable<UserDto> GetUsers();
+        UserDto GetUserByRUTUserName(string usernameRut);
     }
 }

@@ -49,6 +49,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         ScholarshipDto GetScholarshipByName(string name);
         int AddIsapre(IsapreDto isa);
         IsapreDto GetIsapreByName(string name);
+        int AddAfp(AfpDto afp);
+        AfpDto GetAfpByName(string name);
         int AddCurrentJob(CurrentJobDto currentJobDto);
         CurrentJobDto GetCurrentJobByPeopleSociety(int peopleId, int societyId);
         int AddWorkingDay(WorkingDayDto wd);
