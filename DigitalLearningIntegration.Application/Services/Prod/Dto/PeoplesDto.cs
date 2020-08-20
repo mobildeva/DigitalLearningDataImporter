@@ -32,8 +32,15 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             ApellidoMaterno = p.ApellidoMaterno;
             ApellidoPaterno = p.ApellidoPaterno;
             Email = p.Email;
+            IdCodigoArea = p.IdCodigoArea;
             Fono = p.Fono;
             Celular = p.Celular;
+            IdConexion = p.IdConexion;
+            ClaveSence = p.ClaveSence;
+            Activo = p.Activo;
+            ConectaSence = p.ConectaSence;
+            Instructor = p.Instructor;
+            IdPersonaForo = p.IdPersonaForo;
         }
     }
 }

@@ -45,5 +45,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         BloodGDto GetBloodGrByName(string name);
         int AddScholarship(ScholarshipDto scholarship);
         ScholarshipDto GetScholarshipByName(string name);
+        int AddIsapre(IsapreDto isa);
+        IsapreDto GetIsapreByName(string name);
     }
 }

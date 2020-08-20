@@ -49,7 +49,8 @@ namespace DigitalLearningDataImporter.Console
 
             _serviceProvider = services.BuildServiceProvider(true);
         }
-        static void Main(string[] args)
+
+        private static void Main()
         {
             RegisterServices();
             IServiceScope scope = _serviceProvider.CreateScope();
@@ -63,9 +64,9 @@ namespace DigitalLearningDataImporter.Console
             {
                 return;
             }
-            if (_serviceProvider is IDisposable)
+            if (_serviceProvider is IDisposable disposable)
             {
-                ((IDisposable)_serviceProvider).Dispose();
+                disposable.Dispose();
             }
         }
     }

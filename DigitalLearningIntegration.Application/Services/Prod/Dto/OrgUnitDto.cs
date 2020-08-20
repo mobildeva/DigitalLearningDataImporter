@@ -22,8 +22,13 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Id = uo.Id;
             IdSociedad = uo.IdSociedad;
             Nombre = uo.Nombre;
+            IdPadre = uo.IdPadre;
             IdCentroCosto = uo.IdCentroCosto;
+            IdPersonas = uo.IdPersonas;
+            IdUbicacionesFisica = uo.IdUbicacionesFisica;
+            CodigoErp = uo.CodigoErp;
             Activo = uo.Activo;
+            Nivel = uo.Nivel;
         }
     }
 }

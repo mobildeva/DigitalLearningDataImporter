@@ -36,6 +36,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual DbSet<Area> Area { get; set; }
         public virtual DbSet<Locales> Locales { get; set; }
         public virtual DbSet<NivelOcupacional> NivelOcupacional { get; set; }
+        public virtual DbSet<Isapres> Isapres { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -684,6 +685,13 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
             modelBuilder.Entity<NivelOcupacional>(entity =>
             {
                 entity.Property(e => e.Nombre).HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<Isapres>(entity =>
+            {
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

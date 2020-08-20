@@ -63,6 +63,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
 
         public PersonalInfoDto(InformacionPersonal ip)
         {
+            Id = ip.Id;
+            IdPersona = ip.IdPersona;
+            IdGenero = ip.IdGenero;
+            IdEstadoCivil = ip.IdEstadoCivil;
+            IdUbicacion = ip.IdUbicacion;
+            IdPaisNacionalidad = ip.IdPaisNacionalidad;
+            IdIsapre = ip.IdIsapre;
+            IdAfp = ip.IdAfp;
             FechaNacimiento = ip.FechaNacimiento;
             EmailPersonal = ip.EmailPersonal;
             Direccion = ip.Direccion;

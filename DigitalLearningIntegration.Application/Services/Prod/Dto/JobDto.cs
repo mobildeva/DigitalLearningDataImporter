@@ -31,6 +31,21 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Id = cargo.Id;
             Nombre = cargo.Nombre;
             Activo = Activo;
+            IdSociedad = cargo.IdSociedad;
+            IdFamiliaCargo = cargo.IdFamiliaCargo;
+            Descripcion = cargo.Descripcion;
+            IdEscalaSalarial = cargo.IdEscalaSalarial;
+            IdEspecialidadCargo = cargo.IdEspecialidadCargo;
+            CodigoErp = cargo.CodigoErp;
+            Anexo = cargo.Anexo;
+            IdJornadaLaboral = cargo.IdJornadaLaboral;
+            IdUnidadOrganizacional = cargo.IdUnidadOrganizacional;
+            IdUbicacionesFisicas = cargo.IdUbicacionesFisicas;
+            FechaCreacion = cargo.FechaCreacion;
+            FechaModificacion = cargo.FechaModificacion;
+            Supervision = cargo.Supervision;
+            Usuariocreacion = cargo.Usuariocreacion;
+            Usuariomodificacion = cargo.Usuariomodificacion;
         }
     }
 }

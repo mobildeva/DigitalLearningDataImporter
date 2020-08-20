@@ -18,6 +18,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Nombre = familiaCargo.Nombre;
             IdSociedad = familiaCargo.IdSociedad;
             Activo = familiaCargo.Activo;
+            Descripcion = familiaCargo.Descripcion;
         }
     }
 }

@@ -20,6 +20,8 @@ using DigitalLearningIntegration.Infraestructure.Repository.Location;
 using DigitalLearningIntegration.Infraestructure.Repository.BloodG;
 using DigitalLearningIntegration.Infraestructure.Repository.Areas;
 using DigitalLearningIntegration.Infraestructure.Repository.Scholarship;
+using DigitalLearningIntegration.Infraestructure.Repository.OcupLevel;
+using DigitalLearningIntegration.Infraestructure.Repository.Isapre;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -41,6 +43,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly IBloodGRepository _bgRepository;
         private readonly IAreaRepository _areaRepository;
         private readonly IScholarshipRepository _schoRepository;
+        private readonly IOcupLevelRepository _ocLevelRepository;
+        private readonly IIsapreRepository _isapreRepository;
 
         public ProdAppServices(HCMKomatsuProdContext context)
         {
@@ -60,16 +64,45 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _bgRepository = new BloodGRepository(context);
             _areaRepository = new AreaRepository(context);
             _schoRepository = new ScholarshipRepository(context);
+            _ocLevelRepository = new OcupLevelRepository(context);
+            _isapreRepository = new IsapreRepository(context);
         }
 
         public int AddArea(AreaDto area)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = new Area
+                {
+                    Nombre = area.Nombre,
+                    Activo = area.Activo,
+                    FechaCr = DateTime.Now
+                };
+                _areaRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddBloodG(BloodGDto bg)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = new GrupoSanguineo
+                {
+                    Nombre = bg.Nombre,
+                    Activo = bg.Activo
+                };
+                _bgRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddBussUnit(BussUnitDto piDto)
@@ -205,6 +238,24 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public int AddIsapre(IsapreDto isa)
+        {
+            try
+            {
+                var entity = new Isapres
+                {
+                    Nombre = isa.Nombre,
+                    Activo = isa.Activo
+                };
+                _isapreRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
         public int Addjob(JobDto piDto)
         {
             try
@@ -225,12 +276,41 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
         public int AddLocation(LocationDto loc)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = new Ubicacion
+                {
+                    CodigoArea = loc.CodigoArea,
+                    Orden = loc.Orden,
+                    Nombre = loc.Nombre,
+                    Activo = loc.Activo
+                };
+                _locationRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddOcupLevel(OcupLevelDto ocupLevelDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = new NivelOcupacional
+                {
+                    IdSociedad = ocupLevelDto.IdSociedad,
+                    Nombre = ocupLevelDto.Nombre,
+                    Activo = ocupLevelDto.Activo
+                };
+                _ocLevelRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddOrgUnit(OrgUnitDto orgUnitDto)
@@ -304,7 +384,20 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
         public int AddScholarship(ScholarshipDto scholarship)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var entity = new EscolaridadSence
+                {
+                    Activo = scholarship.Activo,
+                    Nombre = scholarship.Nombre
+                };
+                _schoRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public int AddSociety(SocietyDto societyDto)
@@ -328,12 +421,22 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
         public AreaDto GetAreaByName(string name)
         {
-            throw new NotImplementedException();
+            var aux = _areaRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new AreaDto(aux);
+            }
+            else return null;
         }
 
         public BloodGDto GetBloodGrByName(string name)
         {
-            throw new NotImplementedException();
+            var aux = _bgRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new BloodGDto(aux);
+            }
+            else return null;
         }
 
         public BussUnitDto GetBussUnitByNameSociety(string name, int sociatyId)
@@ -407,6 +510,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             return _pInfoRepository.Get().Select(pi => new PersonalInfoDto(pi));
         }
 
+        public IsapreDto GetIsapreByName(string name)
+        {
+            var aux = _isapreRepository.GetByName(name);
+            if (aux != null)
+                return new IsapreDto(aux);
+            else return null;
+        }
+
         public JobDto GetJobByName(string name)
         {
             var aux = _jobRepository.GetByName(name);
@@ -419,12 +530,20 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
         public LocationDto GetLocationByName(string name)
         {
-            throw new NotImplementedException();
+            var aux = _locationRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new LocationDto(aux);
+            }
+            else return null;
         }
 
         public OcupLevelDto GetOcupLevelByNameSociety(string name, int societyId)
         {
-            throw new NotImplementedException();
+            var aux = _ocLevelRepository.GetByName(name, societyId);
+            if (aux != null)
+                return new OcupLevelDto(aux);
+            else return null;
         }
 
         public OrgUnitDto GetOrgUnitByNameSociety(string name, int sociatyId)
@@ -455,7 +574,12 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
         public ScholarshipDto GetScholarshipByName(string name)
         {
-            throw new NotImplementedException();
+            var aux = _schoRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new ScholarshipDto(aux);
+            }
+            else return null;
         }
 
         public SocietyDto GetSocietyByName(string name)
