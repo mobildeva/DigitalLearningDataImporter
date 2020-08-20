@@ -4,19 +4,19 @@ using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.PersonalInfo
+namespace DigitalLearningIntegration.Infraestructure.Repository.SchedulesRule
 {
-    public class PersonalInfoRepository : Repository<InformacionPersonal>, IPersonalInfoRepository
+    public class SchedRuleRepository : Repository<ReglaPlanHorario>, ISchedRuleRepository
     {
-        private readonly HCMKomatsuProdContext _dataContext;
-
-        public PersonalInfoRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        private readonly HCMKomatsuProdContext _context;
+        public SchedRuleRepository(HCMKomatsuProdContext context) : base(context)
         {
-            _dataContext = dataContext;
+            _context = context;
         }
 
-        public ResultDto CreatedOrUpdate(InformacionPersonal entity)
+        public ResultDto CreatedOrUpdate(ReglaPlanHorario entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -46,19 +46,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.PersonalInfo
             return Result;
         }
 
-        public IEnumerable<InformacionPersonal> GetAll()
+        public override ReglaPlanHorario GetById(int id)
         {
-            return base.GetAll();
+            return _context.ReglaPlanHorario.FirstOrDefault(x => x.Id == id);
         }
 
-        public override InformacionPersonal GetById(int id)
+        public ReglaPlanHorario GetByName(string name)
         {
-            return _dataContext.InformacionPersonal.FirstOrDefault(x => x.Id == id);
-        }
-
-        public InformacionPersonal GetByPeopleId(int peopleId)
-        {
-            return _dataContext.InformacionPersonal.FirstOrDefault(x => x.IdPersona == peopleId);
+            return _context.ReglaPlanHorario.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
         }
     }
 }

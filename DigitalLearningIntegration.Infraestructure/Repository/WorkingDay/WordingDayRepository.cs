@@ -1,21 +1,22 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
-using DigitalLearningIntegration.Infraestructure.Dto;
-using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using System.Linq;
+using DigitalLearningIntegration.Infraestructure.Dto;
+using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
+namespace DigitalLearningIntegration.Infraestructure.Repository.WorkingDay
 {
-    public class CurrentJobRepository : Repository<PosicionLaboral>, ICurrentJobRepository
+    public class WorkingDayRepository : Repository<JornadaLaboral>, IWorkingDayRepository
     {
         private readonly HCMKomatsuProdContext _context;
-        public CurrentJobRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        public WorkingDayRepository(HCMKomatsuProdContext context) : base(context)
         {
-            _context = dataContext;
+            _context = context;
         }
-        public ResultDto CreatedOrUpdate(PosicionLaboral entity)
+
+        public ResultDto CreatedOrUpdate(JornadaLaboral entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -45,14 +46,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
             return Result;
         }
 
-        public override PosicionLaboral GetById(int id)
+        public override JornadaLaboral GetById(int id)
         {
-            return _context.PosicionLaboral.FirstOrDefault(x => x.Id == id);
+            return _context.JornadaLaboral.FirstOrDefault(x => x.Id == id);
         }
 
-        public PosicionLaboral GetCurrentJobByPeopleSociety(int peopleId, int societyId)
+        public JornadaLaboral GetByName(string name)
         {
-            return _context.PosicionLaboral.FirstOrDefault(pl => pl.IdPersona == peopleId && pl.IdSociedad == societyId);
+            return _context.JornadaLaboral.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
         }
     }
 }

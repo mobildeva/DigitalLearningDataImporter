@@ -2,7 +2,6 @@
 using DigitalLearningDataImporter.DALstd.ProdEntities;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using DigitalLearningIntegration.Application.Services.Prod.Dto;
 using System.Linq;
 using DigitalLearningIntegration.Infraestructure.Repository.Genre;
@@ -22,6 +21,9 @@ using DigitalLearningIntegration.Infraestructure.Repository.Areas;
 using DigitalLearningIntegration.Infraestructure.Repository.Scholarship;
 using DigitalLearningIntegration.Infraestructure.Repository.OcupLevel;
 using DigitalLearningIntegration.Infraestructure.Repository.Isapre;
+using DigitalLearningIntegration.Infraestructure.Repository.CurrentJob;
+using DigitalLearningIntegration.Infraestructure.Repository.SchedulesRule;
+using DigitalLearningIntegration.Infraestructure.Repository.WorkingDay;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -45,6 +47,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly IScholarshipRepository _schoRepository;
         private readonly IOcupLevelRepository _ocLevelRepository;
         private readonly IIsapreRepository _isapreRepository;
+        private readonly ICurrentJobRepository _cuJobRepository;
+        private readonly ISchedRuleRepository _schedRuleRepository;
+        private readonly IWorkingDayRepository _workDayRepository;
 
         public ProdAppServices(HCMKomatsuProdContext context)
         {
@@ -66,6 +71,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _schoRepository = new ScholarshipRepository(context);
             _ocLevelRepository = new OcupLevelRepository(context);
             _isapreRepository = new IsapreRepository(context);
+            _cuJobRepository = new CurrentJobRepository(context);
+            _schedRuleRepository = new SchedRuleRepository(context);
+            _workDayRepository = new WorkingDayRepository(context);
         }
 
         public int AddArea(AreaDto area)
@@ -201,6 +209,39 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public int AddCurrentJob(CurrentJobDto currentJobDto)
+        {
+            try
+            {
+                var entity = new PosicionLaboral
+                {
+                    IdSociedad = currentJobDto.IdSociedad,
+                    NombrePosicion = currentJobDto.NombrePosicion,
+                    Activo = currentJobDto.Activo,
+                    IdPersona = currentJobDto.IdPersona,
+                    IdSociedadContratante = currentJobDto.IdSociedadContratante,
+                    IdUnidadOrganizacional = currentJobDto.IdUnidadOrganizacional,
+                    IdUnidadNegocio = currentJobDto.IdUnidadNegocio,
+                    IdCargo = currentJobDto.IdCargo,
+                    IdEscolaridadSence = currentJobDto.IdEscolaridadSence,
+                    IdPersonaJefe = currentJobDto.IdPersonaJefe,
+                    FranquiciaSence = currentJobDto.FranquiciaSence,
+                    IdUbicacion = currentJobDto.IdUbicacion,
+                    IdTipoContrato = currentJobDto.IdTipoContrato,
+                    FechaInicioContrato = currentJobDto.FechaInicioContrato,
+                    FechaTerminoContrato = currentJobDto.FechaTerminoContrato,
+                    IdNivelOcupacional = currentJobDto.IdNivelOcupacional,
+                    IdCentroCosto = currentJobDto.IdCentroCosto
+                };
+                _cuJobRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
         public int AddFamily(FamilyDto familyDto)
         {
             try
@@ -273,7 +314,6 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return -1;
             }
         }
-
         public int AddLocation(LocationDto loc)
         {
             try
@@ -347,7 +387,13 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Nombre = people.Nombre,
                     Email = people.Email,
                     Fono = people.Fono,
-                    Celular = people.Celular
+                    Celular = people.Celular,
+                    IdCodigoArea = people.IdCodigoArea,
+                    ConectaSence = people.ConectaSence,
+                    Instructor = people.Instructor,
+                    IdPersonaForo = people.IdPersonaForo,
+                    IdConexion = people.IdConexion,
+                    ClaveSence = people.ClaveSence
                 };
                 _peopleRepository.Add(entity);
                 return entity.Id;
@@ -358,15 +404,42 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
-        public int AddPersonalInfo(PersonalInfoDto piDto)
+        public int AddPersonalInfo(PersonalInfoDto ip)
         {
             try
             {
                 var entity = new InformacionPersonal
                 {
-                    FechaNacimiento = piDto.FechaNacimiento,
-                    EmailPersonal = piDto.EmailPersonal,
-                    Direccion = piDto.Direccion.Trim(),
+                    FechaNacimiento = ip.FechaNacimiento,
+                    EmailPersonal = ip.EmailPersonal,
+                    Direccion = ip.Direccion.Trim(),
+                    IdPersona = ip.IdPersona,
+                    IdGenero = ip.IdGenero,
+                    IdEstadoCivil = ip.IdEstadoCivil,
+                    IdUbicacion = ip.IdUbicacion,
+                    IdPaisNacionalidad = ip.IdPaisNacionalidad,
+                    IdPaisResidencia = ip.IdPaisResidencia,
+                    IdIsapre = ip.IdIsapre,
+                    IdAfp = ip.IdAfp,
+                    IdLocal = ip.IdLocal,
+                    Activo = ip.Activo,
+                    TallaPantalon = ip.TallaPantalon,
+                    TallaCamisa = ip.TallaCamisa,
+                    TallaZapatos = ip.TallaZapatos,
+                    NumeroSeguridadSocial = ip.NumeroSeguridadSocial,
+                    IdArea = ip.IdArea,
+                    TelefonoFijo = ip.TelefonoFijo,
+                    TelefonoMovil = ip.TelefonoMovil,
+                    IdFamiliaCargo = ip.IdFamiliaCargo,
+                    Numero = ip.Numero,
+                    Otro = ip.Otro,
+                    Altura = ip.Altura,
+                    Peso = ip.Peso,
+                    UsuarioMod = ip.UsuarioMod,
+                    FechaMod = ip.FechaMod,
+                    CurriculumVitae = ip.CurriculumVitae,
+                    JornadaLaboral = ip.JornadaLaboral,
+                    IdReglaPlanHorario = ip.IdReglaPlanHorario
                 };
                 _pInfoRepository.Add(entity);
                 return entity.Id;
@@ -379,6 +452,28 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 //    Result = false,
                 //    Message = ex.Message
                 //};
+            }
+        }
+
+        public int AddSchedRule(SchedulesRuleDto schedulesRuleDto)
+        {
+            try
+            {
+                var entity = new ReglaPlanHorario
+                {
+                    FechaCr = schedulesRuleDto.FechaCr,
+                    FechaUp = schedulesRuleDto.FechaUp,
+                    UsuarioCr = schedulesRuleDto.UsuarioCr,
+                    UsuarioUp = schedulesRuleDto.UsuarioUp,
+                    Nombre = schedulesRuleDto.Nombre,
+                    Activo = schedulesRuleDto.Activo
+                };
+                _schedRuleRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
             }
         }
 
@@ -411,6 +506,25 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Nombre = societyDto.Nombre
                 };
                 _societyRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
+        }
+
+        public int AddWorkingDay(WorkingDayDto wd)
+        {
+            try
+            {
+                var entity = new JornadaLaboral
+                {
+                    Descripcion = wd.Descripcion,
+                    Nombre = wd.Nombre,
+                    Activo = wd.Activo
+                };
+                _workDayRepository.Add(entity);
                 return entity.Id;
             }
             catch (Exception)
@@ -484,6 +598,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 return new CountryDto(aux);
             }
+            else return null;
+        }
+
+        public CurrentJobDto GetCurrentJobByPeopleSociety(int peopleId, int societyId)
+        {
+            var aux = _cuJobRepository.GetCurrentJobByPeopleSociety(peopleId, societyId);
+            if (aux != null)
+                return new CurrentJobDto(aux);
             else return null;
         }
 
@@ -572,6 +694,36 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return null;
         }
 
+        public PersonalInfoDto GetPersonalInfoById(int id)
+        {
+            var aux = _pInfoRepository.GetByIdSingle(id);
+            if (aux != null)
+            {
+                return new PersonalInfoDto(aux);
+            }
+            else return null;
+        }
+
+        public PersonalInfoDto GetPersonalInfoByPersona(int peopleId)
+        {
+            var aux = _pInfoRepository.GetByPeopleId(peopleId);
+            if (aux != null)
+            {
+                return new PersonalInfoDto(aux);
+            }
+            else return null;
+        }
+
+        public SchedulesRuleDto GetSchedRuleByName(string name)
+        {
+            var aux = _schedRuleRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new SchedulesRuleDto(aux);
+            }
+            else return null;
+        }
+
         public ScholarshipDto GetScholarshipByName(string name)
         {
             var aux = _schoRepository.GetByName(name);
@@ -600,6 +752,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return new SocietyDto(aux);
             }
             return null;
+        }
+
+        public WorkingDayDto GetWorkingDayByName(string name)
+        {
+            var aux = _workDayRepository.GetByName(name);
+            if (aux != null)
+            {
+                return new WorkingDayDto(aux);
+            }
+            else return null;
         }
     }
 }

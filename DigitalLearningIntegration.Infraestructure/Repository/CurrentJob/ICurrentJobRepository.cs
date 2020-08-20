@@ -10,5 +10,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
     public interface ICurrentJobRepository : IRepository<PosicionLaboral>
     {
         ResultDto CreatedOrUpdate(PosicionLaboral entity);
+        PosicionLaboral GetCurrentJobByPeopleSociety(int peopleId, int societyId);
     }
 }

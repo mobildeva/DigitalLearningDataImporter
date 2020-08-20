@@ -69,6 +69,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             IdEstadoCivil = ip.IdEstadoCivil;
             IdUbicacion = ip.IdUbicacion;
             IdPaisNacionalidad = ip.IdPaisNacionalidad;
+            IdPaisResidencia = ip.IdPaisResidencia;
             IdIsapre = ip.IdIsapre;
             IdAfp = ip.IdAfp;
             FechaNacimiento = ip.FechaNacimiento;
@@ -79,6 +80,19 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             TallaPantalon = ip.TallaPantalon;
             TallaCamisa = ip.TallaCamisa;
             TallaZapatos = ip.TallaZapatos;
+            NumeroSeguridadSocial = ip.NumeroSeguridadSocial;
+            IdArea = ip.IdArea;
+            TelefonoFijo = ip.TelefonoFijo;
+            TelefonoMovil = ip.TelefonoMovil;
+            IdFamiliaCargo = ip.IdFamiliaCargo;
+            Numero = ip.Numero;
+            Otro = ip.Otro;
+            Altura = ip.Altura;
+            Peso = ip.Peso;
+            UsuarioMod = ip.UsuarioMod;
+            FechaMod = ip.FechaMod;
+            CurriculumVitae = ip.CurriculumVitae;
+            JornadaLaboral = ip.JornadaLaboral;
         }
     }
 }

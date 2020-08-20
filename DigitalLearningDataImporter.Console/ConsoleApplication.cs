@@ -88,11 +88,12 @@ namespace DigitalLearningDataImporter.Console
 
                 //ce = _prodServ.GetCivilStatusByName("Casado");
 
-                var pai = _prodServ.GetCountryByName("Chile");
+                //var pai = _prodServ.GetCountryByName("Chile");
 
-                pai = _prodServ.GetCountryByName("Venezuela");
+                //pai = _prodServ.GetCountryByName("Venezuela");
 
 
+                //var pl = _prodServ.GetP
 
                 //segServ.AddUser(new UserDto
                 //{

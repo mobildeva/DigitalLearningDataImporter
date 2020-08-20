@@ -37,6 +37,8 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual DbSet<Locales> Locales { get; set; }
         public virtual DbSet<NivelOcupacional> NivelOcupacional { get; set; }
         public virtual DbSet<Isapres> Isapres { get; set; }
+        public virtual DbSet<JornadaLaboral> JornadaLaboral { get; set; }
+        public virtual DbSet<ReglaPlanHorario> ReglaPlanHorario { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -216,6 +218,11 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .WithMany(p => p.InformacionPersonal)
                     .HasForeignKey(d => d.IdUbicacion)
                     .HasConstraintName("FK_InformacionPersonal_Ubicacion");
+
+                entity.HasOne(d => d.IdReglaPlanHorarioNavigation)
+                   .WithMany(p => p.InformacionPersonal)
+                   .HasForeignKey(d => d.IdReglaPlanHorario)
+                   .HasConstraintName("FK_InformacionPersonal_ReglaPlanHorario");
             });
 
             modelBuilder.Entity<PosicionLaboral>(entity =>
@@ -288,6 +295,21 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .WithMany(p => p.PosicionLaboral)
                     .HasForeignKey(d => d.IdUnidadNegocio)
                     .HasConstraintName("FK_HistoriaLaboral_UnidadesNegocio");
+
+                entity.HasOne(d => d.IdEscolaridadSenceNavigation)
+                    .WithMany(p => p.PosicionLaboral)
+                    .HasForeignKey(d => d.IdEscolaridadSence)
+                    .HasConstraintName("FK_PosicionLaboral_EscolaridadSence");
+
+                entity.HasOne(d => d.IdTipoContratoNavigation)
+                   .WithMany(p => p.PosicionLaboral)
+                   .HasForeignKey(d => d.IdTipoContrato)
+                   .HasConstraintName("FK_PosicionLaboral_TipoContrato");
+
+                entity.HasOne(d => d.IdUbicacionNavigation)
+                    .WithMany(p => p.PosicionLaboral)
+                    .HasForeignKey(d => d.IdUbicacion)
+                    .HasConstraintName("FK_PosicionLaboral_Ubicacion");
             });
 
             modelBuilder.Entity<TipoContrato>(entity =>
@@ -690,6 +712,41 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
             modelBuilder.Entity<Isapres>(entity =>
             {
                 entity.Property(e => e.Nombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<JornadaLaboral>(entity =>
+            {
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(5000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombre)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ReglaPlanHorario>(entity =>
+            {
+                entity.Property(e => e.FechaCr)
+                    .HasColumnName("FechaCR")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.FechaUp).HasColumnType("datetime");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsuarioCr)
+                    .IsRequired()
+                    .HasColumnName("UsuarioCR")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsuarioUp)
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });

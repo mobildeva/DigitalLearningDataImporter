@@ -11,6 +11,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
     public interface IProdAppServices
     {
         int AddPersonalInfo(PersonalInfoDto piDto);
+        PersonalInfoDto GetPersonalInfoByPersona(int peopleId);
+        PersonalInfoDto GetPersonalInfoById(int id);
         IEnumerable<PersonalInfoDto> GetInfos();
         int AddGenre(GenreDto gDto);
         GenreDto GetGenreByName(string name);
@@ -47,5 +49,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         ScholarshipDto GetScholarshipByName(string name);
         int AddIsapre(IsapreDto isa);
         IsapreDto GetIsapreByName(string name);
+        int AddCurrentJob(CurrentJobDto currentJobDto);
+        CurrentJobDto GetCurrentJobByPeopleSociety(int peopleId, int societyId);
+        int AddWorkingDay(WorkingDayDto wd);
+        WorkingDayDto GetWorkingDayByName(string name);
+        int AddSchedRule(SchedulesRuleDto schedulesRuleDto);
+        SchedulesRuleDto GetSchedRuleByName(string name);
     }
 }
