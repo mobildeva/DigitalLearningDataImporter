@@ -168,6 +168,6 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
             _unitOfWork.Commit();
         }
 
-        public abstract T GetById(int id);
+        public abstract T GetById(int id);        
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
+using DigitalLearningIntegration.Infraestructure.Utils;
 using System;
 using System.Linq;
 
@@ -46,6 +47,11 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Genre
         public override Genero GetById(int id)
         {
             return _context.Genero.FirstOrDefault(x => x.Id == id);
+        }
+
+        public Genero GetByName(string name)
+        {
+            return _context.Genero.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
         }
     }
 }

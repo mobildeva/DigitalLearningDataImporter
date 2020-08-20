@@ -8,6 +8,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public FamiliaCargo()
         {
             InformacionPersonal = new HashSet<InformacionPersonal>();
+            Cargos = new HashSet<Cargos>();
         }
 
         public int Id { get; set; }
@@ -17,5 +18,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public bool? Activo { get; set; }
 
         public virtual ICollection<InformacionPersonal> InformacionPersonal { get; set; }
+        public virtual ICollection<Cargos> Cargos { get; set; }
+        public virtual Sociedad IdSociedadNavigation { get; set; }
     }
 }

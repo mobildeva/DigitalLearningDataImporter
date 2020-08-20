@@ -7,8 +7,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
     {
         public Ubicacion()
         {
-            InformacionPersonal = new HashSet<InformacionPersonal>();
             InverseIdPadreNavigation = new HashSet<Ubicacion>();
+            Sociedad = new HashSet<Sociedad>();
+            InformacionPersonal = new HashSet<InformacionPersonal>();
             PosicionLaboral = new HashSet<PosicionLaboral>();
         }
 
@@ -22,8 +23,10 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public int CodigoUbicacionSence { get; set; }
 
         public virtual Ubicacion IdPadreNavigation { get; set; }
-        public virtual ICollection<InformacionPersonal> InformacionPersonal { get; set; }
+        public virtual TipoUbicacion IdTipoUbicacionNavigation { get; set; }
         public virtual ICollection<Ubicacion> InverseIdPadreNavigation { get; set; }
+        public virtual ICollection<Sociedad> Sociedad { get; set; }
+        public virtual ICollection<InformacionPersonal> InformacionPersonal { get; set; }
         public virtual ICollection<PosicionLaboral> PosicionLaboral { get; set; }
     }
 }

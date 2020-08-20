@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using DigitalLearningDataImporter.DALstd;
 using DigitalLearningDataImporter.DALstd.ProdEntities;
+using DigitalLearningIntegration.Application.Services.GobEntity;
 
 namespace DigitalLearningDataImporter.Console
 {
@@ -24,19 +25,6 @@ namespace DigitalLearningDataImporter.Console
         {
             var services = new ServiceCollection();
 
-            //Mapper.Initialize(config =>
-            //{
-            //    config.CreateMap<Data.Models.Customer, Web.ViewModels.Customer>();
-            //});
-
-            //var mappingConfig = new MapperConfiguration(mc =>
-            //{
-            //    mc.AddProfile(new AutoMapping());
-            //});
-            //IMapper mapper = mappingConfig.CreateMapper();
-
-            //services.AddSingleton(mapper);
-            //services.AddAutoMapper(mapperConfig => mapperConfig.AddProfile(new AutoMapping()));
             var connectionString = ConfigurationManager.ConnectionStrings["DatabaseConnecionString"].ConnectionString;
             var optionsBuilder = new DbContextOptionsBuilder<HCMKomatsuSegContext>();
             optionsBuilder.UseSqlServer(connectionString);
@@ -52,9 +40,11 @@ namespace DigitalLearningDataImporter.Console
 
             ISegAppServices segAppServices = new SegAppServices(segContext);
             IProdAppServices prodAppServices = new ProdAppServices(prodContext);
+            IGopEntityServices gopEntityServices = new GopEntityServices();
 
             services.AddSingleton(segAppServices);
             services.AddSingleton(prodAppServices);
+            services.AddSingleton(gopEntityServices);
             services.AddSingleton<ConsoleApplication>();
 
             _serviceProvider = services.BuildServiceProvider(true);

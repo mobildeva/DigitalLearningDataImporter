@@ -8,6 +8,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public Personas()
         {
             UnidadesNegocio = new HashSet<UnidadesNegocio>();
+            PosicionLaboralIdPersonaCambioNavigation = new HashSet<PosicionLaboral>();
+            PosicionLaboralIdPersonaJefeNavigation = new HashSet<PosicionLaboral>();
+            PosicionLaboralIdPersonaNavigation = new HashSet<PosicionLaboral>();
         }
 
         public int Id { get; set; }
@@ -26,7 +29,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public bool? ConectaSence { get; set; }
         public bool? Instructor { get; set; }
         public int? IdPersonaForo { get; set; }
-
+        public virtual ICollection<PosicionLaboral> PosicionLaboralIdPersonaCambioNavigation { get; set; }
+        public virtual ICollection<PosicionLaboral> PosicionLaboralIdPersonaJefeNavigation { get; set; }
+        public virtual ICollection<PosicionLaboral> PosicionLaboralIdPersonaNavigation { get; set; }
         public virtual ICollection<UnidadesNegocio> UnidadesNegocio { get; set; }
     }
 }

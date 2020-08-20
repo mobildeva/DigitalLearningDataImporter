@@ -2,6 +2,7 @@
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
+using System.Linq;
 
 namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
 {
@@ -45,7 +46,12 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
 
         public override Personas GetById(int id)
         {
-            return new Personas();//return _dataContext.Personas.FirstOrDefault(x => x.Id == id);
+            return _dataContext.Personas.FirstOrDefault(x => x.Id == id);
+        }
+
+        public Personas GetByIuAndDv(string uniqueId, string dv)
+        {
+            return _dataContext.Personas.AsEnumerable().FirstOrDefault(p => p.IdentificacionUnica == uniqueId.Trim() && p.Dv == dv);
         }
     }
 }

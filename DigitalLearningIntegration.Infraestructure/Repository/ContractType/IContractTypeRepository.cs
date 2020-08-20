@@ -7,5 +7,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.ContractType
     public interface IContractTypeRepository : IRepository<TipoContrato>
     {
         ResultDto CreatedOrUpdate(TipoContrato entity);
+        TipoContrato GetByName(string name);
     }
 }

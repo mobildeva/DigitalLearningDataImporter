@@ -38,5 +38,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual EscolaridadSence IdEscolaridadSenceNavigation { get; set; }
         public virtual TipoContrato IdTipoContratoNavigation { get; set; }
         public virtual Ubicacion IdUbicacionNavigation { get; set; }
+        public virtual Personas IdPersonaCambioNavigation { get; set; }
+        public virtual Personas IdPersonaJefeNavigation { get; set; }
+        public virtual Personas IdPersonaNavigation { get; set; }
+        public virtual UnidadesNegocio IdUnidadNegocioNavigation { get; set; }
     }
 }

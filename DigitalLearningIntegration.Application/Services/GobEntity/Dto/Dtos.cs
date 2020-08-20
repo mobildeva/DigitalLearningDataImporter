@@ -66,24 +66,7 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
             }
         }
         [JsonProperty(PropertyName = "gender")]
-        public char Gender { get; set; }
-        public string GenderToDl
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(Gender.ToString()))
-                {
-                    switch (Gender)
-                    {
-                        case 'F': { return "Femenino"; }
-                        case 'M': { return "Masculino"; }
-                        default:
-                            return string.Empty;
-                    }
-                }
-                else return string.Empty;
-            }
-        }
+        public string Gender { get; set; }
 
         [JsonProperty(PropertyName = "civil_status")]
         public string Civil_status { get; set; }
@@ -137,6 +120,25 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         [JsonProperty(PropertyName = "phone")]
         public string Phone { get; set; }
         public bool IsDeleted { get; set; }
+        public string BloodG { get; set; }
+        public string BossRut { get; set; }
+        public string Height { get; set; }
+        public string Weight { get; set; }
+        public string PantsSize { get; set; }
+        public string ShirtSize { get; set; }
+        public string ShoeSize { get; set; }
+        public string Isapre { get; set; }
+        public string Afp { get; set; }
+        public string DriverLicenseNumber { get; set; }
+        public string PassportNumber { get; set; }
+        public string AddressNumber { get; set; }
+        public string NameEmergencyContact { get; set; }
+        public string PhoneEmergencyContact { get; set; }
+        public string Scolarship { get; set; }
+        public string OcupationalLevel { get; set; }
+        public string FranchiseSence { get; set; }
+        public string ContractType { get; set; }
+
         public GopEntityDto()
         {
 
@@ -216,6 +218,7 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         public int CompanyId { get; set; }
         [JsonProperty(PropertyName = "custom_attributes")]
         public CustomAttributesDto CustomAttributes { get; set; }
+        public string Email { get; set; }
         public CurrentJobDto()
         {
 
@@ -271,5 +274,19 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
         public string CompanyRut { get; set; }
+    }
+
+    public class LogInfo
+    {
+        public long ProcessId { get; private set; }
+        public string NameOfFile { get; set; }
+        public DateTime DateOfFile { get; set; }
+        public string State { get; set; }
+        public int CountOfRows { get; set; }
+        public LogInfo()
+        {
+            DateOfFile = DateTime.Now;
+            ProcessId = DateTime.Now.Ticks;
+        }
     }
 }

@@ -5,6 +5,10 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
 {
     public partial class UnidadesNegocio
     {
+        public UnidadesNegocio()
+        {
+            PosicionLaboral = new HashSet<PosicionLaboral>();
+        }
         public int Id { get; set; }
         public int IdSociedad { get; set; }
         public string Nombre { get; set; }
@@ -17,5 +21,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
 
         public virtual Personas IdPersonaJefeNavigation { get; set; }
         public virtual UnidadesOrganizacional IdUnidadOrganizacionalNavigation { get; set; }
+        public virtual Sociedad IdSociedadNavigation { get; set; }
+        public virtual ICollection<PosicionLaboral> PosicionLaboral { get; set; }
     }
 }

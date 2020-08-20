@@ -65,6 +65,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         {
             FechaNacimiento = ip.FechaNacimiento;
             EmailPersonal = ip.EmailPersonal;
+            Direccion = ip.Direccion;
         }
     }
 }

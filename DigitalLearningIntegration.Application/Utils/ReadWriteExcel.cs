@@ -29,7 +29,7 @@ namespace DigitalLearningIntegration.Application.Utils
                         foreach (Cell cell in row.Descendants<Cell>())
                         {
                             var colunmName = firstRowIsHeader ? GetCellValue(doc, cell) : "Field" + j++;
-                            Console.WriteLine(colunmName);
+                            //Console.WriteLine(colunmName);
                             Headers.Add(colunmName);
                             dt.Columns.Add(colunmName);
                         }

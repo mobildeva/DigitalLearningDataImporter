@@ -48,5 +48,10 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.BussUnit
         {
             return _context.UnidadesNegocio.FirstOrDefault(x => x.Id == id);
         }
+
+        public UnidadesNegocio GetByName(string name, int idSociedad)
+        {
+            return _context.UnidadesNegocio.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper() && un.IdSociedad == idSociedad);
+        }
     }
 }

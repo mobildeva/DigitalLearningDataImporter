@@ -62,6 +62,6 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual FamiliaCargo IdFamiliaCargoNavigation { get; set; }
         public virtual Genero IdGeneroNavigation { get; set; }
         public virtual GrupoSanguineo IdGrupoSanguineoNavigation { get; set; }
-        public virtual Ubicacion IdUbicacionNavigation { get; set; }
+        public virtual Ubicacion IdUbicacionNavigation { get; set; }        
     }
 }

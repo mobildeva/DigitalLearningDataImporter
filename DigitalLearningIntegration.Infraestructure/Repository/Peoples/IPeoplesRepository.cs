@@ -11,5 +11,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
     {
         ResultDto CreatedOrUpdate(Personas entity);
         Personas GetById(int id);
+        Personas GetByIuAndDv(string uniqueId, string dv);
     }
 }

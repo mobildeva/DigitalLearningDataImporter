@@ -7,5 +7,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.BussUnit
     public interface IBussUnitRepository : IRepository<UnidadesNegocio>
     {
         ResultDto CreatedOrUpdate(UnidadesNegocio entity);
+        UnidadesNegocio GetByName(string name, int idSociedad);
     }
 }
