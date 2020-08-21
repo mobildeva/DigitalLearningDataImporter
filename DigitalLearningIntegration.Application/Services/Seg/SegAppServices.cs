@@ -26,9 +26,13 @@ namespace DigitalLearningIntegration.Application.Services.Seg
                 var entity = new DigitalLearningDataImporter.DALstd.Users
                 {
                     Username = userDto.Username,
-                    Password = userDto.Password
+                    Password = userDto.Password,
+                    Bloqueado = userDto.Bloqueado,
+                    Activo = userDto.Activo,
+                    Nombres = userDto.Nombres,
+                    Fecha = userDto.Fecha
                 };
-                _userRepository.CreatedOrUpdate(entity);
+                _userRepository.Add(entity);
                 return entity.Id;
             }
             catch (Exception)

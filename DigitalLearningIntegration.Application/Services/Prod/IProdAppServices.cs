@@ -33,6 +33,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         int AddSociety(SocietyDto people);
         SocietyDto GetSocietyByName(string name);
         SocietyDto GetSocietyByUniqueId(string name);
+        SocietyDto GetSocietyById(int societyId);
         int AddFamily(FamilyDto people);
         FamilyDto GetFamilyByNameSociety(string name, int societyId);
         int AddCostCenter(CostCenterDto costCenterDto);
@@ -51,11 +52,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         IsapreDto GetIsapreByName(string name);
         int AddAfp(AfpDto afp);
         AfpDto GetAfpByName(string name);
-        int AddCurrentJob(CurrentJobDto currentJobDto);
-        CurrentJobDto GetCurrentJobByPeopleSociety(int peopleId, int societyId);
+        int AddCurrentJob(CurrentJobsDto currentJobDto);
+        CurrentJobsDto GetCurrentJobByPeopleSociety(int peopleId, int societyId);
         int AddWorkingDay(WorkingDayDto wd);
         WorkingDayDto GetWorkingDayByName(string name);
         int AddSchedRule(SchedulesRuleDto schedulesRuleDto);
         SchedulesRuleDto GetSchedRuleByName(string name);
+        int AddLocal(LocalDto local);
+        LocalDto GetLocalByCode(string code);
+        void UpdatePeople(PeoplesDto people);
+        void UpdatePersonalInfo(PersonalInfoDto personalInfo);
+        void UpdateCurrentJob(CurrentJobsDto currentJobsDto);
     }
 }

@@ -10,6 +10,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public int Id { get; set; }
         public string Nombre { get; set; }
         public bool? Activo { get; set; }
+        public GenreDto()
+        {
+
+        }
         public GenreDto(Genero gen)
         {
             Id = gen.Id;

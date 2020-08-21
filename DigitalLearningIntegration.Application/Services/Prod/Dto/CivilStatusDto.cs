@@ -16,5 +16,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Nombre = ec.Nombre;
             Activo = ec.Activo;
         }
+
+        public CivilStatusDto()
+        {
+
+        }
     }
 }

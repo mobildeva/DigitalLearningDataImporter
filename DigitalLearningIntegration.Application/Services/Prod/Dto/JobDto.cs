@@ -25,7 +25,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public string Usuariocreacion { get; set; }
         public string Usuariomodificacion { get; set; }
         public bool? Activo { get; set; }
+        public JobDto()
+        {
 
+        }
         public JobDto(Cargos cargo)
         {
             Id = cargo.Id;

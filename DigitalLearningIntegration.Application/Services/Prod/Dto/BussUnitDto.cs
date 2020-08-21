@@ -17,6 +17,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public string CodigoErp { get; set; }
         public bool? Activo { get; set; }
 
+        public BussUnitDto()
+        {
+
+        }
         public BussUnitDto(UnidadesNegocio un)
         {
             Id = un.Id;

@@ -124,14 +124,14 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
         {
             var entity = _context.Set<T>().Find(id);
 
-            if (!_context.Entry(entity).CurrentValues[nameof(IIsDeleted.IsDeleted)].Equals(true))
-            {
-                return entity;
-            }
-            else
-            {
-                return null;
-            }
+            //if (!_context.Entry(entity).CurrentValues[nameof(IIsDeleted.IsDeleted)].Equals(true))
+            //{
+            return entity;
+            //}
+            //else
+            //{
+            //   return null;
+            //}
         }
 
         public IEnumerable<T> Get(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
@@ -154,7 +154,7 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
 
         public void Update(T entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            //_context.Entry(entity).State = EntityState.Modified;
 
             //var userSession = _httpContextAccessor.HttpContext.User.GetUserId();
 
@@ -164,10 +164,10 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
             //    _context.Entry(entity).CurrentValues[nameof(IAuditable.LastModifiedDate)] = DateTime.Now;
             //}
 
-            _context.Set<T>().Update(entity);
+            //_context.Set<T>().Update(entity);
             _unitOfWork.Commit();
         }
 
-        public abstract T GetById(int id);        
+        public abstract T GetById(int id);
     }
 }

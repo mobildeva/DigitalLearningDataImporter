@@ -8,6 +8,6 @@ namespace DigitalLearningIntegration.Application.Services.GobEntity
 {
     public interface IGopEntityServices
     {
-        IEnumerable<GopEntityDto> GetEntities(DataTable entitiesTable);
+        IEnumerable<GopEntityDtoExpand> GetEntities(DataTable entitiesTable);
     }
 }

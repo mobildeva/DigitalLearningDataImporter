@@ -1,4 +1,5 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
+using DocumentFormat.OpenXml.Wordprocessing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,12 +25,28 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public string Direccion { get; set; }
         public int? IdUbicacion { get; set; }
 
+        public SocietyDto()
+        {
+
+        }
         public SocietyDto(Sociedad s)
         {
             Id = s.Id;
             IdentificacionUnica = s.IdentificacionUnica;
             Nombre = s.Nombre;
+            NombreContacto = s.NombreContacto;
+            CorreoContacto = s.CorreoContacto;
+            Fono = s.Fono;
+            Fax = s.Fax;
+            Logo = s.Logo;
+            CodErp = s.CodErp;
+            Portal = s.Portal;
+            Skin = s.Skin;
+            ClaveSence = s.ClaveSence;
+            Direccion = s.Direccion;
+            IdUbicacion = s.IdUbicacion;
             Activo = s.Activo;
+            SiglaSociedad = s.SiglaSociedad;
         }
     }
 }

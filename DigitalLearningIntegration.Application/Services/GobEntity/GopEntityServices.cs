@@ -8,14 +8,14 @@ namespace DigitalLearningIntegration.Application.Services.GobEntity
 {
     public class GopEntityServices : IGopEntityServices
     {
-        public IEnumerable<GopEntityDto> GetEntities(DataTable entitiesTable)
+        public IEnumerable<GopEntityDtoExpand> GetEntities(DataTable entitiesTable)
         {
-            var result = new List<GopEntityDto>();
+            var result = new List<GopEntityDtoExpand>();
 
-            GopEntityDto aux;
+            GopEntityDtoExpand aux;
             foreach (DataRow r in entitiesTable.Rows)
             {
-                aux = new GopEntityDto()
+                aux = new GopEntityDtoExpand()
                 {
                     Rut = r[0].ToString(),
                     FullName = r[3].ToString(),

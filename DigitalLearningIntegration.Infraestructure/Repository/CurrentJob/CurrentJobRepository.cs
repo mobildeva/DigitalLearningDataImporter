@@ -48,7 +48,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
         public override PosicionLaboral GetById(int id)
         {
             return _context.PosicionLaboral.FirstOrDefault(x => x.Id == id);
-        }
+        }       
 
         public PosicionLaboral GetCurrentJobByPeopleSociety(int peopleId, int societyId)
         {

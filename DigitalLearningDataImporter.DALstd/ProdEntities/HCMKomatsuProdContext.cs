@@ -445,6 +445,16 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .HasForeignKey(d => d.IdSociedad)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UnidadesNegocio_Sociedad");
+
+                entity.HasOne(d => d.IdPersonaJefeNavigation)
+                  .WithMany(p => p.UnidadesNegocio)
+                  .HasForeignKey(d => d.IdPersonaJefe)
+                  .HasConstraintName("FK_UnidadesNegocio_Personas");
+
+                entity.HasOne(d => d.IdUnidadOrganizacionalNavigation)
+                    .WithMany(p => p.UnidadesNegocio)
+                    .HasForeignKey(d => d.IdUnidadOrganizacional)
+                    .HasConstraintName("FK_UnidadesNegocio_UnidadesOrganizacional");
             });
 
             modelBuilder.Entity<UnidadesOrganizacional>(entity =>
@@ -483,6 +493,11 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .HasForeignKey(d => d.IdSociedad)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UnidadesOrganizacional_Sociedad");
+
+                entity.HasOne(d => d.IdCentroCostoNavigation)
+                    .WithMany(p => p.UnidadesOrganizacional)
+                    .HasForeignKey(d => d.IdCentroCosto)
+                    .HasConstraintName("FK_UnidadesOrganizacional_CentroCosto");
             });
 
             modelBuilder.Entity<TipoUbicacion>(entity =>
@@ -701,7 +716,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                 entity.HasOne(d => d.IdFormatoNavigation)
                     .WithMany(p => p.Locales)
                     .HasForeignKey(d => d.IdFormato)
-                    .HasConstraintName("FK_Locales_UnidadesNegocio");
+                    .HasConstraintName("FK_Locales_UnidadesNegocio").IsRequired(false);
             });
 
             modelBuilder.Entity<NivelOcupacional>(entity =>

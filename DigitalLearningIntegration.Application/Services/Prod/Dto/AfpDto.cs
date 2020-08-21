@@ -17,5 +17,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Nombre = afp.Nombre;
             Activo = afp.Activo;
         }
+        public AfpDto()
+        {
+
+        }
     }
 }

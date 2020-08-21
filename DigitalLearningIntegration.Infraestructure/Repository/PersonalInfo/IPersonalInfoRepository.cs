@@ -9,5 +9,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.PersonalInfo
     {
         ResultDto CreatedOrUpdate(InformacionPersonal entity);
         InformacionPersonal GetByPeopleId(int peopleId);
+        InformacionPersonal GetById(int id);
     }
 }

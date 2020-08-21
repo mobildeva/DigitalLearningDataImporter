@@ -15,6 +15,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public string CodigoArea { get; set; }
         public bool? Activo { get; set; }
         public int CodigoUbicacionSence { get; set; }
+        public LocationDto()
+        {
+
+        }
         public LocationDto(Ubicacion ub)
         {
             Id = ub.Id;

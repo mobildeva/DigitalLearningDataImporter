@@ -28,5 +28,6 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual ICollection<UnidadesNegocio> UnidadesNegocio { get; set; }
         public virtual ICollection<Cargos> Cargos { get; set; }
         public virtual Sociedad IdSociedadNavigation { get; set; }
+        public virtual CentroCosto IdCentroCostoNavigation { get; set; }
     }
 }

@@ -30,5 +30,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Activo = uo.Activo;
             Nivel = uo.Nivel;
         }
+        public OrgUnitDto()
+        {
+
+        }
     }
 }

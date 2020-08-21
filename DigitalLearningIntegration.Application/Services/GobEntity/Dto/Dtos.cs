@@ -1,4 +1,5 @@
 ﻿using System;
+using DigitalLearningIntegration.Application.Services.Prod.Dto;
 using Newtonsoft.Json;
 
 namespace DigitalLearningIntegration.Application.GobEntity.Dto
@@ -57,8 +58,11 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         {
             get
             {
-                if (!string.IsNullOrEmpty(Birthday) && DateTime.TryParse(Birthday, out DateTime res))
+                if (!string.IsNullOrEmpty(Birthday))
                 {
+                    //&& DateTime.TryParse(Birthday, out DateTime res)
+                    var splitDate = Birthday.Split('-');
+                    var res = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0]));
                     return res;
                 }
 
@@ -145,6 +149,41 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         }
     }
 
+    public class GopEntityDtoExpand : GopEntityDto
+    {
+        public int? boosId { get; set; }
+        public int orgUnitId { get; set; }
+        public int bussUnitId { get; set; }
+        public int isapId { get; set; }
+        public int familyId { get; set; }
+        public int areaId { get; set; }
+        public int planRuleId { get; set; }
+        public int workingDayId { get; set; }
+        public int localId { get; set; }
+        public int contSocId { get; set; }
+        public int costCenterId { get; set; }
+        public int contTypeId { get; set; }
+        public int ocupLevelId { get; set; }
+        public int scholid { get; set; }
+        public int idGenre { get; set; }
+        public int bloodId { get; set; }
+        public int civilStatusId { get; set; }
+        public int natId { get; set; }
+        public bool hasBoss { get; set; }
+        public bool hasUser { get; set; }
+        public int afpId { get; set; }
+        public int? PeopleId { get; set; }
+        public int? PersonalInfoId { get; set; }
+        public int locationId { get; set; }
+        public int jobId { get; set; }
+        public int? CurrentJobId { get; set; }
+
+        public GopEntityDtoExpand() : base()
+        {
+
+        }
+
+    }
     public class RoleDto
     {
         [JsonProperty(PropertyName = "id")]
@@ -190,8 +229,10 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         {
             get
             {
-                if (!string.IsNullOrEmpty(StartDate) && DateTime.TryParse(StartDate, out DateTime res))
+                if (!string.IsNullOrEmpty(StartDate)) //&& DateTime.TryParse(StartDate, out DateTime res))
                 {
+                    var splitDate = StartDate.Split('-');
+                    var res = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0]));
                     return res;
                 }
 
@@ -205,8 +246,10 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         {
             get
             {
-                if (!string.IsNullOrEmpty(EndDate) && DateTime.TryParse(EndDate, out DateTime res))
+                if (!string.IsNullOrEmpty(EndDate)) //&& DateTime.TryParse(EndDate, out DateTime res))
                 {
+                    var splitDate = EndDate.Split('-');
+                    var res = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0]));
                     return res;
                 }
 

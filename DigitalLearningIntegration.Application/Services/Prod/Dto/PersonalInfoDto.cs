@@ -94,5 +94,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             CurriculumVitae = ip.CurriculumVitae;
             JornadaLaboral = ip.JornadaLaboral;
         }
+
+        public PersonalInfoDto()
+        {
+
+        }
     }
 }

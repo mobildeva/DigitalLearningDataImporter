@@ -23,6 +23,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public bool? ConectaSence { get; set; }
         public bool? Instructor { get; set; }
         public int? IdPersonaForo { get; set; }
+
+        public PeoplesDto()
+        {
+
+        }
         public PeoplesDto(Personas p)
         {
             Id = p.Id;

@@ -25,6 +25,7 @@ using DigitalLearningIntegration.Infraestructure.Repository.CurrentJob;
 using DigitalLearningIntegration.Infraestructure.Repository.SchedulesRule;
 using DigitalLearningIntegration.Infraestructure.Repository.WorkingDay;
 using DigitalLearningIntegration.Infraestructure.Repository.Afp;
+using DigitalLearningIntegration.Infraestructure.Repository.Local;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -52,6 +53,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly ISchedRuleRepository _schedRuleRepository;
         private readonly IWorkingDayRepository _workDayRepository;
         private readonly IAfpRepository _afpRepository;
+        private readonly ILocalRepository _localRepository;
+
         public ProdAppServices(HCMKomatsuProdContext context)
         {
             _pInfoRepository = new PersonalInfoRepository(context);
@@ -76,6 +79,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _schedRuleRepository = new SchedRuleRepository(context);
             _workDayRepository = new WorkingDayRepository(context);
             _afpRepository = new AfpRepository(context);
+            _localRepository = new LocalRepository(context);
         }
 
         public int AddAfp(AfpDto afp)
@@ -142,7 +146,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Activo = piDto.Activo,
                     Nombre = piDto.Nombre,
                     IdCentroCosto = piDto.IdCentroCosto,
-                    IdSociedad = piDto.IdSociedad
+                    IdSociedad = piDto.IdSociedad,
+                    CodigoErp = piDto.CodigoErp
                 };
                 _buRepository.Add(entity);
                 return entity.Id;
@@ -198,12 +203,12 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     IdSociedad = costCenterDto.IdSociedad,
                     Nombre = costCenterDto.Nombre,
                     Activo = costCenterDto.Activo,
-                    Codigo = costCenterDto.Codigo
+                    Codigo = costCenterDto.Codigo,
                 };
                 _costCentRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return -1;
             }
@@ -229,7 +234,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
-        public int AddCurrentJob(CurrentJobDto currentJobDto)
+        public int AddCurrentJob(CurrentJobsDto currentJobDto)
         {
             try
             {
@@ -334,6 +339,27 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return -1;
             }
         }
+
+        public int AddLocal(LocalDto loc)
+        {
+            try
+            {
+                var entity = new Locales
+                {
+                    CodigoLocal = loc.CodigoLocal,
+                    NombreLocal = loc.NombreLocal,
+                    Activo = loc.Activo,
+                    IdFormato = loc.IdFormato
+                };
+                _localRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception e)
+            {
+                return -1;
+            }
+        }
+
         public int AddLocation(LocationDto loc)
         {
             try
@@ -377,17 +403,17 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         {
             try
             {
-                var entity = new UnidadesNegocio
+                var entity = new UnidadesOrganizacional
                 {
                     Activo = orgUnitDto.Activo,
                     Nombre = orgUnitDto.Nombre,
                     IdCentroCosto = orgUnitDto.IdCentroCosto,
                     IdSociedad = orgUnitDto.IdSociedad
                 };
-                _buRepository.Add(entity);
+                _ouRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return -1;
             }
@@ -523,7 +549,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 {
                     IdentificacionUnica = societyDto.IdentificacionUnica,
                     Activo = societyDto.Activo,
-                    Nombre = societyDto.Nombre
+                    Nombre = societyDto.Nombre,
+                    Direccion = societyDto.Direccion,
+                    Logo = societyDto.Logo
                 };
                 _societyRepository.Add(entity);
                 return entity.Id;
@@ -631,11 +659,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
-        public CurrentJobDto GetCurrentJobByPeopleSociety(int peopleId, int societyId)
+        public CurrentJobsDto GetCurrentJobByPeopleSociety(int peopleId, int societyId)
         {
             var aux = _cuJobRepository.GetCurrentJobByPeopleSociety(peopleId, societyId);
             if (aux != null)
-                return new CurrentJobDto(aux);
+                return new CurrentJobsDto(aux);
             else return null;
         }
 
@@ -676,6 +704,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             if (aux != null)
             {
                 return new JobDto(aux);
+            }
+            else return null;
+        }
+
+        public LocalDto GetLocalByCode(string code)
+        {
+            var aux = _localRepository.GetByCode(code);
+            if (aux != null)
+            {
+                return new LocalDto(aux);
             }
             else return null;
         }
@@ -764,6 +802,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public SocietyDto GetSocietyById(int societyId)
+        {
+            var aux = _societyRepository.GetByIdSingle(societyId);
+            if (aux != null)
+            {
+                return new SocietyDto(aux);
+            }
+            else return null;
+        }
+
         public SocietyDto GetSocietyByName(string name)
         {
             var aux = _societyRepository.GetByName(name);
@@ -792,6 +840,79 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return new WorkingDayDto(aux);
             }
             else return null;
+        }
+
+        public void UpdateCurrentJob(CurrentJobsDto currentJobsDto)
+        {
+            var cj = _cuJobRepository.GetById(currentJobsDto.Id);
+
+            if (cj != null)
+            {
+                cj.Activo = currentJobsDto.Activo;
+                //cj.IdPersona =
+                cj.IdUnidadOrganizacional = currentJobsDto.IdUnidadOrganizacional;
+                cj.IdUnidadNegocio = currentJobsDto.IdUnidadNegocio;
+                cj.IdUbicacion = currentJobsDto.IdUbicacion;
+                cj.IdCargo = currentJobsDto.IdCargo;
+                cj.IdEscolaridadSence = currentJobsDto.IdEscolaridadSence;
+                cj.IdNivelOcupacional = currentJobsDto.IdNivelOcupacional;
+                cj.FranquiciaSence = currentJobsDto.FranquiciaSence;
+                cj.IdTipoContrato = currentJobsDto.IdTipoContrato;
+                cj.FechaInicioContrato = currentJobsDto.FechaInicioContrato;
+                cj.FechaTerminoContrato = currentJobsDto.FechaTerminoContrato;
+                cj.IdPersonaJefe = currentJobsDto.IdPersonaJefe;
+                cj.IdSociedadContratante = currentJobsDto.IdSociedadContratante;
+                cj.IdCentroCosto = currentJobsDto.IdCentroCosto;
+            }
+        }
+
+        public void UpdatePeople(PeoplesDto people)
+        {
+            var p = _peopleRepository.GetById(people.Id);
+
+            if (p != null)
+            {
+                p.Activo = people.Activo;
+                p.ApellidoMaterno = people.ApellidoMaterno;
+                p.Nombre = people.Nombre;
+                p.IdentificacionUnica = people.IdentificacionUnica;
+                p.Dv = people.Dv;
+                p.Email = people.Email;
+                p.Fono = p.Fono;
+                p.Celular = p.Celular;
+                p.IdCodigoArea = p.IdCodigoArea;
+
+                _peopleRepository.Update(p);
+            }
+        }
+
+        public void UpdatePersonalInfo(PersonalInfoDto personalInfo)
+        {
+            var pi = _pInfoRepository.GetById(personalInfo.Id);
+
+            if (pi != null)
+            {
+                pi.Activo = personalInfo.Activo;
+                //pi.IdPersona = personalInfo.IdPersona;
+                pi.FechaNacimiento = personalInfo.FechaNacimiento;
+                pi.EmailPersonal = personalInfo.EmailPersonal;
+                pi.IdGenero = personalInfo.IdGenero;
+                pi.IdEstadoCivil = personalInfo.IdEstadoCivil;
+                pi.IdPaisNacionalidad = personalInfo.IdPaisNacionalidad;
+                pi.IdGrupoSanguineo = personalInfo.IdGrupoSanguineo;
+                pi.IdIsapre = personalInfo.IdIsapre;
+                pi.IdAfp = personalInfo.IdAfp;
+                pi.Direccion = personalInfo.Direccion;
+                pi.Numero = personalInfo.Numero;
+                pi.Otro = personalInfo.Otro;
+                pi.IdFamiliaCargo = personalInfo.IdFamiliaCargo;
+                pi.IdArea = personalInfo.IdArea;
+                pi.IdReglaPlanHorario = personalInfo.IdReglaPlanHorario;
+                pi.JornadaLaboral = personalInfo.JornadaLaboral;
+                pi.IdLocal = personalInfo.IdLocal;
+
+                _pInfoRepository.Update(pi);
+            }
         }
     }
 }

@@ -16,5 +16,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Nombre = gs.Nombre;
             Activo = gs.Activo;
         }
+
+        public BloodGDto()
+        {
+
+        }
     }
 }

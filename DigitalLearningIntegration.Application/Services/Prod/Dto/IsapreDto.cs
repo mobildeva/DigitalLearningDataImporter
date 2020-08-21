@@ -16,5 +16,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Nombre = isapre.Nombre;
             Activo = isapre.Activo;
         }
+
+        public IsapreDto()
+        {
+
+        }
     }
 }

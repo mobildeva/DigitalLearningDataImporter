@@ -20,5 +20,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             CodigoArea = pais.CodigoArea;
             CodigoSence = pais.CodigoSence;
         }
+
+        public CountryDto()
+        {
+
+        }
     }
 }

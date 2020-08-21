@@ -5,7 +5,7 @@ using System.Text;
 
 namespace DigitalLearningIntegration.Application.Services.Prod.Dto
 {
-    public class CurrentJobDto
+    public class CurrentJobsDto
     {
         public int Id { get; set; }
         public int IdPersona { get; set; }
@@ -37,7 +37,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public int? IdPersonaCambio { get; set; }
         public int IdCentroCosto { get; set; }
 
-        public CurrentJobDto(PosicionLaboral posicionLaboral)
+        public CurrentJobsDto(PosicionLaboral posicionLaboral)
         {
             Id = posicionLaboral.Id;
             IdPersona = posicionLaboral.IdPersona;
@@ -56,6 +56,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             IdNivelOcupacional = posicionLaboral.IdNivelOcupacional;
             Activo = posicionLaboral.Activo;
             IdCentroCosto = posicionLaboral.IdCentroCosto;
+        }
+        public CurrentJobsDto()
+        {
+
         }
     }
 }

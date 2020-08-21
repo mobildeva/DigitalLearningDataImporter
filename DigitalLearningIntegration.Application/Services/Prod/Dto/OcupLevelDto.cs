@@ -11,6 +11,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public int? IdSociedad { get; set; }
         public string Nombre { get; set; }
         public bool? Activo { get; set; }
+        public OcupLevelDto()
+        {
+
+        }
         public OcupLevelDto(NivelOcupacional nivelOcupacional)
         {
             Id = nivelOcupacional.Id;
