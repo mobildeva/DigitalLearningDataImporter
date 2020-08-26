@@ -15,6 +15,12 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
         {
             _context = dataContext;
         }
+
+        public void AddActiveCurrentJob(PosicionLaboral entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public ResultDto CreatedOrUpdate(PosicionLaboral entity)
         {
             ResultDto Result = new ResultDto

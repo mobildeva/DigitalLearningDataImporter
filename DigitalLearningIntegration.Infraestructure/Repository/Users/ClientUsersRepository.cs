@@ -1,26 +1,22 @@
 ﻿using DigitalLearningDataImporter.DALstd;
+using DigitalLearningIntegration.Infraestructure.Dto;
+using DigitalLearningIntegration.Infraestructure.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DigitalLearningIntegration.Infraestructure.UnitOfWork;
-using DigitalLearningIntegration.Infraestructure.Dto;
-using Serilog.Sinks.File;
-using Serilog.Sinks.SystemConsole;
-using System.Runtime.InteropServices.ComTypes;
-using Microsoft.EntityFrameworkCore;
 
 namespace DigitalLearningIntegration.Infraestructure.Repository.Users
 {
-    public class UserRepository : Repository<DigitalLearningDataImporter.DALstd.Users>, IUserRepository
+    public class ClientUsersRepository : Repository<ClienteUsers>, IClientUsersRepository
     {
         private readonly HCMKomatsuSegContext _context;
 
-        public UserRepository(HCMKomatsuSegContext dataContext) : base(dataContext)
+        public ClientUsersRepository(HCMKomatsuSegContext dataContext) : base(dataContext)
         {
             _context = dataContext;
         }
 
-        public ResultDto CreatedOrUpdate(DigitalLearningDataImporter.DALstd.Users entity)
+        public ResultDto CreatedOrUpdate(ClienteUsers entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -50,19 +46,19 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Users
             return Result;
         }
 
-        public override DigitalLearningDataImporter.DALstd.Users GetById(int id)
+        public override ClienteUsers GetById(int id)
         {
-            return _context.Users.FirstOrDefault(x => x.Id == id);
+            return _context.ClienteUsers.FirstOrDefault(x => x.Id == id);
         }
 
-        public DigitalLearningDataImporter.DALstd.Users GetUserByRUTUserName(string usernameRut)
+        public ClienteUsers GetClientUsersByClientUserId(int? idClientes, int? idUser)
         {
-            return _context.Users.AsEnumerable().FirstOrDefault(u => Utils.Utils.CleanString(u.Username).ToUpper() == Utils.Utils.CleanString(usernameRut).ToUpper());
+            return _context.ClienteUsers.FirstOrDefault(cu => cu.IdClientes == idClientes && cu.IdUsers == idUser);
         }
 
-        public IEnumerable<DigitalLearningDataImporter.DALstd.Users> GetUsers()
+        public IEnumerable<ClienteUsers> GetUsersByClientId(int clientId)
         {
-            return GetAll();
+            return _context.ClienteUsers.Where(cu => cu.IdClientes == clientId);
         }
     }
 }

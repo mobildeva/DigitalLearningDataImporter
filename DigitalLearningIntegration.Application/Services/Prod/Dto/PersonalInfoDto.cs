@@ -58,8 +58,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
         public bool? Pensionado { get; set; }
         public bool? Discapacitado { get; set; }
         public int? IdLocal { get; set; }
-        public int? UsuarioMod { get; set; }
-        public DateTime? FechaMod { get; set; }
+        //public int? UsuarioMod { get; set; }
+        //public DateTime? FechaMod { get; set; }
 
         public PersonalInfoDto(InformacionPersonal ip)
         {
@@ -89,8 +89,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Otro = ip.Otro;
             Altura = ip.Altura;
             Peso = ip.Peso;
-            UsuarioMod = ip.UsuarioMod;
-            FechaMod = ip.FechaMod;
+            //UsuarioMod = ip.UsuarioMod;
+            //FechaMod = ip.FechaMod;
             CurriculumVitae = ip.CurriculumVitae;
             JornadaLaboral = ip.JornadaLaboral;
         }

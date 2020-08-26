@@ -15,14 +15,14 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DbContext _context;
-        //private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 
-        //public Repository(IUnitOfWork unitOfWork, DataContext context)
-        //{
-        //    _unitOfWork = unitOfWork;
-        //    _context = context;
-        //}
+        public Repository(IUnitOfWork unitOfWork, DbContext context)
+        {
+            _unitOfWork = unitOfWork;
+            _context = context;
+        }
         public Repository(DbContext context)
         {
             _unitOfWork = new UnitOfWork(context);
@@ -34,12 +34,12 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
 
         }
 
-        //public Repository(DataContext context, IHttpContextAccessor httpContextAccessor)
-        //{
-        //    _context = context;
-        //    _unitOfWork = new UnitOfWork(context);
-        //    _httpContextAccessor = httpContextAccessor;
-        //}
+        public Repository(DbContext context, IHttpContextAccessor httpContextAccessor)
+        {
+            _context = context;
+            _unitOfWork = new UnitOfWork(context);
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public void Add(T entity)
         {
@@ -109,9 +109,6 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
                     _context.Set<T>().Remove(existing);
                     _unitOfWork.Commit();
                 }
-
-                //_context.Set<T>().Remove(existing);
-                //_unitOfWork.Commit();
             }
         }
 
@@ -169,5 +166,16 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
         }
 
         public abstract T GetById(int id);
+
+        public void AddRange(IEnumerable<T> entities)
+        {
+            _context.Set<T>().AddRange(entities);
+            _unitOfWork.Commit();
+        }
+
+        public void Commit()
+        {
+            _unitOfWork.Commit();
+        }
     }
 }

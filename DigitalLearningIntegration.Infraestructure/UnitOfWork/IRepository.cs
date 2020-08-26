@@ -13,6 +13,8 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
         void Update(T entity);
         T GetByIdSingle(int id);
         void Delete(int id);
+        void AddRange(IEnumerable<T> entity);
+        void Commit();
     }
 
 }

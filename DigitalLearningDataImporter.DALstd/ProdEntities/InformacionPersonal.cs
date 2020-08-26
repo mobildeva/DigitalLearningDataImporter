@@ -56,8 +56,8 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public bool? Pensionado { get; set; }
         public bool? Discapacitado { get; set; }
         public int? IdLocal { get; set; }
-        public int? UsuarioMod { get; set; }
-        public DateTime? FechaMod { get; set; }
+        //public int? UsuarioMod { get; set; }
+        //public DateTime? FechaMod { get; set; }
 
         public virtual FamiliaCargo IdFamiliaCargoNavigation { get; set; }
         public virtual Genero IdGeneroNavigation { get; set; }

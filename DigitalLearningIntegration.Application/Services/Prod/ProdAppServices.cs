@@ -267,6 +267,37 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public void AddCurrentJobs(IEnumerable<CurrentJobsDto> jobs)
+        {
+            try
+            {
+                _cuJobRepository.AddRange(jobs.Select(currentJobDto => new PosicionLaboral
+                {
+                    IdSociedad = currentJobDto.IdSociedad,
+                    NombrePosicion = currentJobDto.NombrePosicion,
+                    Activo = currentJobDto.Activo,
+                    IdPersona = currentJobDto.IdPersona,
+                    IdSociedadContratante = currentJobDto.IdSociedadContratante,
+                    IdUnidadOrganizacional = currentJobDto.IdUnidadOrganizacional,
+                    IdUnidadNegocio = currentJobDto.IdUnidadNegocio,
+                    IdCargo = currentJobDto.IdCargo,
+                    IdEscolaridadSence = currentJobDto.IdEscolaridadSence,
+                    IdPersonaJefe = currentJobDto.IdPersonaJefe,
+                    FranquiciaSence = currentJobDto.FranquiciaSence,
+                    IdUbicacion = currentJobDto.IdUbicacion,
+                    IdTipoContrato = currentJobDto.IdTipoContrato,
+                    FechaInicioContrato = currentJobDto.FechaInicioContrato,
+                    FechaTerminoContrato = currentJobDto.FechaTerminoContrato,
+                    IdNivelOcupacional = currentJobDto.IdNivelOcupacional,
+                    IdCentroCosto = currentJobDto.IdCentroCosto
+                }));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int AddFamily(FamilyDto familyDto)
         {
             try
@@ -450,6 +481,18 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
         }
 
+        public void AddPeoples(IEnumerable<Personas> peoples)
+        {
+            try
+            {
+                _peopleRepository.AddRange(peoples);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int AddPersonalInfo(PersonalInfoDto ip)
         {
             try
@@ -481,8 +524,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Otro = ip.Otro,
                     Altura = ip.Altura,
                     Peso = ip.Peso,
-                    UsuarioMod = ip.UsuarioMod,
-                    FechaMod = ip.FechaMod,
+                    //UsuarioMod = ip.UsuarioMod,
+                    //FechaMod = ip.FechaMod,
                     CurriculumVitae = ip.CurriculumVitae,
                     JornadaLaboral = ip.JornadaLaboral,
                     IdReglaPlanHorario = ip.IdReglaPlanHorario
@@ -498,6 +541,18 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 //    Result = false,
                 //    Message = ex.Message
                 //};
+            }
+        }
+
+        public void AddPersonalInfos(IEnumerable<InformacionPersonal> infos)
+        {
+            try
+            {
+                _pInfoRepository.AddRange(infos);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -842,6 +897,13 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public void SaveChanges()
+        {
+            _peopleRepository.Commit();
+            _pInfoRepository.Commit();
+            _jobRepository.Commit();
+        }
+
         public void UpdateCurrentJob(CurrentJobsDto currentJobsDto)
         {
             var cj = _cuJobRepository.GetById(currentJobsDto.Id);
@@ -882,7 +944,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 p.Celular = p.Celular;
                 p.IdCodigoArea = p.IdCodigoArea;
 
-                _peopleRepository.Update(p);
+                //_peopleRepository.Update(p);
             }
         }
 
@@ -911,7 +973,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 pi.JornadaLaboral = personalInfo.JornadaLaboral;
                 pi.IdLocal = personalInfo.IdLocal;
 
-                _pInfoRepository.Update(pi);
+                //_pInfoRepository.Update(pi);
             }
         }
     }

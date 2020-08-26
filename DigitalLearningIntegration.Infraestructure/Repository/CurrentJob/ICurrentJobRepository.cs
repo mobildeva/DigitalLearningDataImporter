@@ -12,6 +12,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
         ResultDto CreatedOrUpdate(PosicionLaboral entity);
         PosicionLaboral GetCurrentJobByPeopleSociety(int peopleId, int societyId);
         PosicionLaboral GetById(int id);
+        void AddActiveCurrentJob(PosicionLaboral entity);
         //PosicionLaboral GetCurrentJobByNameSociety(string name, int societyId);
     }
 }

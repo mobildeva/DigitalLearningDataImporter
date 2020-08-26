@@ -15,6 +15,9 @@ using DigitalLearningIntegration.Infraestructure.Repository.Genre;
 using DigitalLearningIntegration.Application.GobEntity.Dto;
 using DigitalLearningIntegration.Application.Services.Prod.Dto;
 using DigitalLearningDataImporter.DALstd.ProdEntities;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using System.Collections.Generic;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace DigitalLearningDataImporter.Console
 {
@@ -39,16 +42,28 @@ namespace DigitalLearningDataImporter.Console
 
         public void Run()
         {
+            var sftpPathBackup = string.Empty;
+            var sftpHost = string.Empty;
+            var sftpUserName = string.Empty;
+            var sftpPassword = string.Empty;
+            var sftpPath = string.Empty;
+            var logsPath = string.Empty;
+            int sftpPort = 0;
+            int idSociedad = 0;
+            int deactivateUsersBit = 0;
+
             try
             {
-                var sftpHost = ConfigurationManager.AppSettings.Get("sftpHost");
-                var sftpPort = (ConfigurationManager.AppSettings.Get("sftpPort") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("sftpPort")) : 22;
-                var sftpUserName = ConfigurationManager.AppSettings.Get("sftpUserName");
-                var sftpPassword = ConfigurationManager.AppSettings.Get("sftpPassword");
-                var sftpPath = ConfigurationManager.AppSettings.Get("sftpPath");
-                var logsPath = @ConfigurationManager.AppSettings.Get("logsFullPath");
-                var idSociedad = (ConfigurationManager.AppSettings.Get("idSociedad") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("idSociedad")) : -1;
-                var excelFileName = ConfigurationManager.AppSettings.Get("excelFileName");
+                sftpHost = ConfigurationManager.AppSettings.Get("sftpHost");
+                sftpPort = (ConfigurationManager.AppSettings.Get("sftpPort") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("sftpPort")) : 22;
+                sftpUserName = ConfigurationManager.AppSettings.Get("sftpUserName");
+                sftpPassword = ConfigurationManager.AppSettings.Get("sftpPassword");
+                sftpPath = ConfigurationManager.AppSettings.Get("sftpPath");
+                logsPath = @ConfigurationManager.AppSettings.Get("logsFullPath");
+                idSociedad = (ConfigurationManager.AppSettings.Get("idSociedad") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("idSociedad")) : -1;
+                deactivateUsersBit = (ConfigurationManager.AppSettings.Get("deactivateUsersBit") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("deactivateUsersBit")) : -1;
+
+                sftpPathBackup = sftpPath + "\\Respaldo";
 
                 if (string.IsNullOrEmpty(logsPath))
                 {
@@ -58,42 +73,84 @@ namespace DigitalLearningDataImporter.Console
                 Log.Logger = new LoggerConfiguration()
                     .MinimumLevel.Debug()
                     .WriteTo.Console()
-                    .WriteTo.File(logsPath, rollingInterval: RollingInterval.Minute)
+                    .WriteTo.File(logsPath, rollingInterval: RollingInterval.Hour)
                     .CreateLogger();
 
                 Log.Information("------------------------------------------------");
 
                 Log.Information("Starting the app");
 
-                var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\" + DateTime.Now.Ticks + "_" + excelFileName;
+                var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
-                var resultu = SftpManager.Get(excelFileName, sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
+                var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\";// + DateTime.Now.Ticks + "_" + excelFileName;
 
-                var dataTable = ReadWriteExcel.ReadExcelSheet(xlsDestFilePath, true);
+                var resultu = SftpManager.GetLastExcelFile(sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
+
+                var dataTable = ReadWriteExcel.ReadExcelSheet(resultu, true);
 
                 var entities = _gopServ.GetEntities(dataTable);
 
                 Log.Debug("Read " + entities.Count() + " entities");
 
+                var downUsers = 0;
+                if (deactivateUsersBit == 1)
+                {
+                    var clientUsers = _segServ.GetUsersByClientId(idSociedad).ToList();
+
+                    var usersToDeactivate = new List<ClienteUsersDto>();
+
+                    foreach (var item in clientUsers)
+                    {
+                        if (item.IdUsers != null)
+                        {
+                            var user = _segServ.GetUserById(item.IdUsers.Value);
+                            if (user != null && !entities.Any(e => e.Rut == user.Username) && user.Activo.HasValue && user.Activo.Value)
+                            {
+                                usersToDeactivate.Add(new ClienteUsersDto() { IdUsers = user.Id, IdClientes = idSociedad });
+                            }
+                        }
+                    }
+
+                    if (usersToDeactivate.Any())
+                    {
+                        _segServ.DeactivateUsers(usersToDeactivate);
+
+                        downUsers = usersToDeactivate.Count;
+
+                        Log.Debug("Had been deactivated: " + downUsers + " users.");
+                    }
+                }
                 /*	Altas o Registros creados
-	Actualización de registros activos
-	Bajas o registros desactivados
-	Registros inválidos*/
+                  	Actualización de registros activos
+                  	Bajas o registros desactivados
+                  	Registros inválidos*/
                 var newUsers = 0;
                 var updatesUsers = 0;
-                var downUsers = 0;
-                var invalidsUsers = 0;
+                //var invalidsUsers = 0;
+
+                var genreDic = new Dictionary<string, GenreDto>();
+                var csDic = new Dictionary<string, CivilStatusDto>();
+                var countryDic = new Dictionary<string, CountryDto>();
+                var bgDic = new Dictionary<string, BloodGDto>();
+                var isapDic = new Dictionary<string, IsapreDto>();
+                var afpDic = new Dictionary<string, AfpDto>();
+                //var orgUnitDic = new Dictionary<string, OrgUnitDto>();
+                //var bussUnitDic = new Dictionary<string, BussUnitDto>();
+                //var locationDic = new Dictionary<string, LocationDto>();
+                //var localDic = new Dictionary<string, LocalDto>();
+                //var contTypeDic = new Dictionary<string, ContractTypeDto>();
+                //var costCenterDic = new Dictionary<string, CostCenterDto>();
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
                     var user = _segServ.GetUserByRUTUserName(item.Rut);
 
                     if (user != null)
-                    {//Update
+                    {
                         item.hasUser = true;
                     }
                     else
-                    {//Add
+                    {
                         item.hasUser = false;
                     }
 
@@ -104,11 +161,18 @@ namespace DigitalLearningDataImporter.Console
                     var defaultTextValue = "Sin Información";
 
                     var idGenre = defaultValue;
-                    GenreDto g;
+                    GenreDto g = null;
                     if (!string.IsNullOrEmpty(item.Gender))
                     {
-                        g = _prodServ.GetGenreByName(item.Gender);
-
+                        if (!genreDic.ContainsKey(item.Gender))
+                        {
+                            g = _prodServ.GetGenreByName(item.Gender);
+                            genreDic.Add(item.Gender, g);
+                        }
+                        else
+                        {
+                            g = genreDic[item.Gender];
+                        }
                         if (g == null)
                         {
                             g = new GenreDto()
@@ -117,21 +181,37 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Gender
                             };
                             g.Id = _prodServ.AddGenre(g);
+                            genreDic.Add(g.Nombre, g);
                         }
                     }
                     else
                     {
-                        g = _prodServ.GetGenreByName(defaultTextValue);
+                        if (!genreDic.ContainsKey(defaultTextValue))
+                        {
+                            g = _prodServ.GetGenreByName(defaultTextValue);
+                            genreDic.Add(defaultTextValue, g);
+                        }
+                        else
+                        {
+                            g = genreDic[defaultTextValue];
+                        }
                     }
                     if (g != null)
                         idGenre = g.Id;
 
                     var civilStatusId = defaultValue;
-                    CivilStatusDto cs;
+                    CivilStatusDto cs = null;
                     if (!string.IsNullOrEmpty(item.Civil_status))
                     {
-                        cs = _prodServ.GetCivilStatusByName(item.Civil_status);
-
+                        if (!csDic.ContainsKey(item.Civil_status))
+                        {
+                            cs = _prodServ.GetCivilStatusByName(item.Civil_status);
+                            csDic.Add(item.Civil_status, cs);
+                        }
+                        else
+                        {
+                            cs = csDic[item.Civil_status];
+                        }
                         if (cs == null)
                         {
                             cs = new CivilStatusDto
@@ -140,11 +220,20 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Civil_status
                             };
                             cs.Id = _prodServ.AddCivilStatus(cs);
+                            csDic.Add(cs.Nombre, cs);
                         }
                     }
                     else
                     {
-                        cs = _prodServ.GetCivilStatusByName(defaultTextValue);
+                        if (!csDic.ContainsKey(defaultTextValue))
+                        {
+                            cs = _prodServ.GetCivilStatusByName(defaultTextValue);
+                            csDic.Add(defaultTextValue, cs);
+                        }
+                        else
+                        {
+                            cs = csDic[defaultTextValue];
+                        }
                     }
                     if (cs != null)
                         civilStatusId = cs.Id;
@@ -153,7 +242,15 @@ namespace DigitalLearningDataImporter.Console
                     CountryDto country;
                     if (!string.IsNullOrEmpty(item.Country_code))
                     {
-                        country = _prodServ.GetCountryByName(item.Country_code);
+                        if (!countryDic.ContainsKey(item.Country_code))
+                        {
+                            country = _prodServ.GetCountryByName(item.Country_code);
+                            countryDic.Add(item.Country_code, country);
+                        }
+                        else
+                        {
+                            country = countryDic[item.Country_code];
+                        }
                         if (country == null)
                         {
                             country = new CountryDto
@@ -162,11 +259,20 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Country_code
                             };
                             country.IdPais = _prodServ.AddCountry(country);
+                            countryDic.Add(country.Nombre, country);
                         }
                     }
                     else
                     {
-                        country = _prodServ.GetCountryByName(defaultTextValue);
+                        if (!countryDic.ContainsKey(defaultTextValue))
+                        {
+                            country = _prodServ.GetCountryByName(defaultTextValue);
+                            countryDic.Add(defaultTextValue, country);
+                        }
+                        else
+                        {
+                            country = countryDic[defaultTextValue];
+                        }
                     }
                     if (country != null)
                         natId = country.IdPais;
@@ -175,7 +281,15 @@ namespace DigitalLearningDataImporter.Console
                     BloodGDto bg;
                     if (!string.IsNullOrEmpty(item.BloodG))
                     {
-                        bg = _prodServ.GetBloodGrByName(item.BloodG);
+                        if (!bgDic.ContainsKey(item.BloodG))
+                        {
+                            bg = _prodServ.GetBloodGrByName(item.BloodG);
+                            bgDic.Add(item.BloodG, bg);
+                        }
+                        else
+                        {
+                            bg = bgDic[item.BloodG];
+                        }
                         if (bg == null)
                         {
                             bg = new BloodGDto
@@ -184,11 +298,20 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.BloodG
                             };
                             bg.Id = _prodServ.AddBloodG(bg);
+                            bgDic.Add(bg.Nombre, bg);
                         }
                     }
                     else
                     {
-                        bg = _prodServ.GetBloodGrByName(defaultTextValue);
+                        if (!bgDic.ContainsKey(defaultTextValue))
+                        {
+                            bg = _prodServ.GetBloodGrByName(defaultTextValue);
+                            bgDic.Add(defaultTextValue, bg);
+                        }
+                        else
+                        {
+                            bg = bgDic[defaultTextValue];
+                        }
                     }
                     if (bg != null)
                         bloodId = bg.Id;
@@ -197,7 +320,15 @@ namespace DigitalLearningDataImporter.Console
                     IsapreDto isapre;
                     if (!string.IsNullOrEmpty(item.Isapre))
                     {
-                        isapre = _prodServ.GetIsapreByName(item.Isapre);
+                        if (!isapDic.ContainsKey(item.Isapre))
+                        {
+                            isapre = _prodServ.GetIsapreByName(item.Isapre);
+                            isapDic.Add(item.Isapre, isapre);
+                        }
+                        else
+                        {
+                            isapre = isapDic[item.Isapre];
+                        }
                         if (isapre == null)
                         {
                             isapre = new IsapreDto
@@ -206,11 +337,20 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Isapre
                             };
                             isapre.Id = _prodServ.AddIsapre(isapre);
+                            isapDic.Add(isapre.Nombre, isapre);
                         }
                     }
                     else
                     {
-                        isapre = _prodServ.GetIsapreByName(defaultTextValue);
+                        if (!isapDic.ContainsKey(defaultTextValue))
+                        {
+                            isapre = _prodServ.GetIsapreByName(defaultTextValue);
+                            isapDic.Add(defaultTextValue, isapre);
+                        }
+                        else
+                        {
+                            isapre = isapDic[defaultTextValue];
+                        }
                     }
                     if (isapre != null)
                         isapId = isapre.Id;
@@ -219,7 +359,15 @@ namespace DigitalLearningDataImporter.Console
                     AfpDto afp;
                     if (!string.IsNullOrEmpty(item.Afp))
                     {
-                        afp = _prodServ.GetAfpByName(item.Afp);
+                        if (!afpDic.ContainsKey(item.Afp))
+                        {
+                            afp = _prodServ.GetAfpByName(item.Afp);
+                            afpDic.Add(item.Afp, afp);
+                        }
+                        else
+                        {
+                            afp = afpDic[item.Afp];
+                        }
                         if (afp == null)
                         {
                             afp = new AfpDto
@@ -228,11 +376,19 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Afp
                             };
                             afp.Id = _prodServ.AddAfp(afp);
+                            afpDic.Add(item.Afp, afp);
                         }
                     }
                     else
                     {
-                        afp = _prodServ.GetAfpByName(defaultTextValue);
+                        if (!afpDic.ContainsKey(defaultTextValue))
+                        {
+                            afp = _prodServ.GetAfpByName(defaultTextValue);
+                        }
+                        else
+                        {
+                            afp = afpDic[defaultTextValue];
+                        }
                     }
                     if (afp != null)
                         afpId = afp.Id;
@@ -521,11 +677,27 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Debug("Creating / Updating entities");
 
+                genreDic.Clear();
+                genreDic = null;
+                countryDic.Clear();
+                countryDic = null;
+                bgDic.Clear();
+                bgDic = null;
+                isapDic.Clear();
+                isapDic = null;
+                afpDic.Clear();
+                afpDic = null;
+
+                var usersToAdd = new List<KeyValuePair<UserDto, ClienteUsersDto>>();
+                var peoplesToAdd = new List<KeyValuePair<Personas, InformacionPersonal>>();
+
+                var client = _segServ.GetClientBySocietyId(idSociedad);
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
                     if (!item.hasUser)
                     {
-                        _segServ.AddUser(new UserDto()
+                        var user = new UserDto
                         {
                             Activo = true,
                             Username = item.Rut,
@@ -533,9 +705,21 @@ namespace DigitalLearningDataImporter.Console
                             Bloqueado = false,
                             Nombres = item.FullName,
                             Fecha = DateTime.Now
-                        });
+                        };
 
-                        item.hasUser = true;
+                        ClienteUsersDto userClient = null;
+                        if (client != null)
+                        {
+                            userClient = new ClienteUsersDto
+                            {
+                                Activo = true,
+                                IdClientes = client.Id
+                            };
+
+                            user.ClienteUsers.Add(userClient);
+                        }
+
+                        usersToAdd.Add(new KeyValuePair<UserDto, ClienteUsersDto>(user, userClient));
                     }
 
                     var people = _prodServ.GetPeopleByRUT(item.Rut);
@@ -553,9 +737,29 @@ namespace DigitalLearningDataImporter.Console
                         Celular = item.Phone,
                         IdCodigoArea = item.areaId
                     };
+
+                    var peopAux = new KeyValuePair<Personas, InformacionPersonal>();
+
                     if (people == null)
                     {
-                        item.PeopleId = _prodServ.AddPeople(newPeople);
+                        peopAux = new KeyValuePair<Personas, InformacionPersonal>(new Personas
+                        {
+                            Activo = newPeople.Activo,
+                            ApellidoMaterno = newPeople.ApellidoMaterno,
+                            ApellidoPaterno = newPeople.ApellidoPaterno,
+                            Nombre = newPeople.Nombre,
+                            Celular = newPeople.Celular,
+                            ClaveSence = newPeople.ClaveSence,
+                            ConectaSence = newPeople.ConectaSence,
+                            Dv = newPeople.Dv,
+                            IdentificacionUnica = newPeople.IdentificacionUnica,
+                            IdCodigoArea = newPeople.IdCodigoArea,
+                            Email = newPeople.Email,
+                            Fono = newPeople.Fono,
+                            Instructor = newPeople.Instructor,
+                            IdConexion = newPeople.IdConexion,
+                            IdPersonaForo = newPeople.IdPersonaForo
+                        }, null);
                         newUsers++;
                     }
                     else if (newPeople.Activo != people.Activo || newPeople.ApellidoMaterno != people.ApellidoMaterno || newPeople.ApellidoPaterno != people.ApellidoPaterno || newPeople.Nombre != people.Nombre || newPeople.IdCodigoArea != people.IdCodigoArea || newPeople.Email != people.Email)
@@ -570,12 +774,14 @@ namespace DigitalLearningDataImporter.Console
                         item.PeopleId = people.Id;
                     }
 
-                    var persInfo = _prodServ.GetPersonalInfoByPersona(item.PeopleId.Value);
+                    PersonalInfoDto persInfo = null;
+
+                    if (item.PeopleId.HasValue)
+                        persInfo = _prodServ.GetPersonalInfoByPersona(item.PeopleId.Value);
 
                     var newPersonalInf = new PersonalInfoDto()
                     {
                         Activo = true,
-                        IdPersona = item.PeopleId.Value,
                         FechaNacimiento = item.Dbirthday,
                         EmailPersonal = item.Email,
                         IdGenero = item.idGenre,
@@ -596,7 +802,28 @@ namespace DigitalLearningDataImporter.Console
 
                     if (persInfo == null)
                     {
-                        item.PersonalInfoId = _prodServ.AddPersonalInfo(newPersonalInf);
+                        peopAux = new KeyValuePair<Personas, InformacionPersonal>(peopAux.Key, new InformacionPersonal
+                        {
+                            Activo = newPersonalInf.Activo,
+                            FechaNacimiento = item.Dbirthday,
+                            EmailPersonal = item.Email,
+                            IdGenero = item.idGenre,
+                            IdEstadoCivil = item.civilStatusId,
+                            IdPaisNacionalidad = item.natId,
+                            IdGrupoSanguineo = item.bloodId,
+                            IdIsapre = item.isapId,
+                            IdAfp = item.afpId,
+                            Direccion = item.Address,
+                            Numero = item.AddressNumber,
+                            Otro = item.NameEmergencyContact,
+                            IdFamiliaCargo = item.familyId,
+                            IdArea = item.areaId,
+                            IdReglaPlanHorario = item.planRuleId,
+                            JornadaLaboral = item.workingDayId,
+                            IdLocal = item.localId
+                        });
+
+                        peoplesToAdd.Add(peopAux);
                     }
                     else if (persInfo.Activo != newPersonalInf.Activo || persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento || persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil || persInfo.IdLocal != newPersonalInf.IdLocal)
                     {
@@ -609,6 +836,31 @@ namespace DigitalLearningDataImporter.Console
                         item.PersonalInfoId = persInfo.Id;
                     }
                 }
+
+                _prodServ.SaveChanges();
+
+                if (usersToAdd.Any())
+                    _segServ.AddUsers(usersToAdd.Select(ua => ua.Key));
+
+                if (peoplesToAdd.Any())
+                {
+                    _prodServ.AddPeoples(peoplesToAdd.Select(p => p.Key));
+                    for (int i = 0; i < peoplesToAdd.Count; i++)
+                    {
+                        peoplesToAdd[i].Value.IdPersona = peoplesToAdd[i].Key.Id;
+                    }
+                    _prodServ.AddPersonalInfos(peoplesToAdd.Select(ppi => ppi.Value));
+                }
+
+                foreach (GopEntityDtoExpand item in entities)
+                {
+                    if (!item.PeopleId.HasValue || item.PeopleId.Value <= 0)
+                    {
+                        item.PeopleId = peoplesToAdd.FirstOrDefault(e => (e.Key.IdentificacionUnica + "-" + e.Key.Dv) == item.Rut).Key.Id;
+                    }
+                }
+
+                var jobToAdd = new List<CurrentJobsDto>();
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
@@ -636,35 +888,35 @@ namespace DigitalLearningDataImporter.Console
                     };
 
                     if (currentJob == null)
-                        item.CurrentJobId = _prodServ.AddCurrentJob(newCurrentJob);
+                    {
+                        jobToAdd.Add(newCurrentJob);
+                    }
                     else if (currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
                     {
                         item.CurrentJobId = currentJob.Id;
                         newCurrentJob.Id = currentJob.Id;
                         _prodServ.UpdateCurrentJob(newCurrentJob);
                     }
-                    //var newCurrentJob = new CurrentJobsDto()
-                    //{
-                    //    Activo = true,
-                    //    IdPersona = item.PeopleId.Value,
-                    //    IdUnidadOrganizacional = item.orgUnitId,
-                    //    IdUnidadNegocio = item.bussUnitId,
-                    //    IdUbicacion = item.locationId,
-                    //    IdCargo = item.jobId,
-                    //    IdEscolaridadSence = item.scholid,
-                    //    IdNivelOcupacional = item.ocupLevelId,
-                    //    FranquiciaSence = item.FranchiseSence,
-                    //    IdTipoContrato = item.contTypeId,
-                    //    FechaInicioContrato = item.CurrentJob.DstartDate,
-                    //    FechaTerminoContrato = item.CurrentJob.DendDate,
-                    //    IdPersonaJefe = bossIdAux,
-                    //    IdSociedadContratante = item.contSocId,
-                    //    IdCentroCosto = item.costCenterId
-                    //};
-
-                    //var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
-                    //item.CurrentJobId = _prodServ.AddCurrentJob(newCurrentJob);
                 }
+
+                _prodServ.AddCurrentJobs(jobToAdd);
+
+                _prodServ.SaveChanges();
+
+                var info = new ImportLogInfo
+                {
+                    CountOfRowsInserted = newUsers,
+                    CountOfRowsUpdates = updatesUsers,
+                    CountOfDeactivates = downUsers,
+                    Invalids = 0,
+                    State = "Procesado"
+                };
+
+                GopReportManager.GenerateLogMonitorFile(txtFilePath, info);
+
+                SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPath);
+
+                SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPathBackup);
 
                 Log.Debug("Entities has been procesed");
 
@@ -678,16 +930,22 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                //var info = new LogInfo
-                //{
-                //    CountOfRows = 0,
-                //    NameOfFile = string.Empty,
-                //    State = "No Procesado"
-                //};
+                var info = new ImportLogInfo
+                {
+                    CountOfRowsInserted = 0,
+                    CountOfRowsUpdates = 0,
+                    CountOfDeactivates = 0,
+                    Invalids = 0,
+                    State = "No Procesado"
+                };
 
-                //var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo.txt";
-                //GopReportManager.GenerateLogMonitorFile(txtFilePath, info);
-                //SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPathBackup);
+                var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
+
+                GopReportManager.GenerateLogMonitorFile(txtFilePath, info);
+
+                SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPath);
+
+                SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPathBackup);
             }
             finally
             {

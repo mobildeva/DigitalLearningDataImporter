@@ -177,6 +177,7 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         public int locationId { get; set; }
         public int jobId { get; set; }
         public int? CurrentJobId { get; set; }
+        public int IdUser { get; set; }
 
         public GopEntityDtoExpand() : base()
         {
@@ -327,6 +328,24 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
         public string State { get; set; }
         public int CountOfRows { get; set; }
         public LogInfo()
+        {
+            DateOfFile = DateTime.Now;
+            ProcessId = DateTime.Now.Ticks;
+        }
+    }
+
+    public class ImportLogInfo
+    {
+        public long ProcessId { get; private set; }
+        public string NameOfFile { get; set; }
+        public DateTime DateOfFile { get; set; }
+        public string State { get; set; }
+        public int CountOfRowsInserted { get; set; }
+        public int CountOfRowsUpdates { get; set; }
+        public int CountOfDeactivates { get; set; }
+
+        public int Invalids { get; set; }
+        public ImportLogInfo()
         {
             DateOfFile = DateTime.Now;
             ProcessId = DateTime.Now.Ticks;

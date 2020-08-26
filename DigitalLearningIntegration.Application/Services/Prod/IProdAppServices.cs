@@ -63,5 +63,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         void UpdatePeople(PeoplesDto people);
         void UpdatePersonalInfo(PersonalInfoDto personalInfo);
         void UpdateCurrentJob(CurrentJobsDto currentJobsDto);
+        void SaveChanges();
+        void AddPeoples(IEnumerable<Personas> peoples);
+        void AddPersonalInfos(IEnumerable<InformacionPersonal> infos);
+        void AddCurrentJobs(IEnumerable<CurrentJobsDto> jobs);
     }
 }

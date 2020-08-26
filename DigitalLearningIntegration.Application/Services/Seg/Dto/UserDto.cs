@@ -19,6 +19,7 @@ namespace DigitalLearningIntegration.Application.Services.Seg.Dto
         public bool? Bloqueado { get; set; }
         public string Token { get; set; }
         public DateTime? FechaToken { get; set; }
+        public ICollection<ClienteUsersDto> ClienteUsers { get; set; }
         public UserDto(Users user)
         {
             Id = user.Id;
@@ -33,10 +34,11 @@ namespace DigitalLearningIntegration.Application.Services.Seg.Dto
             Bloqueado = user.Bloqueado;
             Token = user.Token;
             FechaToken = user.FechaToken;
+            ClienteUsers = new List<ClienteUsersDto>();
         }
         public UserDto()
         {
-
+            ClienteUsers = new List<ClienteUsersDto>();
         }
     }
 }

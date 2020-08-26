@@ -133,9 +133,9 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
 
                 entity.Property(e => e.FechaMatrimonio).HasColumnType("date");
 
-                entity.Property(e => e.FechaMod)
-                    .HasColumnType("datetime")
-                    .HasComment("Fecha en que se realizó un cambio en los datos de la persona.");
+                //entity.Property(e => e.FechaMod)
+                //    .HasColumnType("datetime")
+                //    .HasComment("Fecha en que se realizó un cambio en los datos de la persona.");
 
                 entity.Property(e => e.FechaNacimiento).HasColumnType("date");
 
@@ -197,7 +197,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
                     .HasMaxLength(30)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UsuarioMod).HasComment("Usuario que realizó una modificación en los datos de la persona");
+                // entity.Property(e => e.UsuarioMod).HasComment("Usuario que realizó una modificación en los datos de la persona");
 
                 entity.HasOne(d => d.IdFamiliaCargoNavigation)
                     .WithMany(p => p.InformacionPersonal)
