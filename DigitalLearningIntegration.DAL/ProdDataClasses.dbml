@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="HCMKomatsuProd" Class="ProdDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=.;Initial Catalog=HCMKomatsuProd;Integrated Security=True" SettingsObjectName="DigitalLearningIntegration.DAL.Properties.Settings" SettingsPropertyName="HCMKomatsuProdConnectionString" Provider="System.Data.SqlClient" />
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="HCMKomatsuProd3" Class="ProdDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="AppSettings" ConnectionString="Data Source=.;Initial Catalog=HCMKomatsuProd3;Integrated Security=True" SettingsObjectName="DigitalLearningIntegration.DAL.Properties.Settings" SettingsPropertyName="HCMKomatsuProd3ConnectionString" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Personas" Member="Personas">
     <Type Name="Persona">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -289,4 +289,22 @@
       <Association Name="UnidadesNegocio_Locale" Member="UnidadesNegocio" ThisKey="IdFormato" OtherKey="Id" Type="UnidadesNegocio" IsForeignKey="true" />
     </Type>
   </Table>
+  <Function Name="dbo.sp_inserta_personas" Method="sp_inserta_personas">
+    <Parameter Name="id_imp_carga" Type="System.Int32" DbType="Int" />
+    <Parameter Name="strBDSeg" Type="System.String" DbType="VarChar(MAX)" />
+    <Parameter Name="intIdPersonaCambio" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.SP_Inserta_Sesiones_Asistencia" Method="SP_Inserta_Sesiones_Asistencia">
+    <Parameter Name="IdEvento" Parameter="idEvento" Type="System.Int32" DbType="Int" />
+  </Function>
+  <Function Name="dbo.SP_Inserta_Sesiones_Asistencia_Persona" Method="SP_Inserta_Sesiones_Asistencia_Persona">
+    <Parameter Name="IdEvento" Parameter="idEvento" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.sp_actualiza_personas" Method="sp_actualiza_personas">
+    <Parameter Name="id_imp_carga" Type="System.Int32" DbType="Int" />
+    <Parameter Name="strBDSeg" Type="System.String" DbType="VarChar(MAX)" />
+    <Parameter Name="intIdPersonaCambio" Type="System.Int32" DbType="Int" />
+  </Function>
 </Database>

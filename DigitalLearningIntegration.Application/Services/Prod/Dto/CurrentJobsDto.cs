@@ -56,6 +56,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             IdNivelOcupacional = posicionLaboral.IdNivelOcupacional;
             Activo = posicionLaboral.Activo;
             IdCentroCosto = posicionLaboral.IdCentroCosto;
+            Estado = posicionLaboral.Estado;
+            FechaInicioPosicion = posicionLaboral.FechaInicioPosicion;
+            FechaTerminoPosicion = posicionLaboral.FechaTerminoPosicion;
+            ComentarioDesvinculacion = posicionLaboral.ComentarioDesvinculacion;
+            NombrePosicion = posicionLaboral.NombrePosicion;
+            NombrePosicionAnterior = posicionLaboral.NombrePosicionAnterior;
+            IdPersonaCambio = posicionLaboral.IdPersonaCambio;
+            IdTipoCambioPosicion = posicionLaboral.IdTipoCambioPosicion;
+            IdTipoPosicion = posicionLaboral.IdTipoPosicion;
+            IdSociedadContratante = posicionLaboral.IdSociedadContratante;
         }
         public CurrentJobsDto()
         {

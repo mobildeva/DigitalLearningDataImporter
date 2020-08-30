@@ -20,5 +20,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Activo = familiaCargo.Activo;
             Descripcion = familiaCargo.Descripcion;
         }
+
+        public FamilyDto()
+        {
+
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,32 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
             _context = dataContext;
         }
 
-        public void AddActiveCurrentJob(PosicionLaboral entity)
+        public void AddActiveCurrentJobs(IEnumerable<PosicionLaboral> entities)
         {
-            throw new NotImplementedException();
+            var now = DateTime.Now;
+            foreach (var entity in entities)
+            {
+                entity.Estado = 2;
+                entity.FechaInicioPosicion = now;
+                var lastjobs = _context.PosicionLaboral.Where(j => j.IdPersona == entity.IdPersona && j.IdSociedad == entity.IdSociedad).OrderBy(j => j.Id);
+                if (lastjobs.Any())
+                {
+                    var lastJ = lastjobs.Last();
+                    if (lastJ != null)
+                    {
+                        lastJ.FechaTerminoPosicion = now;
+                        lastJ.Estado = 1;
+                    }
+                    foreach (var item in lastjobs)
+                    {
+                        item.Estado = 1;
+                        //item.Activo = false;
+                    }
+                }
+            }
+            _context.SaveChanges();
+
+            AddRange(entities);
         }
 
         public ResultDto CreatedOrUpdate(PosicionLaboral entity)
@@ -54,11 +78,22 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
         public override PosicionLaboral GetById(int id)
         {
             return _context.PosicionLaboral.FirstOrDefault(x => x.Id == id);
-        }       
+        }
 
         public PosicionLaboral GetCurrentJobByPeopleSociety(int peopleId, int societyId)
         {
-            return _context.PosicionLaboral.FirstOrDefault(pl => pl.IdPersona == peopleId && pl.IdSociedad == societyId);
+            var filterCurrentJobs = _context.PosicionLaboral.Where(pl => pl.IdPersona == peopleId && pl.IdSociedad == societyId);
+            if (filterCurrentJobs.Any())
+            {
+                var ordered = filterCurrentJobs.OrderByDescending(pl => pl.Id);
+
+                if (ordered.Any())
+                {
+                    return ordered.FirstOrDefault();
+                }
+            }
+
+            return null;
         }
     }
 }

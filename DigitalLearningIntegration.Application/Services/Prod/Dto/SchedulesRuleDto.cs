@@ -24,5 +24,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             UsuarioUp = reglaPlan.UsuarioUp;
             FechaUp = reglaPlan.FechaUp;
         }
+
+        public SchedulesRuleDto()
+        {
+
+        }
     }
 }

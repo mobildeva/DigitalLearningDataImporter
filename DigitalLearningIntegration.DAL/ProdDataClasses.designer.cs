@@ -22,7 +22,7 @@ namespace DigitalLearningIntegration.DAL
 	using System;
 	
 	
-	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="HCMKomatsuProd")]
+	[global::System.Data.Linq.Mapping.DatabaseAttribute(Name="HCMKomatsuProd3")]
 	public partial class ProdDataContext : System.Data.Linq.DataContext
 	{
 		
@@ -81,7 +81,7 @@ namespace DigitalLearningIntegration.DAL
     #endregion
 		
 		public ProdDataContext() : 
-				base(global::DigitalLearningIntegration.DAL.Properties.Settings.Default.HCMKomatsuProdConnectionString, mappingSource)
+				base(global::DigitalLearningIntegration.DAL.Properties.Settings.Default.HCMKomatsuProd3ConnectionString, mappingSource)
 		{
 			OnCreated();
 		}
@@ -236,6 +236,32 @@ namespace DigitalLearningIntegration.DAL
 			{
 				return this.GetTable<Locale>();
 			}
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_inserta_personas")]
+		public int sp_inserta_personas([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="Int")] System.Nullable<int> id_imp_carga, [global::System.Data.Linq.Mapping.ParameterAttribute(DbType="VarChar(MAX)")] string strBDSeg, [global::System.Data.Linq.Mapping.ParameterAttribute(DbType="Int")] System.Nullable<int> intIdPersonaCambio)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), id_imp_carga, strBDSeg, intIdPersonaCambio);
+			return ((int)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.SP_Inserta_Sesiones_Asistencia")]
+		public void SP_Inserta_Sesiones_Asistencia([global::System.Data.Linq.Mapping.ParameterAttribute(Name="IdEvento", DbType="Int")] System.Nullable<int> idEvento)
+		{
+			this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), idEvento);
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.SP_Inserta_Sesiones_Asistencia_Persona")]
+		public int SP_Inserta_Sesiones_Asistencia_Persona([global::System.Data.Linq.Mapping.ParameterAttribute(Name="IdEvento", DbType="Int")] System.Nullable<int> idEvento)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), idEvento);
+			return ((int)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_actualiza_personas")]
+		public void sp_actualiza_personas([global::System.Data.Linq.Mapping.ParameterAttribute(DbType="Int")] System.Nullable<int> id_imp_carga, [global::System.Data.Linq.Mapping.ParameterAttribute(DbType="VarChar(MAX)")] string strBDSeg, [global::System.Data.Linq.Mapping.ParameterAttribute(DbType="Int")] System.Nullable<int> intIdPersonaCambio)
+		{
+			this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), id_imp_carga, strBDSeg, intIdPersonaCambio);
 		}
 	}
 	

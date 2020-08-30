@@ -89,10 +89,17 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Otro = ip.Otro;
             Altura = ip.Altura;
             Peso = ip.Peso;
+            IdTipoDireccion = ip.IdTipoDireccion;
             //UsuarioMod = ip.UsuarioMod;
             //FechaMod = ip.FechaMod;
             CurriculumVitae = ip.CurriculumVitae;
             JornadaLaboral = ip.JornadaLaboral;
+            Discapacitado = ip.Discapacitado;
+            Pensionado = ip.Pensionado;
+            Sindizalizado = ip.Sindizalizado;
+            CuentaReparto = ip.CuentaReparto;
+            IdGrupoEtnico = ip.IdGrupoEtnico;
+            IdReglaPlanHorario = ip.IdReglaPlanHorario;
         }
 
         public PersonalInfoDto()

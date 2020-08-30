@@ -82,6 +82,43 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _localRepository = new LocalRepository(context);
         }
 
+        public void AddActiveCurrentJobs(IEnumerable<CurrentJobsDto> jobs)
+        {
+            try
+            {
+                _cuJobRepository.AddActiveCurrentJobs(jobs.Select(currentJobDto => new PosicionLaboral
+                {
+                    IdSociedad = currentJobDto.IdSociedad,
+                    NombrePosicion = currentJobDto.NombrePosicion,
+                    Activo = currentJobDto.Activo,
+                    IdPersona = currentJobDto.IdPersona,
+                    IdSociedadContratante = currentJobDto.IdSociedadContratante,
+                    IdUnidadOrganizacional = currentJobDto.IdUnidadOrganizacional,
+                    IdUnidadNegocio = currentJobDto.IdUnidadNegocio,
+                    IdCargo = currentJobDto.IdCargo,
+                    IdEscolaridadSence = currentJobDto.IdEscolaridadSence,
+                    IdPersonaJefe = currentJobDto.IdPersonaJefe,
+                    FranquiciaSence = currentJobDto.FranquiciaSence,
+                    IdUbicacion = currentJobDto.IdUbicacion,
+                    IdTipoContrato = currentJobDto.IdTipoContrato,
+                    FechaInicioContrato = currentJobDto.FechaInicioContrato,
+                    FechaTerminoContrato = currentJobDto.FechaTerminoContrato,
+                    IdNivelOcupacional = currentJobDto.IdNivelOcupacional,
+                    IdCentroCosto = currentJobDto.IdCentroCosto,
+                    Estado = currentJobDto.Estado,
+                    IdTipoCambioPosicion = currentJobDto.IdTipoCambioPosicion,
+                    NombrePosicionAnterior = currentJobDto.NombrePosicionAnterior,
+                    IdPersonaCambio = currentJobDto.IdPersonaCambio,
+                    IdPosicionOrigen = currentJobDto.IdPosicionOrigen,
+                    IdTipoPosicion = currentJobDto.IdTipoPosicion
+                }));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int AddAfp(AfpDto afp)
         {
             try
@@ -289,7 +326,13 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     FechaInicioContrato = currentJobDto.FechaInicioContrato,
                     FechaTerminoContrato = currentJobDto.FechaTerminoContrato,
                     IdNivelOcupacional = currentJobDto.IdNivelOcupacional,
-                    IdCentroCosto = currentJobDto.IdCentroCosto
+                    IdCentroCosto = currentJobDto.IdCentroCosto,
+                    Estado = currentJobDto.Estado,
+                    IdTipoPosicion = currentJobDto.IdTipoPosicion,
+                    IdPosicionOrigen = currentJobDto.IdPosicionOrigen,
+                    IdTipoCambioPosicion = currentJobDto.IdTipoCambioPosicion,
+                    IdPersonaCambio = currentJobDto.IdPersonaCambio,
+                    NombrePosicionAnterior = currentJobDto.NombrePosicionAnterior
                 }));
             }
             catch (Exception)
@@ -801,6 +844,16 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public OrgUnitDto GetOrgUnitBySociety(int idSociedad)
+        {
+            var aux = _ouRepository.GetByIdSociedad(idSociedad);
+            if (aux != null)
+            {
+                return new OrgUnitDto(aux);
+            }
+            else return null;
+        }
+
         public PeoplesDto GetPeopleByRUT(string rut)
         {
             var splitRut = rut.Split('-');
@@ -897,6 +950,86 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
+        public void ReActiveAfp(int id)
+        {
+            _afpRepository.ReActive(id);
+        }
+
+        public void ReActiveBloodG(int id)
+        {
+            _bgRepository.ReActive(id);
+        }
+
+        public void ReActiveBussUnit(int id)
+        {
+            _buRepository.ReActive(id);
+        }
+
+        public void ReActiveCivilStatus(int id)
+        {
+            _civilStaRepository.ReActive(id);
+        }
+
+        public void ReActiveContSoc(int id)
+        {
+            _societyRepository.ReActive(id);
+        }
+
+        public void ReActiveContType(int id)
+        {
+            _contTypeRepository.ReActive(id);
+        }
+
+        public void ReActiveCostCenter(int id)
+        {
+            _costCentRepository.ReActive(id);
+        }
+
+        public void ReActiveCountry(int idPais)
+        {
+            _countryRepository.ReActive(idPais);
+        }
+
+        public void ReActiveGenre(int id)
+        {
+            _genreRepository.ReActive(id);
+        }
+
+        public void ReActiveIsapre(int id)
+        {
+            _isapreRepository.ReActive(id);
+        }
+
+        public void ReActiveJob(int id)
+        {
+            _jobRepository.ReActive(id);
+        }
+
+        public void ReActiveLocal(int id)
+        {
+            _localRepository.ReActive(id);
+        }
+
+        public void ReActiveLocation(int id)
+        {
+            _locationRepository.ReActive(id);
+        }
+
+        public void ReActiveOcupLevel(int id)
+        {
+            _ocLevelRepository.ReActive(id);
+        }
+
+        public void ReActiveOrgUnit(int id)
+        {
+            _ouRepository.ReActive(id);
+        }
+
+        public void ReActiveScholarship(int id)
+        {
+            _schoRepository.ReActive(id);
+        }
+
         public void SaveChanges()
         {
             _peopleRepository.Commit();
@@ -911,7 +1044,6 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             if (cj != null)
             {
                 cj.Activo = currentJobsDto.Activo;
-                //cj.IdPersona =
                 cj.IdUnidadOrganizacional = currentJobsDto.IdUnidadOrganizacional;
                 cj.IdUnidadNegocio = currentJobsDto.IdUnidadNegocio;
                 cj.IdUbicacion = currentJobsDto.IdUbicacion;
@@ -925,6 +1057,14 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 cj.IdPersonaJefe = currentJobsDto.IdPersonaJefe;
                 cj.IdSociedadContratante = currentJobsDto.IdSociedadContratante;
                 cj.IdCentroCosto = currentJobsDto.IdCentroCosto;
+                cj.IdSociedad = currentJobsDto.IdSociedad;
+                cj.IdTipoPosicion = currentJobsDto.IdTipoPosicion;
+                cj.IdTipoCambioPosicion = currentJobsDto.IdTipoCambioPosicion;
+                cj.Estado = currentJobsDto.Estado;
+                cj.IdPosicionOrigen = currentJobsDto.IdPosicionOrigen;
+                cj.NombrePosicion = currentJobsDto.NombrePosicion;
+                cj.NombrePosicionAnterior = currentJobsDto.NombrePosicionAnterior;
+                cj.IdPersonaCambio = currentJobsDto.IdPersonaCambio;
             }
         }
 
@@ -943,7 +1083,12 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 p.Fono = p.Fono;
                 p.Celular = p.Celular;
                 p.IdCodigoArea = p.IdCodigoArea;
+                p.ClaveSence = people.ClaveSence;
+                p.ConectaSence = people.ConectaSence;
+                p.Instructor = people.Instructor;
 
+                if (people.IdConexion.HasValue && people.IdConexion != p.IdConexion)
+                    p.IdConexion = people.IdConexion;
                 //_peopleRepository.Update(p);
             }
         }
@@ -972,7 +1117,13 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 pi.IdReglaPlanHorario = personalInfo.IdReglaPlanHorario;
                 pi.JornadaLaboral = personalInfo.JornadaLaboral;
                 pi.IdLocal = personalInfo.IdLocal;
-
+                pi.IdTipoDireccion = personalInfo.IdTipoDireccion;
+                pi.CuentaReparto = personalInfo.CuentaReparto;
+                pi.Pensionado = personalInfo.Pensionado;
+                pi.Sindizalizado = personalInfo.Sindizalizado;
+                pi.IdUbicacion = personalInfo.IdUbicacion;
+                pi.IdGrupoEtnico = personalInfo.IdGrupoEtnico;
+                pi.Discapacitado = personalInfo.Discapacitado;
                 //_pInfoRepository.Update(pi);
             }
         }

@@ -1,23 +1,16 @@
-﻿using DigitalLearningIntegration.Application.Services.Seg;
-using System.Configuration;
-using AutoMapper;
-using System.Linq;
-using System;
-using DigitalLearningIntegration.Application.Services.Seg.Dto;
-using DigitalLearningIntegration.Application.Services.Prod;
-using DigitalLearningIntegration.Application.Utils;
-using DigitalLearningIntegration.Application.GobEntity;
-using Serilog;
-using Serilog.Sinks.File;
-using Serilog.Sinks.SystemConsole;
-using DigitalLearningIntegration.Application.Services.GobEntity;
-using DigitalLearningIntegration.Infraestructure.Repository.Genre;
+﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
 using DigitalLearningIntegration.Application.GobEntity.Dto;
+using DigitalLearningIntegration.Application.Services.GobEntity;
+using DigitalLearningIntegration.Application.Services.Prod;
 using DigitalLearningIntegration.Application.Services.Prod.Dto;
-using DigitalLearningDataImporter.DALstd.ProdEntities;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using DigitalLearningIntegration.Application.Services.Seg;
+using DigitalLearningIntegration.Application.Services.Seg.Dto;
+using DigitalLearningIntegration.Application.Utils;
+using Serilog;
+using System;
 using System.Collections.Generic;
-using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Configuration;
+using System.Linq;
 
 namespace DigitalLearningDataImporter.Console
 {
@@ -120,6 +113,56 @@ namespace DigitalLearningDataImporter.Console
                         Log.Debug("Had been deactivated: " + downUsers + " users.");
                     }
                 }
+
+                var client = _segServ.GetClientBySocietyId(idSociedad);
+
+                var principalOrgUnitId = 0;
+                var principalOrgUnit = _prodServ.GetOrgUnitBySociety(idSociedad);
+                if (principalOrgUnit != null)
+                    principalOrgUnitId = principalOrgUnit.Id;
+
+                var ownerImportId = 0;
+                var ownerImportPeople = 0;
+
+                var importUser = _segServ.GetUserByName("import_admin");
+                if (importUser != null)
+                {
+                    ownerImportId = importUser.Id;
+                    importUser.Activo = true;
+                    importUser.Bloqueado = false;
+                    _segServ.SaveChanges();
+                }
+                else
+                {
+                    var userIm = new UserDto
+                    {
+                        Activo = true,
+                        Username = "import_admin",
+                        Password = "import_admin",
+                        Bloqueado = false,
+                        Nombres = "import_admin".ToUpper(),
+                        Fecha = DateTime.Now,
+                        PrimerIngreso = true
+                    };
+
+                    ClienteUsersDto userClientIm = null;
+                    if (client != null)
+                    {
+                        userClientIm = new ClienteUsersDto
+                        {
+                            Activo = true,
+                            IdClientes = client.Id
+                        };
+
+                        userIm.ClienteUsers.Add(userClientIm);
+                    }
+
+                    userIm.ProfileUsers.Add(new UserProfileDto { IdPerfil = 2, Activo = true });
+                    ownerImportId = _segServ.AddUser(userIm);
+                }
+
+                //var importPeople = _prodServ.GetPeopleByRUT("import_people");
+
                 /*	Altas o Registros creados
                   	Actualización de registros activos
                   	Bajas o registros desactivados
@@ -134,12 +177,76 @@ namespace DigitalLearningDataImporter.Console
                 var bgDic = new Dictionary<string, BloodGDto>();
                 var isapDic = new Dictionary<string, IsapreDto>();
                 var afpDic = new Dictionary<string, AfpDto>();
-                //var orgUnitDic = new Dictionary<string, OrgUnitDto>();
-                //var bussUnitDic = new Dictionary<string, BussUnitDto>();
-                //var locationDic = new Dictionary<string, LocationDto>();
-                //var localDic = new Dictionary<string, LocalDto>();
-                //var contTypeDic = new Dictionary<string, ContractTypeDto>();
-                //var costCenterDic = new Dictionary<string, CostCenterDto>();
+                var orgUnitDic = new Dictionary<string, OrgUnitDto>();
+                var bussUnitDic = new Dictionary<string, BussUnitDto>();
+                var locationDic = new Dictionary<string, LocationDto>();
+                var localDic = new Dictionary<string, LocalDto>();
+                var contTypeDic = new Dictionary<string, ContractTypeDto>();
+                var costCenterDic = new Dictionary<string, CostCenterDto>();
+                var schoShipDic = new Dictionary<string, ScholarshipDto>();
+                var ocupLevelDic = new Dictionary<string, OcupLevelDto>();
+                var societyDic = new Dictionary<string, SocietyDto>();
+                var jobDic = new Dictionary<string, JobDto>();
+
+                //Review this
+                var defaultValue = 0;
+                var defaultTextValue = "Sin Información";
+
+                var planRuleId = 0;
+                var schedRule = _prodServ.GetSchedRuleByName(defaultTextValue);
+                if (schedRule != null)
+                    planRuleId = schedRule.Id;
+                else
+                {
+                    planRuleId = _prodServ.AddSchedRule(new SchedulesRuleDto
+                    {
+                        Activo = true,
+                        Nombre = defaultTextValue
+                    });
+                }
+
+                var workingDayId = 0;
+                var workingDay = _prodServ.GetWorkingDayByName(defaultTextValue);
+                if (workingDay != null)
+                    workingDayId = workingDay.Id;
+                else
+                {
+                    workingDayId = _prodServ.AddWorkingDay(new WorkingDayDto
+                    {
+                        Nombre = defaultTextValue,
+                        Descripcion = defaultTextValue,
+                        Activo = true
+                    });
+                }
+
+                var areaId = 0;
+                var area = _prodServ.GetAreaByName(defaultTextValue);
+                if (area != null)
+                    areaId = area.Id;
+                else
+                {
+                    areaId = _prodServ.AddArea(new AreaDto
+                    {
+                        Nombre = defaultTextValue,
+                        Activo = true
+                    });
+                }
+
+                var familyId = 0;
+                var family = _prodServ.GetFamilyByNameSociety(defaultTextValue, idSociedad);
+                if (family != null)
+                    familyId = family.Id;
+                else
+                {
+                    familyId = _prodServ.AddFamily(new FamilyDto
+                    {
+                        Activo = true,
+                        Nombre = defaultTextValue,
+                        IdSociedad = idSociedad,
+                        Descripcion = defaultTextValue
+                    });
+                }
+                //End review this
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
@@ -147,18 +254,16 @@ namespace DigitalLearningDataImporter.Console
 
                     if (user != null)
                     {
-                        item.hasUser = true;
+                        item.HasUser = true;
+                        item.IdConexion = user.Id;
                     }
                     else
                     {
-                        item.hasUser = false;
+                        item.HasUser = false;
                     }
 
                     var boosExist = entities.Any(e => e.Rut == item.BossRut);
-                    item.hasBoss = boosExist;
-
-                    var defaultValue = 0;
-                    var defaultTextValue = "Sin Información";
+                    item.HasBoss = boosExist;
 
                     var idGenre = defaultValue;
                     GenreDto g = null;
@@ -167,7 +272,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!genreDic.ContainsKey(item.Gender))
                         {
                             g = _prodServ.GetGenreByName(item.Gender);
-                            genreDic.Add(item.Gender, g);
+                            if (g != null)
+                            {
+                                if (g.Activo != true)
+                                    _prodServ.ReActiveGenre(g.Id);
+                                genreDic.Add(item.Gender, g);
+                            }
                         }
                         else
                         {
@@ -189,7 +299,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!genreDic.ContainsKey(defaultTextValue))
                         {
                             g = _prodServ.GetGenreByName(defaultTextValue);
-                            genreDic.Add(defaultTextValue, g);
+                            if (g != null)
+                            {
+                                if (g.Activo != true)
+                                    _prodServ.ReActiveGenre(g.Id);
+                                genreDic.Add(defaultTextValue, g);
+                            }
                         }
                         else
                         {
@@ -206,7 +321,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!csDic.ContainsKey(item.Civil_status))
                         {
                             cs = _prodServ.GetCivilStatusByName(item.Civil_status);
-                            csDic.Add(item.Civil_status, cs);
+                            if (cs != null)
+                            {
+                                if (cs.Activo != true)
+                                    _prodServ.ReActiveCivilStatus(cs.Id);
+                                csDic.Add(item.Civil_status, cs);
+                            }
                         }
                         else
                         {
@@ -228,7 +348,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!csDic.ContainsKey(defaultTextValue))
                         {
                             cs = _prodServ.GetCivilStatusByName(defaultTextValue);
-                            csDic.Add(defaultTextValue, cs);
+                            if (cs != null)
+                            {
+                                if (cs.Activo != true)
+                                    _prodServ.ReActiveCivilStatus(cs.Id);
+                                csDic.Add(defaultTextValue, cs);
+                            }
                         }
                         else
                         {
@@ -245,7 +370,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!countryDic.ContainsKey(item.Country_code))
                         {
                             country = _prodServ.GetCountryByName(item.Country_code);
-                            countryDic.Add(item.Country_code, country);
+                            if (country != null)
+                            {
+                                if (country.Activo != true)
+                                    _prodServ.ReActiveCountry(country.IdPais);
+                                countryDic.Add(item.Country_code, country);
+                            }
                         }
                         else
                         {
@@ -267,7 +397,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!countryDic.ContainsKey(defaultTextValue))
                         {
                             country = _prodServ.GetCountryByName(defaultTextValue);
-                            countryDic.Add(defaultTextValue, country);
+                            if (country != null)
+                            {
+                                if (country.Activo != true)
+                                    _prodServ.ReActiveCountry(country.IdPais);
+                                countryDic.Add(defaultTextValue, country);
+                            }
                         }
                         else
                         {
@@ -284,7 +419,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!bgDic.ContainsKey(item.BloodG))
                         {
                             bg = _prodServ.GetBloodGrByName(item.BloodG);
-                            bgDic.Add(item.BloodG, bg);
+                            if (bg != null)
+                            {
+                                if (bg.Activo != true)
+                                    _prodServ.ReActiveBloodG(bg.Id);
+                                bgDic.Add(item.BloodG, bg);
+                            }
                         }
                         else
                         {
@@ -306,7 +446,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!bgDic.ContainsKey(defaultTextValue))
                         {
                             bg = _prodServ.GetBloodGrByName(defaultTextValue);
-                            bgDic.Add(defaultTextValue, bg);
+                            if (bg != null)
+                            {
+                                if (bg.Activo != true)
+                                    _prodServ.ReActiveBloodG(bg.Id);
+                                bgDic.Add(defaultTextValue, bg);
+                            }
                         }
                         else
                         {
@@ -323,7 +468,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!isapDic.ContainsKey(item.Isapre))
                         {
                             isapre = _prodServ.GetIsapreByName(item.Isapre);
-                            isapDic.Add(item.Isapre, isapre);
+                            if (isapre != null)
+                            {
+                                if (isapre.Activo != true)
+                                    _prodServ.ReActiveIsapre(isapre.Id);
+                                isapDic.Add(item.Isapre, isapre);
+                            }
                         }
                         else
                         {
@@ -345,7 +495,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!isapDic.ContainsKey(defaultTextValue))
                         {
                             isapre = _prodServ.GetIsapreByName(defaultTextValue);
-                            isapDic.Add(defaultTextValue, isapre);
+                            if (isapre != null)
+                            {
+                                if (isapre.Activo != true)
+                                    _prodServ.ReActiveIsapre(isapre.Id);
+                                isapDic.Add(defaultTextValue, isapre);
+                            }
                         }
                         else
                         {
@@ -362,7 +517,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!afpDic.ContainsKey(item.Afp))
                         {
                             afp = _prodServ.GetAfpByName(item.Afp);
-                            afpDic.Add(item.Afp, afp);
+                            if (afp != null)
+                            {
+                                if (afp.Activo != true)
+                                    _prodServ.ReActiveAfp(afp.Id);
+                                afpDic.Add(item.Afp, afp);
+                            }
                         }
                         else
                         {
@@ -384,6 +544,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!afpDic.ContainsKey(defaultTextValue))
                         {
                             afp = _prodServ.GetAfpByName(defaultTextValue);
+                            if (afp != null)
+                            {
+                                if (afp.Activo != true)
+                                    _prodServ.ReActiveAfp(afp.Id);
+                                afpDic.Add(defaultTextValue, afp);
+                            }
                         }
                         else
                         {
@@ -397,21 +563,50 @@ namespace DigitalLearningDataImporter.Console
                     OrgUnitDto orgUnit;
                     if (!string.IsNullOrEmpty(item.CurrentJob.CustomAttributes.Gerencia))
                     {
-                        orgUnit = _prodServ.GetOrgUnitByNameSociety(item.CurrentJob.CustomAttributes.Gerencia, idSociedad);
+                        if (!orgUnitDic.ContainsKey(item.CurrentJob.CustomAttributes.Gerencia))
+                        {
+                            orgUnit = _prodServ.GetOrgUnitByNameSociety(item.CurrentJob.CustomAttributes.Gerencia, idSociedad);
+                            if (orgUnit != null)
+                            {
+                                if (orgUnit.Activo != true)
+                                    _prodServ.ReActiveOrgUnit(orgUnit.Id);
+                                orgUnitDic.Add(item.CurrentJob.CustomAttributes.Gerencia, orgUnit);
+                            }
+                        }
+                        else
+                        {
+                            orgUnit = orgUnitDic[item.CurrentJob.CustomAttributes.Gerencia];
+                        }
                         if (orgUnit == null)
                         {
-                            orgUnit = new OrgUnitDto()
+                            orgUnit = new OrgUnitDto
                             {
                                 Activo = true,
                                 Nombre = item.CurrentJob.CustomAttributes.Gerencia,
-                                IdSociedad = idSociedad
+                                IdSociedad = idSociedad,
+                                IdPadre = principalOrgUnitId,
+                                CodigoErp = string.Empty
                             };
                             orgUnit.Id = _prodServ.AddOrgUnit(orgUnit);
+                            orgUnitDic.Add(item.CurrentJob.CustomAttributes.Gerencia, orgUnit);
                         }
                     }
                     else
                     {
-                        orgUnit = _prodServ.GetOrgUnitByNameSociety(defaultTextValue, idSociedad);
+                        if (!orgUnitDic.ContainsKey(defaultTextValue))
+                        {
+                            orgUnit = _prodServ.GetOrgUnitByNameSociety(defaultTextValue, idSociedad);
+                            if (orgUnit != null)
+                            {
+                                if (orgUnit.Activo != true)
+                                    _prodServ.ReActiveOrgUnit(orgUnit.Id);
+                                orgUnitDic.Add(defaultTextValue, orgUnit);
+                            }
+                        }
+                        else
+                        {
+                            orgUnit = orgUnitDic[defaultTextValue];
+                        }
                     }
                     if (orgUnit != null)
                         orgUnitId = orgUnit.Id;
@@ -420,23 +615,50 @@ namespace DigitalLearningDataImporter.Console
                     BussUnitDto bussUnit;
                     if (!string.IsNullOrEmpty(item.CurrentJob.CustomAttributes.AreaGastos))
                     {
-                        bussUnit = _prodServ.GetBussUnitByNameSociety(item.CurrentJob.CustomAttributes.AreaGastos, idSociedad);
+                        if (!bussUnitDic.ContainsKey(item.CurrentJob.CustomAttributes.AreaGastos))
+                        {
+                            bussUnit = _prodServ.GetBussUnitByNameSociety(item.CurrentJob.CustomAttributes.AreaGastos, idSociedad);
+                            if (bussUnit != null)
+                            {
+                                if (bussUnit.Activo != true)
+                                    _prodServ.ReActiveBussUnit(bussUnit.Id);
+                                bussUnitDic.Add(item.CurrentJob.CustomAttributes.AreaGastos, bussUnit);
+                            }
+                        }
+                        else
+                        {
+                            bussUnit = bussUnitDic[item.CurrentJob.CustomAttributes.AreaGastos];
+                        }
                         if (bussUnit == null)
                         {
                             bussUnit = new BussUnitDto()
                             {
                                 Activo = true,
                                 Nombre = item.CurrentJob.CustomAttributes.AreaGastos,
-                                IdSociedad = idSociedad
-                                //IdUnidadOrganizacional = null,//orgUnitId,
-                                //CodigoErp = string.Empty
+                                IdSociedad = idSociedad,
+                                IdUnidadOrganizacional = orgUnitId,
+                                CodigoErp = null
                             };
                             bussUnit.Id = _prodServ.AddBussUnit(bussUnit);
+                            bussUnitDic.Add(item.CurrentJob.CustomAttributes.AreaGastos, bussUnit);
                         }
                     }
                     else
                     {
-                        bussUnit = _prodServ.GetBussUnitByNameSociety(defaultTextValue, idSociedad);
+                        if (!bussUnitDic.ContainsKey(defaultTextValue))
+                        {
+                            bussUnit = _prodServ.GetBussUnitByNameSociety(defaultTextValue, idSociedad);
+                            if (bussUnit != null)
+                            {
+                                if (bussUnit.Activo != true)
+                                    _prodServ.ReActiveBussUnit(bussUnit.Id);
+                                bussUnitDic.Add(defaultTextValue, bussUnit);
+                            }
+                        }
+                        else
+                        {
+                            bussUnit = bussUnitDic[defaultTextValue];
+                        }
                     }
                     if (bussUnit != null)
                         bussUnitId = bussUnit.Id;
@@ -445,7 +667,20 @@ namespace DigitalLearningDataImporter.Console
                     LocationDto location;
                     if (!string.IsNullOrEmpty(item.District))
                     {
-                        location = _prodServ.GetLocationByName(item.District);
+                        if (!locationDic.ContainsKey(item.District))
+                        {
+                            location = _prodServ.GetLocationByName(item.District);
+                            if (location != null)
+                            {
+                                if (location.Activo != true)
+                                    _prodServ.ReActiveLocation(location.Id);
+                                locationDic.Add(item.District, location);
+                            }
+                        }
+                        else
+                        {
+                            location = locationDic[item.District];
+                        }
                         if (location == null)
                         {
                             location = new LocationDto()
@@ -454,11 +689,25 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.District
                             };
                             location.Id = _prodServ.AddLocation(location);
+                            locationDic.Add(item.District, location);
                         }
                     }
                     else
                     {
-                        location = _prodServ.GetLocationByName(defaultTextValue);
+                        if (!locationDic.ContainsKey(defaultTextValue))
+                        {
+                            location = _prodServ.GetLocationByName(defaultTextValue);
+                            if (location != null)
+                            {
+                                if (location.Activo != true)
+                                    _prodServ.ReActiveLocation(location.Id);
+                                locationDic.Add(defaultTextValue, location);
+                            }
+                        }
+                        else
+                        {
+                            location = locationDic[defaultTextValue];
+                        }
                     }
                     if (location != null)
                         locId = location.Id;
@@ -467,7 +716,20 @@ namespace DigitalLearningDataImporter.Console
                     ScholarshipDto scholarship;
                     if (!string.IsNullOrEmpty(item.Scolarship))
                     {
-                        scholarship = _prodServ.GetScholarshipByName(item.Scolarship);
+                        if (!schoShipDic.ContainsKey(item.Scolarship))
+                        {
+                            scholarship = _prodServ.GetScholarshipByName(item.Scolarship);
+                            if (scholarship != null)
+                            {
+                                if (scholarship.Activo != true)
+                                    _prodServ.ReActiveScholarship(scholarship.Id);
+                                schoShipDic.Add(item.Scolarship, scholarship);
+                            }
+                        }
+                        else
+                        {
+                            scholarship = schoShipDic[item.Scolarship];
+                        }
                         if (scholarship == null)
                         {
                             scholarship = new ScholarshipDto()
@@ -476,11 +738,22 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Scolarship
                             };
                             scholarship.Id = _prodServ.AddScholarship(scholarship);
+                            schoShipDic.Add(item.Scolarship, scholarship);
                         }
                     }
                     else
                     {
-                        scholarship = _prodServ.GetScholarshipByName(defaultTextValue);
+                        if (!schoShipDic.ContainsKey(defaultTextValue))
+                        {
+                            scholarship = _prodServ.GetScholarshipByName(defaultTextValue);
+                            if (scholarship.Activo != true)
+                                _prodServ.ReActiveScholarship(scholarship.Id);
+                            schoShipDic.Add(defaultTextValue, scholarship);
+                        }
+                        else
+                        {
+                            scholarship = schoShipDic[defaultTextValue];
+                        }
                     }
                     if (scholarship != null)
                         scholid = scholarship.Id;
@@ -489,7 +762,20 @@ namespace DigitalLearningDataImporter.Console
                     OcupLevelDto ocupLevel;
                     if (!string.IsNullOrEmpty(item.OcupationalLevel))
                     {
-                        ocupLevel = _prodServ.GetOcupLevelByNameSociety(item.OcupationalLevel, idSociedad);
+                        if (!ocupLevelDic.ContainsKey(item.OcupationalLevel))
+                        {
+                            ocupLevel = _prodServ.GetOcupLevelByNameSociety(item.OcupationalLevel, idSociedad);
+                            if (ocupLevel != null)
+                            {
+                                if (ocupLevel.Activo != true)
+                                    _prodServ.ReActiveOcupLevel(ocupLevel.Id);
+                                ocupLevelDic.Add(item.OcupationalLevel, ocupLevel);
+                            }
+                        }
+                        else
+                        {
+                            ocupLevel = ocupLevelDic[item.OcupationalLevel];
+                        }
                         if (ocupLevel == null)
                         {
                             ocupLevel = new OcupLevelDto()
@@ -499,11 +785,22 @@ namespace DigitalLearningDataImporter.Console
                                 IdSociedad = idSociedad
                             };
                             ocupLevel.Id = _prodServ.AddOcupLevel(ocupLevel);
+                            ocupLevelDic.Add(item.OcupationalLevel, ocupLevel);
                         }
                     }
                     else
                     {
-                        ocupLevel = _prodServ.GetOcupLevelByNameSociety(defaultTextValue, idSociedad);
+                        if (!ocupLevelDic.ContainsKey(defaultTextValue))
+                        {
+                            ocupLevel = _prodServ.GetOcupLevelByNameSociety(defaultTextValue, idSociedad);
+                            if (ocupLevel.Activo != true)
+                                _prodServ.ReActiveOcupLevel(ocupLevel.Id);
+                            ocupLevelDic.Add(defaultTextValue, ocupLevel);
+                        }
+                        else
+                        {
+                            ocupLevel = ocupLevelDic[defaultTextValue];
+                        }
                     }
                     if (ocupLevel != null)
                         ocupLevelId = ocupLevel.Id;
@@ -512,7 +809,20 @@ namespace DigitalLearningDataImporter.Console
                     ContractTypeDto contractType;
                     if (!string.IsNullOrEmpty(item.ContractType))
                     {
-                        contractType = _prodServ.GetContTypeByName(item.ContractType);
+                        if (!contTypeDic.ContainsKey(item.ContractType))
+                        {
+                            contractType = _prodServ.GetContTypeByName(item.ContractType);
+                            if (contractType != null)
+                            {
+                                if (contractType.Activo != true)
+                                    _prodServ.ReActiveContType(contractType.Id);
+                                contTypeDic.Add(item.ContractType, contractType);
+                            }
+                        }
+                        else
+                        {
+                            contractType = contTypeDic[item.ContractType];
+                        }
                         if (contractType == null)
                         {
                             contractType = new ContractTypeDto()
@@ -521,11 +831,25 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.ContractType
                             };
                             contractType.Id = _prodServ.AddContType(contractType);
+                            contTypeDic.Add(item.ContractType, contractType);
                         }
                     }
                     else
                     {
-                        contractType = _prodServ.GetContTypeByName(defaultTextValue);
+                        if (!contTypeDic.ContainsKey(defaultTextValue))
+                        {
+                            contractType = _prodServ.GetContTypeByName(defaultTextValue);
+                            if (contractType != null)
+                            {
+                                if (contractType.Activo != true)
+                                    _prodServ.ReActiveContType(contractType.Id);
+                                contTypeDic.Add(defaultTextValue, contractType);
+                            }
+                        }
+                        else
+                        {
+                            contractType = contTypeDic[item.ContractType];
+                        }
                     }
                     if (contractType != null)
                         contTypeId = contractType.Id;
@@ -534,7 +858,20 @@ namespace DigitalLearningDataImporter.Console
                     SocietyDto contSociety;
                     if (!string.IsNullOrEmpty(item.Health_company))
                     {
-                        contSociety = _prodServ.GetSocietyByUniqueId(item.Health_company);
+                        if (!societyDic.ContainsKey(item.Health_company))
+                        {
+                            contSociety = _prodServ.GetSocietyByUniqueId(item.Health_company);
+                            if (contSociety != null)
+                            {
+                                if (contSociety.Activo != true)
+                                    _prodServ.ReActiveContSoc(contSociety.Id);
+                                societyDic.Add(item.Health_company, contSociety);
+                            }
+                        }
+                        else
+                        {
+                            contSociety = societyDic[item.Health_company];
+                        }
                         if (contSociety == null)
                         {
                             contSociety = new SocietyDto()
@@ -546,11 +883,25 @@ namespace DigitalLearningDataImporter.Console
                                 Direccion = string.Empty
                             };
                             contSociety.Id = _prodServ.AddSociety(contSociety);
+                            societyDic.Add(item.Health_company, contSociety);
                         }
                     }
                     else
                     {
-                        contSociety = _prodServ.GetSocietyById(idSociedad);
+                        if (!societyDic.ContainsKey(defaultTextValue))
+                        {
+                            contSociety = _prodServ.GetSocietyByUniqueId(defaultTextValue);
+                            if (contSociety != null)
+                            {
+                                if (contSociety.Activo != true)
+                                    _prodServ.ReActiveContSoc(contSociety.Id);
+                                societyDic.Add(defaultTextValue, contSociety);
+                            }
+                        }
+                        else
+                        {
+                            contSociety = societyDic[defaultTextValue];
+                        }
                     }
                     if (contSociety != null)
                         contSocietyId = contSociety.Id;
@@ -559,7 +910,20 @@ namespace DigitalLearningDataImporter.Console
                     CostCenterDto costCenter;
                     if (!string.IsNullOrEmpty(item.CurrentJob.CostCenter))
                     {
-                        costCenter = _prodServ.GetCostCenterByNameSociety(item.CurrentJob.CostCenter, idSociedad);
+                        if (!costCenterDic.ContainsKey(item.CurrentJob.CostCenter))
+                        {
+                            costCenter = _prodServ.GetCostCenterByNameSociety(item.CurrentJob.CostCenter, idSociedad);
+                            if (costCenter != null)
+                            {
+                                if (costCenter.Activo != true)
+                                    _prodServ.ReActiveCostCenter(costCenter.Id);
+                                costCenterDic.Add(item.CurrentJob.CostCenter, costCenter);
+                            }
+                        }
+                        else
+                        {
+                            costCenter = costCenterDic[item.CurrentJob.CostCenter];
+                        }
                         if (costCenter == null)
                         {
                             costCenter = new CostCenterDto()
@@ -570,11 +934,25 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.CurrentJob.CostCenter
                             };
                             costCenter.Id = _prodServ.AddCostCenter(costCenter);
+                            costCenterDic.Add(item.CurrentJob.CostCenter, costCenter);
                         }
                     }
                     else
                     {
-                        costCenter = _prodServ.GetCostCenterByNameSociety(defaultTextValue, idSociedad);
+                        if (!costCenterDic.ContainsKey(defaultTextValue))
+                        {
+                            costCenter = _prodServ.GetCostCenterByNameSociety(defaultTextValue, idSociedad);
+                            if (costCenter != null)
+                            {
+                                if (costCenter.Activo != true)
+                                    _prodServ.ReActiveCostCenter(costCenter.Id);
+                                costCenterDic.Add(defaultTextValue, costCenter);
+                            }
+                        }
+                        else
+                        {
+                            costCenter = costCenterDic[defaultTextValue];
+                        }
                     }
                     if (costCenter != null)
                         costCenterId = costCenter.Id;
@@ -583,7 +961,20 @@ namespace DigitalLearningDataImporter.Console
                     LocalDto local;
                     if (!string.IsNullOrEmpty(item.CurrentJob.CustomAttributes.CodigoLocal))
                     {
-                        local = _prodServ.GetLocalByCode(item.CurrentJob.CustomAttributes.CodigoLocal);
+                        if (!localDic.ContainsKey(item.CurrentJob.CustomAttributes.CodigoLocal))
+                        {
+                            local = _prodServ.GetLocalByCode(item.CurrentJob.CustomAttributes.CodigoLocal);
+                            if (local != null)
+                            {
+                                if (!local.Activo)
+                                    _prodServ.ReActiveLocal(local.Id);
+                                localDic.Add(item.CurrentJob.CustomAttributes.CodigoLocal, local);
+                            }
+                        }
+                        else
+                        {
+                            local = localDic[item.CurrentJob.CustomAttributes.CodigoLocal];
+                        }
                         if (local == null)
                         {
                             local = new LocalDto()
@@ -594,11 +985,25 @@ namespace DigitalLearningDataImporter.Console
                                 CodigoLocal = item.CurrentJob.CustomAttributes.CodigoLocal
                             };
                             local.Id = _prodServ.AddLocal(local);
+                            localDic.Add(item.CurrentJob.CustomAttributes.CodigoLocal, local);
                         }
                     }
                     else
                     {
-                        local = _prodServ.GetLocalByCode(defaultTextValue);
+                        if (!localDic.ContainsKey(defaultTextValue))
+                        {
+                            local = _prodServ.GetLocalByCode(defaultTextValue);
+                            if (local != null)
+                            {
+                                if (!local.Activo)
+                                    _prodServ.ReActiveLocal(local.Id);
+                                localDic.Add(defaultTextValue, local);
+                            }
+                        }
+                        else
+                        {
+                            local = localDic[defaultTextValue];
+                        }
                     }
                     if (local != null)
                         localId = local.Id;
@@ -607,7 +1012,20 @@ namespace DigitalLearningDataImporter.Console
                     JobDto job;
                     if (!string.IsNullOrEmpty(item.CurrentJob.Role.Name))
                     {
-                        job = _prodServ.GetJobByName(item.CurrentJob.Role.Name);
+                        if (!jobDic.ContainsKey(item.CurrentJob.Role.Name))
+                        {
+                            job = _prodServ.GetJobByName(item.CurrentJob.Role.Name);
+                            if (job != null)
+                            {
+                                if (job.Activo != true)
+                                    _prodServ.ReActiveJob(job.Id);
+                                jobDic.Add(item.CurrentJob.Role.Name, job);
+                            }
+                        }
+                        else
+                        {
+                            job = jobDic[item.CurrentJob.Role.Name];
+                        }
                         if (job == null)
                         {
                             job = new JobDto()
@@ -615,64 +1033,80 @@ namespace DigitalLearningDataImporter.Console
                                 Activo = true,
                                 Nombre = item.CurrentJob.Role.Name,
                                 IdSociedad = idSociedad,
-                                FechaCreacion = DateTime.Now
+                                FechaCreacion = DateTime.Now,
+                                IdUnidadOrganizacional = 0,
+                                IdFamiliaCargo = 0
                             };
                             job.Id = _prodServ.Addjob(job);
+                            jobDic.Add(item.CurrentJob.Role.Name, job);
                         }
                     }
                     else
                     {
-                        job = _prodServ.GetJobByName(defaultTextValue);
+                        if (!jobDic.ContainsKey(defaultTextValue))
+                        {
+                            job = _prodServ.GetJobByName(defaultTextValue);
+                            if (job != null)
+                            {
+                                if (job.Activo != true)
+                                    _prodServ.ReActiveJob(job.Id);
+                                jobDic.Add(defaultTextValue, job);
+                            }
+                        }
+                        else
+                        {
+                            job = jobDic[defaultTextValue];
+                        }
                     }
                     if (job != null)
                         jobId = job.Id;
 
                     //REVIEW THAT
-                    var planRuleId = -1;
+                    /*var planRuleId = 0;
                     var schedRule = _prodServ.GetSchedRuleByName(defaultTextValue);
                     if (schedRule != null)
                         planRuleId = schedRule.Id;
 
-                    var workingDayId = -1;
+                    var workingDayId = 0;
                     var workingDay = _prodServ.GetWorkingDayByName(defaultTextValue);
                     if (workingDay != null)
                         workingDayId = workingDay.Id;
 
-                    var areaId = -1;
+                    var areaId = 0;
                     var area = _prodServ.GetAreaByName(defaultTextValue);
                     if (area != null)
                         areaId = area.Id;
 
-                    var familyId = -1;
+                    var familyId = 0;
                     var family = _prodServ.GetFamilyByNameSociety(defaultTextValue, idSociedad);
                     if (family != null)
-                        familyId = family.Id;
+                        familyId = family.Id;*/
                     //REVIEW END
 
-                    item.afpId = afpId;
-                    item.familyId = familyId;
-                    item.areaId = areaId;
-                    item.workingDayId = workingDayId;
-                    item.planRuleId = planRuleId;
-                    item.localId = localId;
-                    item.locationId = locId;
-                    item.costCenterId = costCenterId;
-                    item.contSocId = contSocietyId;
-                    item.contTypeId = contTypeId;
-                    item.ocupLevelId = ocupLevelId;
-                    item.scholid = scholid;
-                    item.orgUnitId = orgUnitId;
-                    item.bussUnitId = bussUnitId;
-                    item.isapId = isapId;
-                    item.idGenre = idGenre;
-                    item.bloodId = bloodId;
-                    item.civilStatusId = civilStatusId;
-                    item.natId = natId;
-                    item.jobId = jobId;
-                    item.hasBoss = boosExist;
-                    if (!item.hasBoss)
-                        item.boosId = null;
-                    else item.boosId = -1;
+                    item.AfpId = afpId;
+                    item.FamilyId = familyId;
+                    item.AreaId = areaId;
+                    item.WorkingDayId = workingDayId;
+                    item.PlanRuleId = planRuleId;
+                    item.LocalId = localId;
+                    item.LocationId = locId;
+                    item.CostCenterId = costCenterId;
+                    item.ContSocId = contSocietyId;
+                    item.ContTypeId = contTypeId;
+                    item.OcupLevelId = ocupLevelId;
+                    item.Scholid = scholid;
+                    item.OrgUnitId = orgUnitId;
+                    item.BussUnitId = bussUnitId;
+                    item.IsapId = isapId;
+                    item.IdGenre = idGenre;
+                    item.BloodId = bloodId;
+                    item.CivilStatusId = civilStatusId;
+                    item.NatId = natId;
+                    item.JobId = jobId;
+                    item.HasBoss = boosExist;
+                    if (!item.HasBoss)
+                        item.BoosId = null;
+                    else item.BoosId = -1;
                 }
 
                 Log.Debug("Creating / Updating entities");
@@ -687,15 +1121,39 @@ namespace DigitalLearningDataImporter.Console
                 isapDic = null;
                 afpDic.Clear();
                 afpDic = null;
+                orgUnitDic.Clear();
+                orgUnitDic = null;
+                bussUnitDic.Clear();
+                bussUnitDic = null;
+                locationDic.Clear();
+                locationDic = null;
+                localDic.Clear();
+                localDic = null;
+                contTypeDic.Clear();
+                contTypeDic = null;
+                costCenterDic.Clear();
+                costCenterDic = null;
+                schoShipDic.Clear();
+                schoShipDic = null;
+                ocupLevelDic.Clear();
+                ocupLevelDic = null;
+                societyDic.Clear();
+                societyDic = null;
+                jobDic.Clear();
+                jobDic = null;
 
                 var usersToAdd = new List<KeyValuePair<UserDto, ClienteUsersDto>>();
                 var peoplesToAdd = new List<KeyValuePair<Personas, InformacionPersonal>>();
+                var clientsUserToAdd = new List<ClienteUsersDto>();
+                var profilesToAdd = new List<UserProfileDto>();
 
-                var client = _segServ.GetClientBySocietyId(idSociedad);
+                var updatesPeoplesLog = string.Empty;
+                var updatesPersInfoLog = string.Empty;
+                var updatesJobLog = string.Empty;
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    if (!item.hasUser)
+                    if (!item.HasUser)
                     {
                         var user = new UserDto
                         {
@@ -704,7 +1162,9 @@ namespace DigitalLearningDataImporter.Console
                             Password = item.Rut,
                             Bloqueado = false,
                             Nombres = item.FullName,
-                            Fecha = DateTime.Now
+                            Fecha = DateTime.Now,
+                            PrimerIngreso = true,
+                            NumeroIntentosFallidos = 0
                         };
 
                         ClienteUsersDto userClient = null;
@@ -719,7 +1179,38 @@ namespace DigitalLearningDataImporter.Console
                             user.ClienteUsers.Add(userClient);
                         }
 
+                        user.ProfileUsers.Add(new UserProfileDto { IdPerfil = 2, Activo = true });
+
                         usersToAdd.Add(new KeyValuePair<UserDto, ClienteUsersDto>(user, userClient));
+                    }
+                    else
+                    {
+                        var uClient = _segServ.GetUsersByClientId(client.Id);
+
+                        if (uClient.Any())
+                        {
+                            var userClientAux = uClient.FirstOrDefault(uc => uc.IdUsers == item.IdConexion.Value);
+
+                            if (userClientAux == null)
+                            {
+                                clientsUserToAdd.Add(new ClienteUsersDto()
+                                {
+                                    Activo = true,
+                                    IdClientes = client.Id,
+                                    IdUsers = item.IdConexion.Value
+                                });
+                            }
+                        }
+
+                        if (item.IdConexion.HasValue)
+                        {
+                            var userProfile = _segServ.GetUserByUserIdAndPerfilId(item.IdConexion.Value, 2);
+
+                            if (userProfile == null)
+                            {
+                                profilesToAdd.Add(new UserProfileDto { IdPerfil = 2, IdUsers = item.IdConexion, Activo = true });
+                            }
+                        }
                     }
 
                     var people = _prodServ.GetPeopleByRUT(item.Rut);
@@ -735,7 +1226,12 @@ namespace DigitalLearningDataImporter.Console
                         Email = item.CurrentJob.Email,
                         Fono = item.Office_phone,
                         Celular = item.Phone,
-                        IdCodigoArea = item.areaId
+                        IdCodigoArea = item.AreaId,
+                        IdConexion = item.IdConexion,
+                        Instructor = false,
+                        ClaveSence = string.Empty,
+                        ConectaSence = null,
+                        IdPersonaForo = null
                     };
 
                     var peopAux = new KeyValuePair<Personas, InformacionPersonal>();
@@ -762,11 +1258,15 @@ namespace DigitalLearningDataImporter.Console
                         }, null);
                         newUsers++;
                     }
-                    else if (newPeople.Activo != people.Activo || newPeople.ApellidoMaterno != people.ApellidoMaterno || newPeople.ApellidoPaterno != people.ApellidoPaterno || newPeople.Nombre != people.Nombre || newPeople.IdCodigoArea != people.IdCodigoArea || newPeople.Email != people.Email)
+                    else if (newPeople.IdConexion != people.IdConexion || newPeople.Activo != people.Activo || newPeople.ApellidoMaterno != people.ApellidoMaterno || newPeople.ApellidoPaterno != people.ApellidoPaterno || newPeople.Nombre != people.Nombre || newPeople.IdCodigoArea != people.IdCodigoArea || newPeople.Email != people.Email)
                     {
                         item.PeopleId = people.Id;
                         newPeople.Id = people.Id;
                         _prodServ.UpdatePeople(newPeople);
+
+                        _prodServ.SaveChanges();
+
+                        updatesPeoplesLog += item.PeopleId + "; ";
                         updatesUsers++;
                     }
                     else
@@ -784,20 +1284,28 @@ namespace DigitalLearningDataImporter.Console
                         Activo = true,
                         FechaNacimiento = item.Dbirthday,
                         EmailPersonal = item.Email,
-                        IdGenero = item.idGenre,
-                        IdEstadoCivil = item.civilStatusId,
-                        IdPaisNacionalidad = item.natId,
-                        IdGrupoSanguineo = item.bloodId,
-                        IdIsapre = item.isapId,
-                        IdAfp = item.afpId,
+                        IdGenero = item.IdGenre,
+                        IdEstadoCivil = item.CivilStatusId,
+                        IdPaisNacionalidad = item.NatId,
+                        IdGrupoSanguineo = item.BloodId,
+                        IdIsapre = item.IsapId,
+                        IdAfp = item.AfpId,
                         Direccion = item.Address,
                         Numero = item.AddressNumber,
                         Otro = item.NameEmergencyContact,
-                        IdFamiliaCargo = item.familyId,
-                        IdArea = item.areaId,
-                        IdReglaPlanHorario = item.planRuleId,
-                        JornadaLaboral = item.workingDayId,
-                        IdLocal = item.localId
+                        IdFamiliaCargo = item.FamilyId,
+                        IdArea = item.AreaId,
+                        IdReglaPlanHorario = item.PlanRuleId,
+                        JornadaLaboral = item.WorkingDayId,
+                        IdLocal = item.LocalId,
+                        IdUbicacion = item.LocationId,
+                        IdGrupoEtnico = 0,
+                        IdPaisResidencia = item.NatId,
+                        IdTipoDireccion = 6,
+                        CuentaReparto = false,
+                        Sindizalizado = false,
+                        Pensionado = false,
+                        Discapacitado = false
                     };
 
                     if (persInfo == null)
@@ -807,29 +1315,41 @@ namespace DigitalLearningDataImporter.Console
                             Activo = newPersonalInf.Activo,
                             FechaNacimiento = item.Dbirthday,
                             EmailPersonal = item.Email,
-                            IdGenero = item.idGenre,
-                            IdEstadoCivil = item.civilStatusId,
-                            IdPaisNacionalidad = item.natId,
-                            IdGrupoSanguineo = item.bloodId,
-                            IdIsapre = item.isapId,
-                            IdAfp = item.afpId,
+                            IdGenero = item.IdGenre,
+                            IdEstadoCivil = item.CivilStatusId,
+                            IdPaisNacionalidad = item.NatId,
+                            IdGrupoSanguineo = item.BloodId,
+                            IdIsapre = item.IsapId,
+                            IdAfp = item.AfpId,
                             Direccion = item.Address,
                             Numero = item.AddressNumber,
                             Otro = item.NameEmergencyContact,
-                            IdFamiliaCargo = item.familyId,
-                            IdArea = item.areaId,
-                            IdReglaPlanHorario = item.planRuleId,
-                            JornadaLaboral = item.workingDayId,
-                            IdLocal = item.localId
+                            IdFamiliaCargo = item.FamilyId,
+                            IdArea = item.AreaId,
+                            IdReglaPlanHorario = item.PlanRuleId,
+                            JornadaLaboral = item.WorkingDayId,
+                            IdLocal = item.LocalId,
+                            IdTipoDireccion = newPersonalInf.IdTipoDireccion,
+                            IdGrupoEtnico = newPersonalInf.IdGrupoEtnico,
+                            IdUbicacion = newPersonalInf.IdUbicacion,
+                            IdPaisResidencia = newPersonalInf.IdPaisResidencia,
+                            CuentaReparto = newPersonalInf.CuentaReparto,
+                            Sindizalizado = newPersonalInf.Sindizalizado,
+                            Pensionado = newPersonalInf.Pensionado,
+                            Discapacitado = newPersonalInf.Discapacitado
                         });
 
                         peoplesToAdd.Add(peopAux);
                     }
-                    else if (persInfo.Activo != newPersonalInf.Activo || persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento || persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil || persInfo.IdLocal != newPersonalInf.IdLocal)
+                    else if (newPersonalInf.Discapacitado != persInfo.Discapacitado || newPersonalInf.Pensionado != persInfo.Pensionado || newPersonalInf.Sindizalizado != persInfo.Sindizalizado || newPersonalInf.CuentaReparto != persInfo.CuentaReparto || newPersonalInf.IdTipoDireccion != persInfo.IdTipoDireccion || newPersonalInf.IdGrupoEtnico != persInfo.IdGrupoEtnico || newPersonalInf.IdPaisResidencia != persInfo.IdPaisResidencia || persInfo.IdPaisNacionalidad != newPersonalInf.IdPaisNacionalidad || persInfo.IdUbicacion != newPersonalInf.IdUbicacion || persInfo.IdReglaPlanHorario != newPersonalInf.IdReglaPlanHorario || persInfo.Activo != newPersonalInf.Activo || persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento || persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil || persInfo.IdLocal != newPersonalInf.IdLocal)
                     {
                         item.PersonalInfoId = persInfo.Id;
                         newPersonalInf.Id = persInfo.Id;
                         _prodServ.UpdatePersonalInfo(newPersonalInf);
+
+                        _prodServ.SaveChanges();
+
+                        updatesPersInfoLog += item.PersonalInfoId + "; ";
                     }
                     else
                     {
@@ -840,16 +1360,63 @@ namespace DigitalLearningDataImporter.Console
                 _prodServ.SaveChanges();
 
                 if (usersToAdd.Any())
+                {
                     _segServ.AddUsers(usersToAdd.Select(ua => ua.Key));
+
+                    var addUsersRuts = "";
+                    foreach (var item in usersToAdd)
+                    {
+                        addUsersRuts += item.Key.Username + "; ";
+                    }
+                    Log.Debug("Added users: " + addUsersRuts);
+                }
+
+                if (profilesToAdd.Any())
+                {
+                    _segServ.AddProfiles(profilesToAdd);
+                }
+
+                if (clientsUserToAdd.Any())
+                {
+                    _segServ.AddClientsUsers(clientsUserToAdd);
+                }
 
                 if (peoplesToAdd.Any())
                 {
+                    UserDto aux;
+                    foreach (var p in peoplesToAdd.Where(peop => !peop.Key.IdConexion.HasValue))
+                    {
+                        aux = _segServ.GetUserByRUTUserName(p.Key.IdentificacionUnica + "-" + p.Key.Dv);
+                        if (aux != null)
+                        {
+                            p.Key.IdConexion = aux.Id;
+                        }
+                    }
+
                     _prodServ.AddPeoples(peoplesToAdd.Select(p => p.Key));
+
+                    var addedPeoplesIds = "";
+                    foreach (var item in peoplesToAdd.Select(p => p.Key))
+                    {
+                        addedPeoplesIds += item.Id + "; ";
+                    }
+                    Log.Debug("Added peoples: " + addedPeoplesIds);
+                    Log.Debug("Updated peoples: " + updatesPeoplesLog);
+
                     for (int i = 0; i < peoplesToAdd.Count; i++)
                     {
                         peoplesToAdd[i].Value.IdPersona = peoplesToAdd[i].Key.Id;
                     }
+
                     _prodServ.AddPersonalInfos(peoplesToAdd.Select(ppi => ppi.Value));
+
+                    addedPeoplesIds = "";
+                    foreach (var item in peoplesToAdd.Select(p => p.Value))
+                    {
+                        addedPeoplesIds += item.Id + "; ";
+                    }
+                    Log.Debug("Added information of peoples: " + addedPeoplesIds);
+                    Log.Debug("Updated information of peoples: " + updatesPersInfoLog);
                 }
 
                 foreach (GopEntityDtoExpand item in entities)
@@ -864,7 +1431,7 @@ namespace DigitalLearningDataImporter.Console
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    int? bossIdAux = item.hasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : null;
+                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : null;
 
                     var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
 
@@ -872,34 +1439,49 @@ namespace DigitalLearningDataImporter.Console
                     {
                         Activo = true,
                         IdPersona = item.PeopleId.Value,
-                        IdUnidadOrganizacional = item.orgUnitId,
-                        IdUnidadNegocio = item.bussUnitId,
-                        IdUbicacion = item.locationId,
-                        IdCargo = item.jobId,
-                        IdEscolaridadSence = item.scholid,
-                        IdNivelOcupacional = item.ocupLevelId,
+                        IdUnidadOrganizacional = item.OrgUnitId,
+                        IdUnidadNegocio = item.BussUnitId,
+                        IdUbicacion = item.LocationId,
+                        IdCargo = item.JobId,
+                        IdEscolaridadSence = item.Scholid,
+                        IdNivelOcupacional = item.OcupLevelId,
                         FranquiciaSence = item.FranchiseSence,
-                        IdTipoContrato = item.contTypeId,
-                        FechaInicioContrato = item.CurrentJob.DstartDate,
+                        IdTipoContrato = item.ContTypeId,
+                        FechaInicioContrato = item.CurrentJob.DstartDate.HasValue ? item.CurrentJob.DstartDate.Value : DateTime.Now,
                         FechaTerminoContrato = item.CurrentJob.DendDate,
                         IdPersonaJefe = bossIdAux,
-                        IdSociedadContratante = item.contSocId,
-                        IdCentroCosto = item.costCenterId
+                        IdSociedadContratante = item.ContSocId,
+                        IdSociedad = idSociedad,
+                        IdCentroCosto = item.CostCenterId,
+                        IdTipoPosicion = 0,
+                        IdPosicionOrigen = null,
+                        Estado = 2,
+                        IdTipoCambioPosicion = 14,
+                        NombrePosicion = string.Empty,
+                        NombrePosicionAnterior = string.Empty,
+                        IdPersonaCambio = ownerImportPeople
+                        //IdPersonaCambio
                     };
 
                     if (currentJob == null)
                     {
                         jobToAdd.Add(newCurrentJob);
                     }
-                    else if (currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
+                    else if (newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != currentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
                     {
                         item.CurrentJobId = currentJob.Id;
                         newCurrentJob.Id = currentJob.Id;
                         _prodServ.UpdateCurrentJob(newCurrentJob);
+
+                        _prodServ.SaveChanges();
+
+                        updatesJobLog += item.CurrentJobId + "; ";
                     }
                 }
 
-                _prodServ.AddCurrentJobs(jobToAdd);
+                _prodServ.AddActiveCurrentJobs(jobToAdd);
+                Log.Debug("Updated current jobs: " + updatesJobLog);
+
 
                 _prodServ.SaveChanges();
 

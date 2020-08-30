@@ -67,5 +67,23 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         void AddPeoples(IEnumerable<Personas> peoples);
         void AddPersonalInfos(IEnumerable<InformacionPersonal> infos);
         void AddCurrentJobs(IEnumerable<CurrentJobsDto> jobs);
+        void AddActiveCurrentJobs(IEnumerable<CurrentJobsDto> jobs);
+        OrgUnitDto GetOrgUnitBySociety(int idSociedad);
+        void ReActiveGenre(int id);
+        void ReActiveCivilStatus(int id);
+        void ReActiveCountry(int idPais);
+        void ReActiveBloodG(int id);
+        void ReActiveIsapre(int id);
+        void ReActiveAfp(int id);
+        void ReActiveOrgUnit(int id);
+        void ReActiveBussUnit(int id);
+        void ReActiveLocation(int id);
+        void ReActiveScholarship(int id);
+        void ReActiveOcupLevel(int id);
+        void ReActiveContType(int id);
+        void ReActiveCostCenter(int id);
+        void ReActiveContSoc(int id);
+        void ReActiveLocal(int id);
+        void ReActiveJob(int id);
     }
 }

@@ -25,5 +25,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             UsuarioUp = a.UsuarioUp;
             FechaUp = a.FechaUp;
         }
+
+        public AreaDto()
+        {
+
+        }
     }
 }

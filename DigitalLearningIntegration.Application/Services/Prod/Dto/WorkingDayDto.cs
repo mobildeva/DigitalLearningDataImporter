@@ -18,5 +18,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             Descripcion = jornadaLaboral.Descripcion;
             Activo = jornadaLaboral.Activo;
         }
+
+        public WorkingDayDto()
+        {
+
+        }
     }
 }

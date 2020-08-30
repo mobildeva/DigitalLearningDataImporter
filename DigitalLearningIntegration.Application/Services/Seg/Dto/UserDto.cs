@@ -20,6 +20,7 @@ namespace DigitalLearningIntegration.Application.Services.Seg.Dto
         public string Token { get; set; }
         public DateTime? FechaToken { get; set; }
         public ICollection<ClienteUsersDto> ClienteUsers { get; set; }
+        public ICollection<UserProfileDto> ProfileUsers { get; set; }
         public UserDto(Users user)
         {
             Id = user.Id;
@@ -35,10 +36,12 @@ namespace DigitalLearningIntegration.Application.Services.Seg.Dto
             Token = user.Token;
             FechaToken = user.FechaToken;
             ClienteUsers = new List<ClienteUsersDto>();
+            ProfileUsers = new List<UserProfileDto>();
         }
         public UserDto()
         {
             ClienteUsers = new List<ClienteUsersDto>();
+            ProfileUsers = new List<UserProfileDto>();
         }
     }
 }

@@ -18,5 +18,9 @@ namespace DigitalLearningIntegration.Application.Services.Seg
         void DeactivateUsers(IEnumerable<ClienteUsersDto> clienteUsersDtos);
         void SaveChanges();
         ClientDto GetClientBySocietyId(int societyId);
+        UserProfileDto GetUserByUserIdAndPerfilId(int userId, int profileId);
+        UserProfileDto GetUserProfileById(int userProfileId);
+        void AddProfiles(IEnumerable<UserProfileDto> profilesToAdd);
+        UserDto GetUserByName(string userName);
     }
 }

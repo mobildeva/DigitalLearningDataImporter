@@ -151,33 +151,34 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
 
     public class GopEntityDtoExpand : GopEntityDto
     {
-        public int? boosId { get; set; }
-        public int orgUnitId { get; set; }
-        public int bussUnitId { get; set; }
-        public int isapId { get; set; }
-        public int familyId { get; set; }
-        public int areaId { get; set; }
-        public int planRuleId { get; set; }
-        public int workingDayId { get; set; }
-        public int localId { get; set; }
-        public int contSocId { get; set; }
-        public int costCenterId { get; set; }
-        public int contTypeId { get; set; }
-        public int ocupLevelId { get; set; }
-        public int scholid { get; set; }
-        public int idGenre { get; set; }
-        public int bloodId { get; set; }
-        public int civilStatusId { get; set; }
-        public int natId { get; set; }
-        public bool hasBoss { get; set; }
-        public bool hasUser { get; set; }
-        public int afpId { get; set; }
+        public int? BoosId { get; set; }
+        public int OrgUnitId { get; set; }
+        public int BussUnitId { get; set; }
+        public int IsapId { get; set; }
+        public int FamilyId { get; set; }
+        public int AreaId { get; set; }
+        public int PlanRuleId { get; set; }
+        public int WorkingDayId { get; set; }
+        public int LocalId { get; set; }
+        public int ContSocId { get; set; }
+        public int CostCenterId { get; set; }
+        public int ContTypeId { get; set; }
+        public int OcupLevelId { get; set; }
+        public int Scholid { get; set; }
+        public int IdGenre { get; set; }
+        public int BloodId { get; set; }
+        public int CivilStatusId { get; set; }
+        public int NatId { get; set; }
+        public bool HasBoss { get; set; }
+        public bool HasUser { get; set; }
+        public int AfpId { get; set; }
         public int? PeopleId { get; set; }
         public int? PersonalInfoId { get; set; }
-        public int locationId { get; set; }
-        public int jobId { get; set; }
+        public int LocationId { get; set; }
+        public int JobId { get; set; }
         public int? CurrentJobId { get; set; }
         public int IdUser { get; set; }
+        public int? IdConexion { get; set; }
 
         public GopEntityDtoExpand() : base()
         {

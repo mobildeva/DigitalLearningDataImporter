@@ -9,5 +9,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Users
     {
         ResultDto CreatedOrUpdate(DigitalLearningDataImporter.DALstd.Users entity);
         DigitalLearningDataImporter.DALstd.Users GetUserByRUTUserName(string usernameRut);
+        //void AddRangeOfUsers(IEnumerable<DigitalLearningDataImporter.DALstd.Users> newUsers);
+        DigitalLearningDataImporter.DALstd.Users GetByUserName(string userName);
     }
 }

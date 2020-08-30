@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Users = DigitalLearningDataImporter.DALstd.Users;
+using DigitalLearningIntegration.Infraestructure.Repository.UserProfile;
 
 namespace DigitalLearningIntegration.Application.Services.Seg
 {
@@ -19,11 +20,13 @@ namespace DigitalLearningIntegration.Application.Services.Seg
         private readonly IUserRepository _userRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IClientUsersRepository _clientUsersRepository;
+        private readonly IUserProfile _userProfRepository;
         public SegAppServices(HCMKomatsuSegContext context)
         {
             _userRepository = new UserRepository(context);
             _clientUsersRepository = new ClientUsersRepository(context);
             _clientRepository = new ClientRepository(context);
+            _userProfRepository = new UserProfile(context);
         }
 
         public void AddClientsUsers(IEnumerable<ClienteUsersDto> clienteUsersDtos)
@@ -62,6 +65,23 @@ namespace DigitalLearningIntegration.Application.Services.Seg
             }
         }
 
+        public void AddProfiles(IEnumerable<UserProfileDto> profilesToAdd)
+        {
+            try
+            {
+                _userProfRepository.AddRange(profilesToAdd.Select(userDto => new UsersPerfil
+                {
+                    IdPerfil = userDto.IdPerfil,
+                    IdUsers = userDto.IdUsers,
+                    Activo = true
+                }));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public int AddUser(UserDto userDto)
         {
             try
@@ -96,7 +116,8 @@ namespace DigitalLearningIntegration.Application.Services.Seg
                     Activo = userDto.Activo,
                     Nombres = userDto.Nombres,
                     Fecha = userDto.Fecha,
-                    ClienteUsers = new List<ClienteUsers>(userDto.ClienteUsers.Select(cu => new ClienteUsers { Activo = cu.Activo, IdClientes = cu.IdClientes }))
+                    ClienteUsers = new List<ClienteUsers>(userDto.ClienteUsers.Select(cu => new ClienteUsers { Activo = cu.Activo, IdClientes = cu.IdClientes })),
+                    UsersPerfil = new List<UsersPerfil>(userDto.ProfileUsers.Select(cu => new UsersPerfil { Activo = cu.Activo, IdPerfil = cu.IdPerfil }))
                 }));
             }
             catch (Exception)
@@ -118,6 +139,7 @@ namespace DigitalLearningIntegration.Application.Services.Seg
                     {
                         userAux.Activo = false;
                         userAux.Bloqueado = true;
+                        userAux.PrimerIngreso = false;
                         //_userRepository.Update(userAux);
                     }
 
@@ -154,11 +176,35 @@ namespace DigitalLearningIntegration.Application.Services.Seg
             else return null;
         }
 
+        public UserDto GetUserByName(string userName)
+        {
+            var aux = _userRepository.GetByUserName(userName);
+            if (aux != null)
+                return new UserDto(aux);
+            else return null;
+        }
+
         public UserDto GetUserByRUTUserName(string usernameRut)
         {
             var aux = _userRepository.GetUserByRUTUserName(usernameRut);
             if (aux != null)
                 return new UserDto(aux);
+            else return null;
+        }
+
+        public UserProfileDto GetUserByUserIdAndPerfilId(int userId, int profileId)
+        {
+            var aux = _userProfRepository.GetUserByUserIdAndPerfilId(userId, profileId);
+            if (aux != null)
+                return new UserProfileDto(aux);
+            else return null;
+        }
+
+        public UserProfileDto GetUserProfileById(int userProfileId)
+        {
+            var aux = _userProfRepository.GetByIdSingle(userProfileId);
+            if (aux != null)
+                return new UserProfileDto(aux);
             else return null;
         }
 

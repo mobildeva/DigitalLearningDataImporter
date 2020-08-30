@@ -11,6 +11,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.OrgUnit
     {
         ResultDto CreatedOrUpdate(UnidadesOrganizacional entity);
         UnidadesOrganizacional GetByName(string name, int idSociedad);
-
+        UnidadesOrganizacional GetByIdSociedad(int societyId);
     }
 }

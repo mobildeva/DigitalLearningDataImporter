@@ -3,6 +3,7 @@ using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.Migrations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -171,11 +172,25 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
         {
             _context.Set<T>().AddRange(entities);
             _unitOfWork.Commit();
+            //Log.Debug("Added entities of type: "+T.GetType()+);
         }
 
         public void Commit()
         {
             _unitOfWork.Commit();
+        }
+
+        public void ReActive(int id)
+        {
+            var entity = GetById(id);
+            if (entity != null)
+            {
+                if (_context.Entry(entity).CurrentValues.Properties.Any(p => p.Name == "Activo"))
+                {
+                    _context.Entry(entity).CurrentValues["Activo"] = true;
+                    _unitOfWork.Commit();
+                }
+            }
         }
     }
 }
