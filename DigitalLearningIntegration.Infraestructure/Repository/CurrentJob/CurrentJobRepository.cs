@@ -22,41 +22,69 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
             var now = DateTime.Now;
             foreach (var entity in entities)
             {
-                entity.Estado = 2;
-                entity.FechaInicioPosicion = now;
-                entity.Activo = true;
-                //entity.FechaInicioContrato=
-
-                _context.Entry(entity).State = EntityState.Modified;
-                _context.PosicionLaboral.Update(entity);
-
                 var lastjobs = _context.PosicionLaboral.Where(j => j.IdPersona == entity.IdPersona && j.IdSociedad == entity.IdSociedad).OrderBy(j => j.Id);
-                if (lastjobs.Any())
+
+                PosicionLaboral lastJob = null;
+
+                if (!lastjobs.Any())
                 {
-                    var lastJ = lastjobs.Last();
-                    if (lastJ != null)
+                    entity.Estado = 2;
+                    entity.FechaInicioPosicion = now;
+                    entity.Activo = true;
+
+                    AddWhitOutSave(entity);
+                }
+                else if (entity.FechaInicioContrato.HasValue && !entity.FechaTerminoContrato.HasValue)
+                {
+                    lastJob = lastjobs.Last();
+
+                    if (lastJob.FechaInicioContrato != entity.FechaInicioContrato)
                     {
-                        lastJ.FechaTerminoPosicion = now;
-                        lastJ.Estado = 1;
-                        lastJ.Activo = true;//false;
+                        if (!lastJob.FechaTerminoPosicion.HasValue && !lastJob.FechaTerminoContrato.HasValue)
+                        {
+                            lastJob.Estado = 1;
+                            lastJob.Activo = true;
+                            lastJob.FechaTerminoPosicion = now;
+                        }
+                        else
+                        {
+                            lastJob.Estado = 1;
+                            lastJob.Activo = false;
+                            lastJob.FechaTerminoPosicion = now;
+                        }
 
-                        _context.Entry(lastJ).State = EntityState.Modified;
-                        _context.PosicionLaboral.Update(lastJ);
+                        _context.Entry(lastJob).State = EntityState.Modified;
+                        _context.PosicionLaboral.Update(lastJob);
+
+                        entity.Estado = 2;
+                        entity.FechaInicioPosicion = now;
+                        entity.Activo = true;
+
+                        AddWhitOutSave(entity);
                     }
-                    //foreach (var item in lastjobs)
-                    //{
-                    //    item.Estado = 1;
-                    //    item.Activo = false;
+                    else if (lastJob.Estado != 2 && lastJob.Activo != true)
+                    {
+                        lastJob.Estado = 2;
+                        lastJob.Activo = true;
 
-                    //    _context.Entry(item).State = EntityState.Modified;
-                    //    _context.PosicionLaboral.Update(item);
-                    //}
+                        _context.Entry(lastJob).State = EntityState.Modified;
+                        _context.PosicionLaboral.Update(lastJob);
+                    }
+                }
+                else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue)
+                {
+                    lastJob = lastjobs.Last();
+                    lastJob.Estado = 2;
+                    lastJob.Activo = false;
+                    lastJob.FechaTerminoContrato = entity.FechaTerminoContrato.Value;
+                    lastJob.FechaTerminoPosicion = now;
+
+                    _context.Entry(lastJob).State = EntityState.Modified;
+                    _context.PosicionLaboral.Update(lastJob);
                 }
             }
 
-            //_context.SaveChanges();
-
-            AddRange(entities);
+            _context.SaveChanges();
         }
 
         public ResultDto CreatedOrUpdate(PosicionLaboral entity)
