@@ -24,6 +24,12 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
             {
                 entity.Estado = 2;
                 entity.FechaInicioPosicion = now;
+                entity.Activo = true;
+                //entity.FechaInicioContrato=
+
+                _context.Entry(entity).State = EntityState.Modified;
+                _context.PosicionLaboral.Update(entity);
+
                 var lastjobs = _context.PosicionLaboral.Where(j => j.IdPersona == entity.IdPersona && j.IdSociedad == entity.IdSociedad).OrderBy(j => j.Id);
                 if (lastjobs.Any())
                 {
@@ -32,15 +38,23 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
                     {
                         lastJ.FechaTerminoPosicion = now;
                         lastJ.Estado = 1;
+                        lastJ.Activo = true;//false;
+
+                        _context.Entry(lastJ).State = EntityState.Modified;
+                        _context.PosicionLaboral.Update(lastJ);
                     }
-                    foreach (var item in lastjobs)
-                    {
-                        item.Estado = 1;
-                        //item.Activo = false;
-                    }
+                    //foreach (var item in lastjobs)
+                    //{
+                    //    item.Estado = 1;
+                    //    item.Activo = false;
+
+                    //    _context.Entry(item).State = EntityState.Modified;
+                    //    _context.PosicionLaboral.Update(item);
+                    //}
                 }
             }
-            _context.SaveChanges();
+
+            //_context.SaveChanges();
 
             AddRange(entities);
         }

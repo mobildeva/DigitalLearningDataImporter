@@ -51,7 +51,14 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
 
         public Personas GetByIuAndDv(string uniqueId, string dv)
         {
-            return _dataContext.Personas.AsEnumerable().FirstOrDefault(p => p.IdentificacionUnica == uniqueId.Trim() && p.Dv == dv);
+            var uniqTrim = uniqueId.Trim();
+            var dvtrim = dv.Trim();
+            return _dataContext.Personas.FirstOrDefault(p => p.IdentificacionUnica == uniqTrim && p.Dv == dvtrim);
+        }
+
+        public Personas GetByIdConexion(int id)
+        {
+            return _dataContext.Personas.FirstOrDefault(x => x.IdConexion == id);
         }
     }
 }

@@ -50,7 +50,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Family
 
         public FamiliaCargo GetByName(string name, int societyId)
         {
-            return _context.FamiliaCargo.AsEnumerable().FirstOrDefault(s => (!s.IdSociedad.HasValue || s.IdSociedad == societyId) && (Utils.Utils.CleanString(s.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper()));
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.FamiliaCargo.AsEnumerable().FirstOrDefault(s => (!s.IdSociedad.HasValue || s.IdSociedad == societyId) && (Utils.Utils.CleanString(s.Nombre).ToUpper() == cleanName));
         }
     }
 }

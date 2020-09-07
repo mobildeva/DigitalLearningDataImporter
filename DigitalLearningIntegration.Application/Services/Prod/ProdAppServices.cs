@@ -1065,6 +1065,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 cj.NombrePosicion = currentJobsDto.NombrePosicion;
                 cj.NombrePosicionAnterior = currentJobsDto.NombrePosicionAnterior;
                 cj.IdPersonaCambio = currentJobsDto.IdPersonaCambio;
+
+                _cuJobRepository.Update(cj);
             }
         }
 
@@ -1076,20 +1078,25 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             {
                 p.Activo = people.Activo;
                 p.ApellidoMaterno = people.ApellidoMaterno;
+                p.ApellidoPaterno = people.ApellidoPaterno;
                 p.Nombre = people.Nombre;
                 p.IdentificacionUnica = people.IdentificacionUnica;
                 p.Dv = people.Dv;
                 p.Email = people.Email;
-                p.Fono = p.Fono;
-                p.Celular = p.Celular;
-                p.IdCodigoArea = p.IdCodigoArea;
-                p.ClaveSence = people.ClaveSence;
-                p.ConectaSence = people.ConectaSence;
-                p.Instructor = people.Instructor;
+                p.Fono = people.Fono;
+                p.Celular = people.Celular;
+
+                if (people.IdCodigoArea.HasValue && p.IdCodigoArea != people.IdCodigoArea)
+                    p.IdCodigoArea = people.IdCodigoArea;
+
+                //p.ClaveSence = people.ClaveSence;
+                //p.ConectaSence = people.ConectaSence;
+                //p.Instructor = people.Instructor;
 
                 if (people.IdConexion.HasValue && people.IdConexion != p.IdConexion)
                     p.IdConexion = people.IdConexion;
-                //_peopleRepository.Update(p);
+
+                _peopleRepository.Update(p);
             }
         }
 
@@ -1114,18 +1121,31 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 pi.Otro = personalInfo.Otro;
                 pi.IdFamiliaCargo = personalInfo.IdFamiliaCargo;
                 pi.IdArea = personalInfo.IdArea;
-                pi.IdReglaPlanHorario = personalInfo.IdReglaPlanHorario;
-                pi.JornadaLaboral = personalInfo.JornadaLaboral;
+                //pi.IdReglaPlanHorario = personalInfo.IdReglaPlanHorario;
+                //pi.JornadaLaboral = personalInfo.JornadaLaboral;
                 pi.IdLocal = personalInfo.IdLocal;
                 pi.IdTipoDireccion = personalInfo.IdTipoDireccion;
-                pi.CuentaReparto = personalInfo.CuentaReparto;
-                pi.Pensionado = personalInfo.Pensionado;
+                //pi.CuentaReparto = personalInfo.CuentaReparto;
+                //pi.Pensionado = personalInfo.Pensionado;
                 pi.Sindizalizado = personalInfo.Sindizalizado;
-                pi.IdUbicacion = personalInfo.IdUbicacion;
+                //pi.IdUbicacion = personalInfo.IdUbicacion;
                 pi.IdGrupoEtnico = personalInfo.IdGrupoEtnico;
-                pi.Discapacitado = personalInfo.Discapacitado;
-                //_pInfoRepository.Update(pi);
+                //pi.Discapacitado = personalInfo.Discapacitado;
+                //pi.TallaPantalon = personalInfo.TallaPantalon;
+                //pi.Altura = personalInfo.Altura;
+
+                _pInfoRepository.Update(pi);
             }
+        }
+
+        public Personas GetByIdConexion(int id)
+        {
+            var aux = _peopleRepository.GetByIdConexion(id);
+            if (aux != null)
+            {
+                return aux;
+            }
+            return null;
         }
     }
 }

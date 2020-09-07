@@ -65,8 +65,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Users
             return GetAll();
         }
 
-
-
         public DigitalLearningDataImporter.DALstd.Users GetByUserName(string userName)
         {
             return _context.Users.AsEnumerable().FirstOrDefault(u => Utils.Utils.CleanString(u.Username).ToUpper() == Utils.Utils.CleanString(userName).ToUpper());

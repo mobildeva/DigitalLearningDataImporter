@@ -152,7 +152,7 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
 
         public void Update(T entity)
         {
-            //_context.Entry(entity).State = EntityState.Modified;
+            _context.Entry(entity).State = EntityState.Modified;
 
             //var userSession = _httpContextAccessor.HttpContext.User.GetUserId();
 
@@ -162,8 +162,8 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
             //    _context.Entry(entity).CurrentValues[nameof(IAuditable.LastModifiedDate)] = DateTime.Now;
             //}
 
-            //_context.Set<T>().Update(entity);
-            _unitOfWork.Commit();
+            _context.Set<T>().Update(entity);
+            //_unitOfWork.Commit();
         }
 
         public abstract T GetById(int id);

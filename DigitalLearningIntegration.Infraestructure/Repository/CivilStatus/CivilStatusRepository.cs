@@ -49,7 +49,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CivilStatus
 
         public EstadoCivil GetByName(string name)
         {
-            return _context.EstadoCivil.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper().Contains(Utils.Utils.CleanString(name).ToUpper()));
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.EstadoCivil.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper().Contains(cleanName));
         }
 
         public CivilStatusRepository(HCMKomatsuProdContext dataContext) : base(dataContext)

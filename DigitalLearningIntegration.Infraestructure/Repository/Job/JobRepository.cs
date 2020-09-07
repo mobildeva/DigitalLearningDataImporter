@@ -52,7 +52,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Job
 
         public Cargos GetByName(string name)
         {
-            return _context.Cargos.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Cargos.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
         }
     }
 }

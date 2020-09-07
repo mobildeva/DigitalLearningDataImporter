@@ -85,5 +85,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         void ReActiveContSoc(int id);
         void ReActiveLocal(int id);
         void ReActiveJob(int id);
+        Personas GetByIdConexion(int id);
+
+        //void UpdateEntity(InformacionPersonal informacionPersonal);
     }
 }

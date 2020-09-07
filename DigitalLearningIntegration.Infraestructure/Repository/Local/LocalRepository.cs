@@ -45,7 +45,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
 
         public Locales GetByCode(string code)
         {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.CodigoLocal).ToUpper() == Utils.Utils.CleanString(code).ToUpper());
+            var cleanCode = Utils.Utils.CleanString(code).ToUpper();
+
+            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.CodigoLocal).ToUpper() == cleanCode);
         }
 
         public override Locales GetById(int id)
@@ -55,7 +57,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Local
 
         public Locales GetByName(string name)
         {
-            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.NombreLocal).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Locales.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.NombreLocal).ToUpper() == cleanName);
         }
     }
 }

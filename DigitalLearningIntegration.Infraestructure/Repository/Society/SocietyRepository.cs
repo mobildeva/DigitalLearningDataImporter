@@ -60,12 +60,16 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Society
 
         public Sociedad GetByName(string name)
         {
-            return _dataContext.Sociedad.AsEnumerable().FirstOrDefault(s => Utils.Utils.CleanString(s.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _dataContext.Sociedad.AsEnumerable().FirstOrDefault(s => Utils.Utils.CleanString(s.Nombre).ToUpper() == cleanName);
         }
 
         public Sociedad GetByUniqueIdentifier(string uniqIdent)
         {
-            return _dataContext.Sociedad.AsEnumerable().FirstOrDefault(s => Utils.Utils.CleanString(s.IdentificacionUnica).ToUpper() == Utils.Utils.CleanString(uniqIdent).ToUpper());
+            var cleanUniqIdent = Utils.Utils.CleanString(uniqIdent).ToUpper();
+
+            return _dataContext.Sociedad.AsEnumerable().FirstOrDefault(s => Utils.Utils.CleanString(s.IdentificacionUnica).ToUpper() == cleanUniqIdent);
         }
     }
 }
