@@ -970,7 +970,7 @@ namespace DigitalLearningDataImporter.Console
                             costCenter = new CostCenterDto()
                             {
                                 Activo = true,
-                                Codigo = item.CurrentJob.CostCenter,
+                                Codigo = string.Empty,//item.CurrentJob.CostCenter,
                                 IdSociedad = idSociedad,
                                 Nombre = item.CurrentJob.CostCenter
                             };
@@ -1508,8 +1508,8 @@ namespace DigitalLearningDataImporter.Console
                     {
                         jobToAdd.Add(newCurrentJob);
                     }
-                    //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio ||
-                    else if (newCurrentJob.IdUbicacion != currentJob.IdUbicacion || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != currentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
+                    //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion
+                    else if (newCurrentJob.IdUbicacion != currentJob.IdUbicacion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != currentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
                     {
                         item.CurrentJobId = currentJob.Id;
                         newCurrentJob.Id = currentJob.Id;
