@@ -184,7 +184,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Nombre = piDto.Nombre,
                     IdCentroCosto = piDto.IdCentroCosto,
                     IdSociedad = piDto.IdSociedad,
-                    CodigoErp = piDto.CodigoErp
+                    CodigoErp = piDto.CodigoErp,
+                    IdUnidadOrganizacional = piDto.IdUnidadOrganizacional
                 };
                 _buRepository.Add(entity);
                 return entity.Id;
@@ -403,7 +404,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 var entity = new Cargos
                 {
                     Activo = true,
-                    Nombre = piDto.Nombre
+                    Nombre = piDto.Nombre,
+                    IdSociedad = piDto.IdSociedad,
+                    IdUnidadOrganizacional = piDto.IdUnidadOrganizacional,
+                    IdFamiliaCargo = piDto.IdFamiliaCargo,
+                    FechaCreacion = piDto.FechaCreacion
                 };
                 _jobRepository.Add(entity);
                 return entity.Id;

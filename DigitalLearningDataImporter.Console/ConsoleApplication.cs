@@ -289,6 +289,19 @@ namespace DigitalLearningDataImporter.Console
                 }
                 //End review this
 
+                //Introduce default values
+                var ocup = _prodServ.GetOcupLevelByNameSociety(defaultTextValue, idSociedad);
+                if (ocup == null)
+                {
+                    _prodServ.AddOcupLevel(new OcupLevelDto
+                    {
+                        Activo = true,
+                        IdSociedad = idSociedad,
+                        Nombre = defaultTextValue
+                    });
+                }
+
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
                     var user = _segServ.GetUserByRUTUserName(item.Rut);
@@ -834,9 +847,12 @@ namespace DigitalLearningDataImporter.Console
                         if (!ocupLevelDic.ContainsKey(defaultTextValue))
                         {
                             ocupLevel = _prodServ.GetOcupLevelByNameSociety(defaultTextValue, idSociedad);
-                            if (ocupLevel.Activo != true)
-                                _prodServ.ReActiveOcupLevel(ocupLevel.Id);
-                            ocupLevelDic.Add(defaultTextValue, ocupLevel);
+                            if (ocupLevel != null)
+                            {
+                                if (ocupLevel.Activo != true)
+                                    _prodServ.ReActiveOcupLevel(ocupLevel.Id);
+                                ocupLevelDic.Add(defaultTextValue, ocupLevel);
+                            }
                         }
                         else
                         {
@@ -1509,22 +1525,27 @@ namespace DigitalLearningDataImporter.Console
                         jobToAdd.Add(newCurrentJob);
                     }
                     //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion
-                    else if (newCurrentJob.IdUbicacion != currentJob.IdUbicacion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != currentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != currentJob.FechaTerminoContrato)
+                    else if (newCurrentJob.IdUbicacion != currentJob.IdUbicacion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato)
                     {
                         item.CurrentJobId = currentJob.Id;
                         newCurrentJob.Id = currentJob.Id;
                         //_prodServ.UpdateCurrentJob(newCurrentJob);
-                        _prodServ.AddActiveCurrentJobs(new List<CurrentJobsDto>() { newCurrentJob });
+
+                        //_prodServ.AddActiveCurrentJobs(new List<CurrentJobsDto>() { newCurrentJob });
 
                         //_prodServ.SaveChanges();
+                        jobToAdd.Add(newCurrentJob);
 
                         updatesJobLog += item.CurrentJobId + "; ";
                     }
                 }
 
-                _prodServ.SaveChanges();
+                //_prodServ.SaveChanges();
 
                 _prodServ.AddActiveCurrentJobs(jobToAdd);
+
+                //_prodServ.SaveChanges();
+
                 Log.Debug("Updated current jobs: " + updatesJobLog);
 
                 var info = new ImportLogInfo
