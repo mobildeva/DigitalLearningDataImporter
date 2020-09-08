@@ -71,7 +71,7 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                Log.Information("Starting the app");
+                Log.Information("Starting the app. Version: 1.7");
 
                 var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
