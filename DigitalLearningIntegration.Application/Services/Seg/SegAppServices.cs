@@ -93,7 +93,11 @@ namespace DigitalLearningIntegration.Application.Services.Seg
                     Bloqueado = userDto.Bloqueado,
                     Activo = userDto.Activo,
                     Nombres = userDto.Nombres,
-                    Fecha = userDto.Fecha
+                    Fecha = userDto.Fecha,
+                    PrimerIngreso = userDto.PrimerIngreso,
+                    NumeroIntentosFallidos = userDto.NumeroIntentosFallidos,
+                    ClienteUsers = new List<ClienteUsers>(userDto.ClienteUsers.Select(cu => new ClienteUsers { Activo = cu.Activo, IdClientes = cu.IdClientes })),
+                    UsersPerfil = new List<UsersPerfil>(userDto.ProfileUsers.Select(cu => new UsersPerfil { Activo = cu.Activo, IdPerfil = cu.IdPerfil }))
                 };
                 _userRepository.Add(entity);
                 return entity.Id;
@@ -116,6 +120,8 @@ namespace DigitalLearningIntegration.Application.Services.Seg
                     Activo = userDto.Activo,
                     Nombres = userDto.Nombres,
                     Fecha = userDto.Fecha,
+                    PrimerIngreso = userDto.PrimerIngreso,
+                    NumeroIntentosFallidos = userDto.NumeroIntentosFallidos,
                     ClienteUsers = new List<ClienteUsers>(userDto.ClienteUsers.Select(cu => new ClienteUsers { Activo = cu.Activo, IdClientes = cu.IdClientes })),
                     UsersPerfil = new List<UsersPerfil>(userDto.ProfileUsers.Select(cu => new UsersPerfil { Activo = cu.Activo, IdPerfil = cu.IdPerfil }))
                 }));
