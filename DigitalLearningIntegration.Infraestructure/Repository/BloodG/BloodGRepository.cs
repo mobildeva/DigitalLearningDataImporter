@@ -49,7 +49,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.BloodG
         }
         public GrupoSanguineo GetByName(string name)
         {
-            return _context.GrupoSanguineo.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.GrupoSanguineo.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == cleanName);
         }
     }
 }

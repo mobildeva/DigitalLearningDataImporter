@@ -56,7 +56,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.OrgUnit
             return _context.UnidadesOrganizacional.FirstOrDefault(x => x.IdSociedad == societyId && x.Nombre != "Sin Información");
         }
 
-        public UnidadesOrganizacional GetByName(string name, int idSociedad)
+        public UnidadesOrganizacional GetOrgUnitByClientNameSociety(int idSociedad, string name)
         {
             var cleanName = Utils.Utils.CleanString(name).ToUpper();
             return _context.UnidadesOrganizacional.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == cleanName && un.IdSociedad == idSociedad);

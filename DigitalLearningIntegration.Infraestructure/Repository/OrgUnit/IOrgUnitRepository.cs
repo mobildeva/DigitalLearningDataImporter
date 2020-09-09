@@ -9,8 +9,8 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.OrgUnit
 {
     public interface IOrgUnitRepository : IRepository<UnidadesOrganizacional>
     {
-        ResultDto CreatedOrUpdate(UnidadesOrganizacional entity);
-        UnidadesOrganizacional GetByName(string name, int idSociedad);
+        ResultDto CreatedOrUpdate(UnidadesOrganizacional entity);        
         UnidadesOrganizacional GetByIdSociedad(int societyId);
+        UnidadesOrganizacional GetOrgUnitByClientNameSociety(int idSociedad, string clientName);
     }
 }

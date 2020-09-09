@@ -2,6 +2,7 @@
 using DigitalLearningIntegration.Application.Services.Prod.Dto;
 using DigitalLearningIntegration.Infraestructure.Repository.CivilStatus;
 using DocumentFormat.OpenXml.CustomXmlSchemaReferences;
+using DocumentFormat.OpenXml.Office2013.Word;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -27,7 +28,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         int AddBussUnit(BussUnitDto buDto);
         BussUnitDto GetBussUnitByNameSociety(string name, int societyId);
         int AddOrgUnit(OrgUnitDto ouDto);
-        OrgUnitDto GetOrgUnitByNameSociety(string name, int societyId);
+        //OrgUnitDto GetOrgUnitByNameSociety(string name, int societyId);
         int AddContType(ContractTypeDto people);
         ContractTypeDto GetContTypeByName(string name);
         int AddSociety(SocietyDto people);
@@ -86,6 +87,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         void ReActiveLocal(int id);
         void ReActiveJob(int id);
         Personas GetByIdConexion(int id);
+        OrgUnitDto GetOrgUnitByClientNameSociety(int idSociedad, string clientName);
+        PeoplesDto GetAdminPeople();
 
         //void UpdateEntity(InformacionPersonal informacionPersonal);
     }

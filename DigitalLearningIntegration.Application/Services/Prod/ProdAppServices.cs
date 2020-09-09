@@ -408,7 +408,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     IdSociedad = piDto.IdSociedad,
                     IdUnidadOrganizacional = piDto.IdUnidadOrganizacional,
                     IdFamiliaCargo = piDto.IdFamiliaCargo,
-                    FechaCreacion = piDto.FechaCreacion
+                    FechaCreacion = piDto.FechaCreacion,
+                    IdEscalaSalarial = piDto.IdEscalaSalarial,
+                    IdJornadaLaboral = piDto.IdJornadaLaboral,
+                    IdUbicacionesFisicas = piDto.IdUbicacionesFisicas,
+                    IdEspecialidadCargo = piDto.IdEspecialidadCargo
                 };
                 _jobRepository.Add(entity);
                 return entity.Id;
@@ -472,9 +476,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 _ocLevelRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return -1;
+                throw e;
             }
         }
 
@@ -487,14 +491,15 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Activo = orgUnitDto.Activo,
                     Nombre = orgUnitDto.Nombre,
                     IdCentroCosto = orgUnitDto.IdCentroCosto,
-                    IdSociedad = orgUnitDto.IdSociedad
+                    IdSociedad = orgUnitDto.IdSociedad,
+                    IdPadre = orgUnitDto.IdPadre
                 };
                 _ouRepository.Add(entity);
                 return entity.Id;
             }
             catch (Exception e)
             {
-                return -1;
+                throw e;
             }
         }
 
@@ -525,7 +530,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -583,12 +588,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
-                //return new ResultDto
-                //{
-                //    Result = false,
-                //    Message = ex.Message
-                //};
+                throw;
             }
         }
 
@@ -622,7 +622,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -640,7 +640,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -661,7 +661,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -680,7 +680,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -839,15 +839,15 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             else return null;
         }
 
-        public OrgUnitDto GetOrgUnitByNameSociety(string name, int sociatyId)
-        {
-            var aux = _ouRepository.GetByName(name, sociatyId);
-            if (aux != null)
-            {
-                return new OrgUnitDto(aux);
-            }
-            else return null;
-        }
+        //public OrgUnitDto GetOrgUnitByNameSociety(string name, int sociatyId)
+        //{
+        //    var aux = _ouRepository.GetOrgUnitByClientNameSociety(sociatyId, name);
+        //    if (aux != null)
+        //    {
+        //        return new OrgUnitDto(aux);
+        //    }
+        //    else return null;
+        //}
 
         public OrgUnitDto GetOrgUnitBySociety(int idSociedad)
         {
@@ -1149,6 +1149,26 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             if (aux != null)
             {
                 return aux;
+            }
+            return null;
+        }
+
+        public OrgUnitDto GetOrgUnitByClientNameSociety(int idSociedad, string clientName)
+        {
+            var aux = _ouRepository.GetOrgUnitByClientNameSociety(idSociedad, clientName);
+            if (aux != null)
+            {
+                return new OrgUnitDto(aux);
+            }
+            return null;
+        }
+
+        public PeoplesDto GetAdminPeople()
+        {
+            var admin = _peopleRepository.GetByIuAndDv("0", "0");
+            if (admin != null)
+            {
+                return new PeoplesDto(admin);
             }
             return null;
         }

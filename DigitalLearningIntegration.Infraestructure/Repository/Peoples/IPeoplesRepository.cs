@@ -13,5 +13,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
         Personas GetById(int id);
         Personas GetByIuAndDv(string uniqueId, string dv);
         Personas GetByIdConexion(int id);
+        Personas GetUserByRUT(string rut);
     }
 }

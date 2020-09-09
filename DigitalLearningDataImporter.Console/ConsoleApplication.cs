@@ -117,9 +117,12 @@ namespace DigitalLearningDataImporter.Console
                 var client = _segServ.GetClientBySocietyId(idSociedad);
 
                 var principalOrgUnitId = 0;
-                var principalOrgUnit = _prodServ.GetOrgUnitBySociety(idSociedad);
-                if (principalOrgUnit != null)
-                    principalOrgUnitId = principalOrgUnit.Id;
+                if (client != null)
+                {
+                    var principalOrgUnit = _prodServ.GetOrgUnitByClientNameSociety(idSociedad, client.Nombre);
+                    if (principalOrgUnit != null)
+                        principalOrgUnitId = principalOrgUnit.Id;
+                }
 
                 var ownerImportId = 0;
                 var importPeopleId = 0;
@@ -619,7 +622,7 @@ namespace DigitalLearningDataImporter.Console
                     {
                         if (!orgUnitDic.ContainsKey(item.CurrentJob.CustomAttributes.Gerencia))
                         {
-                            orgUnit = _prodServ.GetOrgUnitByNameSociety(item.CurrentJob.CustomAttributes.Gerencia, idSociedad);
+                            orgUnit = _prodServ.GetOrgUnitByClientNameSociety(idSociedad, item.CurrentJob.CustomAttributes.Gerencia);
                             if (orgUnit != null)
                             {
                                 if (orgUnit.Activo != true)
@@ -649,7 +652,7 @@ namespace DigitalLearningDataImporter.Console
                     {
                         if (!orgUnitDic.ContainsKey(defaultTextValue))
                         {
-                            orgUnit = _prodServ.GetOrgUnitByNameSociety(defaultTextValue, idSociedad);
+                            orgUnit = _prodServ.GetOrgUnitByClientNameSociety(idSociedad, defaultTextValue);
                             if (orgUnit != null)
                             {
                                 if (orgUnit.Activo != true)
@@ -1092,7 +1095,11 @@ namespace DigitalLearningDataImporter.Console
                                 IdSociedad = idSociedad,
                                 FechaCreacion = DateTime.Now,
                                 IdUnidadOrganizacional = 0,
-                                IdFamiliaCargo = 0
+                                IdFamiliaCargo = familyId,//0, 
+                                IdEscalaSalarial = 0,
+                                IdJornadaLaboral = workingDayId,
+                                IdUbicacionesFisicas = null,
+                                IdEspecialidadCargo = null
                             };
                             job.Id = _prodServ.Addjob(job);
                             jobDic.Add(item.CurrentJob.Role.Name, job);
@@ -1315,13 +1322,20 @@ namespace DigitalLearningDataImporter.Console
                         }, null);
                         newUsers++;
                     }
-                    else if ((!string.IsNullOrEmpty(newPeople.Fono) && newPeople.Fono != people.Fono) || (!string.IsNullOrEmpty(newPeople.Celular) && newPeople.Celular != people.Celular) || newPeople.IdConexion != people.IdConexion || newPeople.Activo != people.Activo || (!string.IsNullOrEmpty(newPeople.ApellidoMaterno) && newPeople.ApellidoMaterno != people.ApellidoMaterno) || (!string.IsNullOrEmpty(newPeople.ApellidoPaterno) && newPeople.ApellidoPaterno != people.ApellidoPaterno) || (!string.IsNullOrEmpty(newPeople.Nombre) && newPeople.Nombre != people.Nombre) || (newPeople.IdCodigoArea.HasValue && newPeople.IdCodigoArea != people.IdCodigoArea) || (!string.IsNullOrEmpty(newPeople.Email) && newPeople.Email != people.Email))
+                    else if ((!string.IsNullOrEmpty(newPeople.Fono) && newPeople.Fono != people.Fono)
+                        || (!string.IsNullOrEmpty(newPeople.Celular) && newPeople.Celular != people.Celular)
+                        || (newPeople.IdConexion.HasValue && newPeople.IdConexion != people.IdConexion)
+                        || newPeople.Activo != people.Activo
+                        || (!string.IsNullOrEmpty(newPeople.ApellidoMaterno) && newPeople.ApellidoMaterno != people.ApellidoMaterno)
+                        || (!string.IsNullOrEmpty(newPeople.ApellidoPaterno) && newPeople.ApellidoPaterno != people.ApellidoPaterno)
+                        || (!string.IsNullOrEmpty(newPeople.Nombre) && newPeople.Nombre != people.Nombre)
+                        || (newPeople.IdCodigoArea.HasValue && newPeople.IdCodigoArea.Value != defaultValue && newPeople.IdCodigoArea != people.IdCodigoArea)
+                        || (!string.IsNullOrEmpty(newPeople.Email) && newPeople.Email != people.Email))
                     {
                         item.PeopleId = people.Id;
                         newPeople.Id = people.Id;
-                        _prodServ.UpdatePeople(newPeople);
 
-                        //_prodServ.SaveChanges();
+                        _prodServ.UpdatePeople(newPeople);
 
                         updatesPeoplesLog += item.PeopleId + "; ";
                         updatesUsers++;
@@ -1399,13 +1413,18 @@ namespace DigitalLearningDataImporter.Console
                         peoplesToAdd.Add(peopAux);
                     }
                     //newPersonalInf.IdGrupoEtnico != persInfo.IdGrupoEtnico || newPersonalInf.Discapacitado != persInfo.Discapacitado || newPersonalInf.Pensionado != persInfo.Pensionado || newPersonalInf.Sindizalizado != persInfo.Sindizalizado || newPersonalInf.CuentaReparto != persInfo.CuentaReparto || persInfo.IdReglaPlanHorario != newPersonalInf.IdReglaPlanHorario || persInfo.IdUbicacion != newPersonalInf.IdUbicacion
-                    else if (newPersonalInf.IdTipoDireccion != persInfo.IdTipoDireccion || newPersonalInf.IdPaisResidencia != persInfo.IdPaisResidencia || persInfo.IdPaisNacionalidad != newPersonalInf.IdPaisNacionalidad || persInfo.Activo != newPersonalInf.Activo || persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento || persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil || persInfo.IdLocal != newPersonalInf.IdLocal)
+                    else if ((newPersonalInf.IdTipoDireccion.HasValue && newPersonalInf.IdTipoDireccion.Value != defaultValue && newPersonalInf.IdTipoDireccion != persInfo.IdTipoDireccion)
+                        || (newPersonalInf.IdPaisResidencia.HasValue && newPersonalInf.IdPaisResidencia.Value != defaultValue && newPersonalInf.IdPaisResidencia != persInfo.IdPaisResidencia)
+                        || (newPersonalInf.IdPaisNacionalidad.HasValue && newPersonalInf.IdPaisNacionalidad.Value != defaultValue && persInfo.IdPaisNacionalidad != newPersonalInf.IdPaisNacionalidad)
+                        || persInfo.Activo != newPersonalInf.Activo
+                        || (newPersonalInf.FechaNacimiento.HasValue && persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento)
+                        || (newPersonalInf.IdEstadoCivil.HasValue && newPersonalInf.IdEstadoCivil.Value != defaultValue && persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil)
+                        || (newPersonalInf.IdLocal.HasValue && newPersonalInf.IdLocal.Value != defaultValue && persInfo.IdLocal != newPersonalInf.IdLocal))
                     {
                         item.PersonalInfoId = persInfo.Id;
                         newPersonalInf.Id = persInfo.Id;
-                        _prodServ.UpdatePersonalInfo(newPersonalInf);
 
-                        //_prodServ.SaveChanges();
+                        _prodServ.UpdatePersonalInfo(newPersonalInf);
 
                         updatesPersInfoLog += item.PersonalInfoId + "; ";
                     }
@@ -1487,9 +1506,11 @@ namespace DigitalLearningDataImporter.Console
 
                 var jobToAdd = new List<CurrentJobsDto>();
 
+                var admin = _prodServ.GetAdminPeople();
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : null;
+                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? admin.Id : -1);
 
                     var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
 
@@ -1507,7 +1528,7 @@ namespace DigitalLearningDataImporter.Console
                         IdTipoContrato = item.ContTypeId,
                         FechaInicioContrato = item.CurrentJob.DstartDate.HasValue ? item.CurrentJob.DstartDate.Value : DateTime.Now,
                         FechaTerminoContrato = item.CurrentJob.DendDate,
-                        IdPersonaJefe = bossIdAux,
+                        IdPersonaJefe = bossIdAux != -1 ? bossIdAux : null,
                         IdSociedadContratante = item.ContSocId,
                         IdSociedad = idSociedad,
                         IdCentroCosto = item.CostCenterId,
@@ -1524,27 +1545,26 @@ namespace DigitalLearningDataImporter.Console
                     {
                         jobToAdd.Add(newCurrentJob);
                     }
-                    //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion
-                    else if (newCurrentJob.IdUbicacion != currentJob.IdUbicacion || newCurrentJob.Estado != currentJob.Estado || newCurrentJob.Activo != currentJob.Activo || currentJob.IdSociedad != newCurrentJob.IdSociedad || currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante || currentJob.IdCargo != newCurrentJob.IdCargo || currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto || currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato || currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato)
+                    //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion || currentJob.IdSociedad != newCurrentJob.IdSociedad
+                    else if ((newCurrentJob.IdUbicacion.HasValue && newCurrentJob.IdUbicacion.Value != defaultValue && newCurrentJob.IdUbicacion != currentJob.IdUbicacion)
+                        || newCurrentJob.Estado != currentJob.Estado
+                        || newCurrentJob.Activo != currentJob.Activo
+                        || (newCurrentJob.IdSociedadContratante.HasValue && newCurrentJob.IdSociedadContratante.Value != defaultValue && currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante)
+                        || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
+                        || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
+                        || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato)
+                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato))
                     {
                         item.CurrentJobId = currentJob.Id;
                         newCurrentJob.Id = currentJob.Id;
-                        //_prodServ.UpdateCurrentJob(newCurrentJob);
 
-                        //_prodServ.AddActiveCurrentJobs(new List<CurrentJobsDto>() { newCurrentJob });
-
-                        //_prodServ.SaveChanges();
                         jobToAdd.Add(newCurrentJob);
 
                         updatesJobLog += item.CurrentJobId + "; ";
                     }
                 }
 
-                //_prodServ.SaveChanges();
-
                 _prodServ.AddActiveCurrentJobs(jobToAdd);
-
-                //_prodServ.SaveChanges();
 
                 Log.Debug("Updated current jobs: " + updatesJobLog);
 

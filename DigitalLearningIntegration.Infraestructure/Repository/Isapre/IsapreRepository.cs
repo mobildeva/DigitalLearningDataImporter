@@ -53,7 +53,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Isapre
 
         public Isapres GetByName(string name)
         {
-            return _context.Isapres.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Isapres.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == cleanName);
         }
     }
 }

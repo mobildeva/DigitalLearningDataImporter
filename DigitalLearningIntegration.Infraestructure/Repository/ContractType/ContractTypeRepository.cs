@@ -49,7 +49,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.ContractType
         }
         public TipoContrato GetByName(string name)
         {
-            return _context.TipoContrato.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.TipoContrato.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
         }
     }
 }

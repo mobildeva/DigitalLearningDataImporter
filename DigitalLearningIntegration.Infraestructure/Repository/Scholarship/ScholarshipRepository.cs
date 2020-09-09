@@ -53,7 +53,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Scholarship
 
         public EscolaridadSence GetByName(string name)
         {
-            return _context.EscolaridadSence.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.EscolaridadSence.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == cleanName);
         }
     }
 }

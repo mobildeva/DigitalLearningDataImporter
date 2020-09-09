@@ -51,7 +51,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Genre
 
         public Genero GetByName(string name)
         {
-            return _context.Genero.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Genero.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
         }
     }
 }

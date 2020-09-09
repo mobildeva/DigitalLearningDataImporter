@@ -50,7 +50,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Country
 
         public Pais GetByName(string name)
         {
-            return _context.Pais.AsEnumerable().FirstOrDefault(g => (Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper()) || (Utils.Utils.CleanString(g.Nombre).ToUpper().Contains(Utils.Utils.CleanString(name).ToUpper())));
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Pais.AsEnumerable().FirstOrDefault(g => (Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName) || (Utils.Utils.CleanString(g.Nombre).ToUpper().Contains(cleanName)));
         }
     }
 }

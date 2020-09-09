@@ -52,7 +52,9 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Location
 
         public Ubicacion GetByName(string name)
         {
-            return _context.Ubicacion.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == Utils.Utils.CleanString(name).ToUpper());
+            var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
+            return _context.Ubicacion.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
         }
     }
 }

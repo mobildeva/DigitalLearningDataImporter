@@ -60,5 +60,15 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Peoples
         {
             return _dataContext.Personas.FirstOrDefault(x => x.IdConexion == id);
         }
+
+        public Personas GetUserByRUT(string rut)
+        {
+            var splitRut = rut.Split('-');
+            if (splitRut.Count() == 2)
+            {
+                return GetByIuAndDv(splitRut[0], splitRut[1]);
+            }
+            return null;
+        }
     }
 }
