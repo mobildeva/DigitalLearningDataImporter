@@ -175,9 +175,9 @@ namespace DigitalLearningDataImporter.Console
                             Activo = true,
                             Dv = string.Empty,
                             IdentificacionUnica = string.Empty,
-                            Nombre = "Dataimporter".ToUpper(),
-                            ApellidoMaterno = "Dataimporter".ToUpper(),
-                            ApellidoPaterno = "Dataimporter".ToUpper(),
+                            Nombre = "Data Importer",
+                            ApellidoMaterno = string.Empty,
+                            ApellidoPaterno = string.Empty,
                             Instructor = false,
                             IdConexion = ownerImportId,
                             IdCodigoArea = null,
@@ -192,6 +192,12 @@ namespace DigitalLearningDataImporter.Console
                     {
                         importPeoples.Activo = true;
                         importPeopleId = importPeoples.Id;
+                        importPeoples.Nombre = "Data Importer";
+                        importPeoples.ApellidoMaterno = string.Empty;
+                        importPeoples.ApellidoPaterno = string.Empty;
+
+                        //_prodServ.UpdatePeople(importPeoples);
+
                         _prodServ.SaveChanges();
                     }
                 }
@@ -304,6 +310,27 @@ namespace DigitalLearningDataImporter.Console
                     });
                 }
 
+                var contTypeD = _prodServ.GetContTypeByName(defaultTextValue);
+                if (contTypeD == null)
+                {
+                    _prodServ.AddContType(new ContractTypeDto
+                    {
+                        Activo = true,
+                        Nombre = defaultTextValue
+                    });
+                }
+
+                var socD = _prodServ.GetSocietyByName(defaultTextValue);
+                if (socD == null)
+                {
+                    _prodServ.AddSociety(new SocietyDto
+                    {
+                        Activo = true,
+                        Nombre = defaultTextValue,
+                        IdUbicacion = 0,
+                        IdentificacionUnica = "0-0"
+                    });
+                }
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
@@ -908,7 +935,7 @@ namespace DigitalLearningDataImporter.Console
                         }
                         else
                         {
-                            contractType = contTypeDic[item.ContractType];
+                            contractType = contTypeDic[defaultTextValue];
                         }
                     }
                     if (contractType != null)
