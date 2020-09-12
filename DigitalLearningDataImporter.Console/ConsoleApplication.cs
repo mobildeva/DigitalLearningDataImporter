@@ -967,7 +967,10 @@ namespace DigitalLearningDataImporter.Console
                                 Nombre = item.Health_company,
                                 IdentificacionUnica = item.Health_company,
                                 Logo = string.Empty,
-                                Direccion = string.Empty
+                                Direccion = string.Empty,
+                                IdUbicacion = defaultValue,
+                                CorreoContacto = "spacheco@dl.cl",
+                                SiglaSociedad = item.Health_company
                             };
                             contSociety.Id = _prodServ.AddSociety(contSociety);
                             societyDic.Add(item.Health_company, contSociety);

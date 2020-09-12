@@ -59,6 +59,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.OrgUnit
         public UnidadesOrganizacional GetOrgUnitByClientNameSociety(int idSociedad, string name)
         {
             var cleanName = Utils.Utils.CleanString(name).ToUpper();
+
             return _context.UnidadesOrganizacional.AsEnumerable().FirstOrDefault(un => Utils.Utils.CleanString(un.Nombre).ToUpper() == cleanName && un.IdSociedad == idSociedad);
         }
     }
