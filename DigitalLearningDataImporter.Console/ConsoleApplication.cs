@@ -71,7 +71,7 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                Log.Information("Starting the app. Version: 1.8");
+                Log.Information("Starting the app. Version: 1.9.1");
 
                 var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
@@ -1533,10 +1533,8 @@ namespace DigitalLearningDataImporter.Console
 
                         peoplesToAdd.Add(peopAux);
                     }
-                    //newPersonalInf.IdGrupoEtnico != persInfo.IdGrupoEtnico || newPersonalInf.Discapacitado != persInfo.Discapacitado || newPersonalInf.Pensionado != persInfo.Pensionado || newPersonalInf.Sindizalizado != persInfo.Sindizalizado || newPersonalInf.CuentaReparto != persInfo.CuentaReparto || persInfo.IdReglaPlanHorario != newPersonalInf.IdReglaPlanHorario || persInfo.IdUbicacion != newPersonalInf.IdUbicacion
-                    else if ((newPersonalInf.IdTipoDireccion.HasValue && newPersonalInf.IdTipoDireccion.Value != defaultValue && newPersonalInf.IdTipoDireccion != persInfo.IdTipoDireccion)
-                        || (newPersonalInf.IdPaisResidencia.HasValue && newPersonalInf.IdPaisResidencia.Value != defaultValue && newPersonalInf.IdPaisResidencia != persInfo.IdPaisResidencia)
-                        || (newPersonalInf.IdPaisNacionalidad.HasValue && newPersonalInf.IdPaisNacionalidad.Value != defaultValue && persInfo.IdPaisNacionalidad != newPersonalInf.IdPaisNacionalidad)
+                    //newPersonalInf.IdGrupoEtnico != persInfo.IdGrupoEtnico || newPersonalInf.Discapacitado != persInfo.Discapacitado || newPersonalInf.Pensionado != persInfo.Pensionado || newPersonalInf.Sindizalizado != persInfo.Sindizalizado || newPersonalInf.CuentaReparto != persInfo.CuentaReparto || persInfo.IdReglaPlanHorario != newPersonalInf.IdReglaPlanHorario || persInfo.IdUbicacion != newPersonalInf.IdUbicacion || (newPersonalInf.IdPaisResidencia.HasValue && newPersonalInf.IdPaisResidencia.Value != defaultValue && newPersonalInf.IdPaisResidencia != persInfo.IdPaisResidencia) || (newPersonalInf.IdTipoDireccion.HasValue && newPersonalInf.IdTipoDireccion.Value != defaultValue && newPersonalInf.IdTipoDireccion != persInfo.IdTipoDireccion)
+                    else if ((newPersonalInf.IdPaisNacionalidad.HasValue && newPersonalInf.IdPaisNacionalidad.Value != defaultValue && persInfo.IdPaisNacionalidad != newPersonalInf.IdPaisNacionalidad)
                         || persInfo.Activo != newPersonalInf.Activo
                         || (newPersonalInf.FechaNacimiento.HasValue && persInfo.FechaNacimiento != newPersonalInf.FechaNacimiento)
                         || (newPersonalInf.IdEstadoCivil.HasValue && newPersonalInf.IdEstadoCivil.Value != defaultValue && persInfo.IdEstadoCivil != newPersonalInf.IdEstadoCivil)
@@ -1647,7 +1645,7 @@ namespace DigitalLearningDataImporter.Console
                         IdNivelOcupacional = item.OcupLevelId,
                         FranquiciaSence = item.FranchiseSence,
                         IdTipoContrato = item.ContTypeId,
-                        FechaInicioContrato = item.CurrentJob.DstartDate.HasValue ? item.CurrentJob.DstartDate.Value : DateTime.Now,
+                        FechaInicioContrato = item.CurrentJob.DstartDate ?? DateTime.Now,
                         FechaTerminoContrato = item.CurrentJob.DendDate,
                         IdPersonaJefe = bossIdAux != -1 ? bossIdAux : null,
                         IdSociedadContratante = item.ContSocId,
@@ -1662,14 +1660,16 @@ namespace DigitalLearningDataImporter.Console
                         IdPersonaCambio = importPeopleId
                     };
 
+                    var updatesCount = 0;
+
                     if (currentJob == null)
                     {
                         jobToAdd.Add(newCurrentJob);
                     }
                     //newCurrentJob.IdPersonaCambio != currentJob.IdPersonaCambio || newCurrentJob.NombrePosicionAnterior != currentJob.NombrePosicionAnterior || newCurrentJob.NombrePosicion != currentJob.NombrePosicion || currentJob.IdEscolaridadSence != newCurrentJob.IdEscolaridadSence || || newCurrentJob.IdTipoCambioPosicion != currentJob.IdTipoCambioPosicion || || newCurrentJob.IdTipoPosicion != currentJob.IdTipoPosicion || currentJob.IdSociedad != newCurrentJob.IdSociedad
                     else if ((newCurrentJob.IdUbicacion.HasValue && newCurrentJob.IdUbicacion.Value != defaultValue && newCurrentJob.IdUbicacion != currentJob.IdUbicacion)
-                        || newCurrentJob.Estado != currentJob.Estado
-                        || newCurrentJob.Activo != currentJob.Activo
+                        //|| newCurrentJob.Estado != currentJob.Estado
+                        //|| newCurrentJob.Activo != currentJob.Activo
                         || (newCurrentJob.IdSociedadContratante.HasValue && newCurrentJob.IdSociedadContratante.Value != defaultValue && currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante)
                         || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
                         || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
@@ -1677,7 +1677,45 @@ namespace DigitalLearningDataImporter.Console
                         || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato))
                     {
                         item.CurrentJobId = currentJob.Id;
+
                         newCurrentJob.Id = currentJob.Id;
+                        //newCurrentJob.IdTipoContrato
+
+                        if ((newCurrentJob.IdUbicacion.HasValue && newCurrentJob.IdUbicacion.Value != defaultValue && newCurrentJob.IdUbicacion != currentJob.IdUbicacion))
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 13;
+                            //newCurrentJob.IdUbicacion = 
+                            updatesCount++;
+                        }
+                        if ((newCurrentJob.IdSociedadContratante.HasValue && newCurrentJob.IdSociedadContratante.Value != defaultValue && currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante))
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 10;
+                            updatesCount++;
+                        }
+                        if ((newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo))
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 2;
+                            updatesCount++;
+                        }
+                        if (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 17;
+                            updatesCount++;
+                        }
+                        if (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 7;
+                            updatesCount++;
+                        }
+                        if (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 11;
+                            updatesCount++;
+                        }
+                        if (updatesCount > 0)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 6;
+                        }
 
                         jobToAdd.Add(newCurrentJob);
 

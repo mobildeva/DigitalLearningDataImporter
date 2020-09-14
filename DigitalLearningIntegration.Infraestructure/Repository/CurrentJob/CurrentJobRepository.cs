@@ -24,7 +24,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
             {
                 var lastjobs = _context.PosicionLaboral.Where(j => j.IdPersona == entity.IdPersona && j.IdSociedad == entity.IdSociedad).OrderBy(j => j.Id);
 
-                PosicionLaboral lastJob = null;
+                PosicionLaboral lastJob = lastjobs.Last();
 
                 if (!lastjobs.Any())
                 {
@@ -36,9 +36,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
                 }
                 else if (entity.FechaInicioContrato.HasValue && !entity.FechaTerminoContrato.HasValue)
                 {
-                    lastJob = lastjobs.Last();
-
-                    if (lastJob.FechaInicioContrato != entity.FechaInicioContrato)
+                    if ((lastJob.FechaInicioContrato != entity.FechaInicioContrato) || (entity.IdTipoCambioPosicion.HasValue && entity.IdTipoCambioPosicion.Value > 0 && entity.IdTipoCambioPosicion.Value != 14))
                     {
                         if (!lastJob.FechaTerminoPosicion.HasValue && !lastJob.FechaTerminoContrato.HasValue)
                         {
@@ -71,9 +69,8 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
                         _context.PosicionLaboral.Update(lastJob);
                     }
                 }
-                else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue)
+                else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue && entity.FechaTerminoContrato.Value != lastJob.FechaTerminoContrato.Value)
                 {
-                    lastJob = lastjobs.Last();
                     lastJob.Estado = 2;
                     lastJob.Activo = false;
                     lastJob.FechaTerminoContrato = entity.FechaTerminoContrato.Value;
