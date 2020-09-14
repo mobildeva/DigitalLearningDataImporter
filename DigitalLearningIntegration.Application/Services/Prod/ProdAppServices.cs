@@ -133,7 +133,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -152,7 +152,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -170,7 +170,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -192,7 +192,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -246,9 +246,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 _costCentRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -268,7 +268,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -301,7 +301,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -357,7 +357,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -375,7 +375,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -393,7 +393,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -419,7 +419,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -437,9 +437,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 _localRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -459,7 +459,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             }
             catch (Exception)
             {
-                return -1;
+                throw;
             }
         }
 
@@ -476,9 +476,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 _ocLevelRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -497,9 +497,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 _ouRepository.Add(entity);
                 return entity.Id;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
 
@@ -654,7 +654,11 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                     Activo = societyDto.Activo,
                     Nombre = societyDto.Nombre,
                     Direccion = societyDto.Direccion,
-                    Logo = societyDto.Logo
+                    Logo = societyDto.Logo,
+                    IdUbicacion = societyDto.IdUbicacion,
+                    SiglaSociedad = societyDto.SiglaSociedad,
+                    CodErp = societyDto.CodErp,
+                    CorreoContacto = societyDto.CorreoContacto
                 };
                 _societyRepository.Add(entity);
                 return entity.Id;
@@ -1114,27 +1118,63 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 pi.Activo = personalInfo.Activo;
                 //pi.IdPersona = personalInfo.IdPersona;
                 pi.FechaNacimiento = personalInfo.FechaNacimiento;
-                pi.EmailPersonal = personalInfo.EmailPersonal;
-                pi.IdGenero = personalInfo.IdGenero;
-                pi.IdEstadoCivil = personalInfo.IdEstadoCivil;
-                pi.IdPaisNacionalidad = personalInfo.IdPaisNacionalidad;
-                pi.IdGrupoSanguineo = personalInfo.IdGrupoSanguineo;
-                pi.IdIsapre = personalInfo.IdIsapre;
-                pi.IdAfp = personalInfo.IdAfp;
-                pi.Direccion = personalInfo.Direccion;
-                pi.Numero = personalInfo.Numero;
-                pi.Otro = personalInfo.Otro;
-                pi.IdFamiliaCargo = personalInfo.IdFamiliaCargo;
-                pi.IdArea = personalInfo.IdArea;
+
+                if (!string.IsNullOrEmpty(personalInfo.EmailPersonal))
+                    pi.EmailPersonal = personalInfo.EmailPersonal;
+
+                if (personalInfo.IdGenero.HasValue && personalInfo.IdGenero.Value > 0)
+                    pi.IdGenero = personalInfo.IdGenero;
+
+                if (personalInfo.IdEstadoCivil.HasValue && personalInfo.IdEstadoCivil.Value > 0)
+                    pi.IdEstadoCivil = personalInfo.IdEstadoCivil;
+
+                if (personalInfo.IdPaisNacionalidad.HasValue && personalInfo.IdPaisNacionalidad.Value > 0)
+                    pi.IdPaisNacionalidad = personalInfo.IdPaisNacionalidad;
+
+                if (personalInfo.IdGrupoSanguineo.HasValue && personalInfo.IdGrupoSanguineo.Value > 0)
+                    pi.IdGrupoSanguineo = personalInfo.IdGrupoSanguineo;
+
+                if (personalInfo.IdIsapre.HasValue && personalInfo.IdIsapre > 0)
+                    pi.IdIsapre = personalInfo.IdIsapre;
+
+                if (personalInfo.IdAfp.HasValue && personalInfo.IdAfp.Value > 0)
+                    pi.IdAfp = personalInfo.IdAfp;
+
+                if (!string.IsNullOrEmpty(personalInfo.Direccion))
+                    pi.Direccion = personalInfo.Direccion;
+
+                if (!string.IsNullOrEmpty(personalInfo.Numero))
+                    pi.Numero = personalInfo.Numero;
+
+                if (!string.IsNullOrEmpty(personalInfo.Otro))
+                    pi.Otro = personalInfo.Otro;
+
+                if (personalInfo.IdFamiliaCargo.HasValue && personalInfo.IdFamiliaCargo.Value > 0)
+                    pi.IdFamiliaCargo = personalInfo.IdFamiliaCargo;
+
+                if (personalInfo.IdArea.HasValue && personalInfo.IdArea.Value > 0)
+                    pi.IdArea = personalInfo.IdArea;
+
                 //pi.IdReglaPlanHorario = personalInfo.IdReglaPlanHorario;
                 //pi.JornadaLaboral = personalInfo.JornadaLaboral;
-                pi.IdLocal = personalInfo.IdLocal;
-                pi.IdTipoDireccion = personalInfo.IdTipoDireccion;
+
+                if (personalInfo.IdLocal.HasValue && personalInfo.IdLocal.Value > 0)
+                    pi.IdLocal = personalInfo.IdLocal;
+
+                if (personalInfo.IdTipoDireccion.HasValue && personalInfo.IdTipoDireccion.Value > 0)
+                    pi.IdTipoDireccion = personalInfo.IdTipoDireccion;
+
                 //pi.CuentaReparto = personalInfo.CuentaReparto;
                 //pi.Pensionado = personalInfo.Pensionado;
-                pi.Sindizalizado = personalInfo.Sindizalizado;
+
+                if (personalInfo.Sindizalizado.HasValue)
+                    pi.Sindizalizado = personalInfo.Sindizalizado;
+
                 //pi.IdUbicacion = personalInfo.IdUbicacion;
-                pi.IdGrupoEtnico = personalInfo.IdGrupoEtnico;
+
+                if (personalInfo.IdGrupoEtnico.HasValue && personalInfo.IdGrupoEtnico.Value > 0)
+                    pi.IdGrupoEtnico = personalInfo.IdGrupoEtnico;
+
                 //pi.Discapacitado = personalInfo.Discapacitado;
                 //pi.TallaPantalon = personalInfo.TallaPantalon;
                 //pi.Altura = personalInfo.Altura;
