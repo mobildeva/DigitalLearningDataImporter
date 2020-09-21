@@ -89,6 +89,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         Personas GetByIdConexion(int id);
         OrgUnitDto GetOrgUnitByClientNameSociety(int idSociedad, string clientName);
         PeoplesDto GetAdminPeople();
+        SocietyTypeDto GetSocietyTypeByName(string name);
+        LocationDto GetByNameAndType(string name, int type);
+        ProvSocietyDto GetProvSocBySocProv(int idProv, int idSociedad, int? idSocType);
+        int AddProvSociety(ProvSocietyDto provSocietyDto);
 
         //void UpdateEntity(InformacionPersonal informacionPersonal);
     }

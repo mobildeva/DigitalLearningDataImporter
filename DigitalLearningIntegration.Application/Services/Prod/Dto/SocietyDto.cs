@@ -49,4 +49,43 @@ namespace DigitalLearningIntegration.Application.Services.Prod.Dto
             SiglaSociedad = s.SiglaSociedad;
         }
     }
+
+    public class ProvSocietyDto
+    {
+        public int Id { get; set; }
+        public int? IdProveedor { get; set; }
+        public int? IdTipoSociedad { get; set; }
+        public int? IdSociedad { get; set; }
+        public bool? Activo { get; set; }
+        public ProvSocietyDto(SociedadProveedor sociedadProveedor)
+        {
+            Id = sociedadProveedor.Id;
+            IdProveedor = sociedadProveedor.IdProveedor;
+            IdSociedad = sociedadProveedor.IdSociedad;
+            IdTipoSociedad = sociedadProveedor.IdTipoSociedad;
+        }
+
+        public ProvSocietyDto()
+        {
+
+        }
+    }
+
+    public class SocietyTypeDto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public bool? Activo { get; set; }
+        public SocietyTypeDto(TipoSociedad tipoSociedad)
+        {
+            Id = tipoSociedad.Id;
+            Nombre = tipoSociedad.Nombre;
+            Activo = tipoSociedad.Activo;
+        }
+
+        public SocietyTypeDto()
+        {
+
+        }
+    }
 }

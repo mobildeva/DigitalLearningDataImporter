@@ -11,5 +11,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Location
     {
         ResultDto CreatedOrUpdate(Ubicacion entity);
         Ubicacion GetByName(string name);
+        Ubicacion GetByNameAndType(string name, int type);
     }
 }

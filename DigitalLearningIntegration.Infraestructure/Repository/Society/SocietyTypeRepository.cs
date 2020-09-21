@@ -1,21 +1,24 @@
 ﻿using DigitalLearningDataImporter.DALstd.ProdEntities;
 using DigitalLearningIntegration.Infraestructure.Dto;
 using DigitalLearningIntegration.Infraestructure.UnitOfWork;
+using DigitalLearningIntegration.Infraestructure.Utils;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
+using System.Text;
 
-namespace DigitalLearningIntegration.Infraestructure.Repository.Location
+namespace DigitalLearningIntegration.Infraestructure.Repository.Society
 {
-    public class LocationRepository : Repository<Ubicacion>, ILocationRepository
+    public class SocietyTypeRepository : Repository<TipoSociedad>, ISocietyTypeRepository
     {
-        private readonly HCMKomatsuProdContext _context;
-        public LocationRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
+        private readonly HCMKomatsuProdContext _dataContext;
+
+        public SocietyTypeRepository(HCMKomatsuProdContext dataContext) : base(dataContext)
         {
-            _context = dataContext;
+            _dataContext = dataContext;
         }
-        public ResultDto CreatedOrUpdate(Ubicacion entity)
+
+        public ResultDto CreatedOrUpdate(TipoSociedad entity)
         {
             ResultDto Result = new ResultDto
             {
@@ -45,23 +48,16 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.Location
             return Result;
         }
 
-        public override Ubicacion GetById(int id)
+        public override TipoSociedad GetById(int id)
         {
-            return _context.Ubicacion.FirstOrDefault(x => x.Id == id);
+            return _dataContext.TipoSociedad.FirstOrDefault(x => x.Id == id);
         }
 
-        public Ubicacion GetByName(string name)
+        public TipoSociedad GetByName(string name)
         {
             var cleanName = Utils.Utils.CleanString(name).ToUpper();
 
-            return _context.Ubicacion.AsEnumerable().FirstOrDefault(g => Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
-        }
-
-        public Ubicacion GetByNameAndType(string name, int type)
-        {
-            var cleanName = Utils.Utils.CleanString(name).ToUpper();
-
-            return _context.Ubicacion.AsEnumerable().FirstOrDefault(g => g.IdTipoUbicacion == type && Utils.Utils.CleanString(g.Nombre).ToUpper() == cleanName);
+            return _dataContext.TipoSociedad.AsEnumerable().FirstOrDefault(s => Utils.Utils.CleanString(s.Nombre).ToUpper() == cleanName);
         }
     }
 }

@@ -39,6 +39,8 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
         public virtual DbSet<Isapres> Isapres { get; set; }
         public virtual DbSet<JornadaLaboral> JornadaLaboral { get; set; }
         public virtual DbSet<ReglaPlanHorario> ReglaPlanHorario { get; set; }
+        public virtual DbSet<SociedadProveedor> SociedadProveedor { get; set; }
+        public virtual DbSet<TipoSociedad> TipoSociedad { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -763,6 +765,36 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
 
                 entity.Property(e => e.UsuarioUp)
                     .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<SociedadProveedor>(entity =>
+            {
+                entity.HasIndex(e => e.IdProveedor)
+                    .HasName("IX_FK_SociedadProveedor_Sociedad");
+
+                entity.HasIndex(e => e.IdTipoSociedad)
+                    .HasName("IX_FK_SociedadProveedor_TipoSociedad");
+
+                entity.HasIndex(e => new { e.IdSociedad, e.IdProveedor, e.IdTipoSociedad, e.Activo })
+                    .HasName("IDX_SociedadProveedor_IdSociedad_IdProveedor_IdTipoProveedor_Activo");
+
+                entity.HasOne(d => d.IdSociedadNavigation)
+                    .WithMany(p => p.SociedadProveedor)
+                    .HasForeignKey(d => d.IdSociedad)
+                    .HasConstraintName("FK_SociedadProveedor_Sociedad");
+
+                entity.HasOne(d => d.IdTipoSociedadNavigation)
+                    .WithMany(p => p.SociedadProveedor)
+                    .HasForeignKey(d => d.IdTipoSociedad)
+                    .HasConstraintName("FK_SociedadProveedor_TipoSociedad");
+            });
+
+            modelBuilder.Entity<TipoSociedad>(entity =>
+            {
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasMaxLength(150)
                     .IsUnicode(false);
             });
 

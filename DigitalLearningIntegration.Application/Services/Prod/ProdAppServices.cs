@@ -26,6 +26,7 @@ using DigitalLearningIntegration.Infraestructure.Repository.SchedulesRule;
 using DigitalLearningIntegration.Infraestructure.Repository.WorkingDay;
 using DigitalLearningIntegration.Infraestructure.Repository.Afp;
 using DigitalLearningIntegration.Infraestructure.Repository.Local;
+using DigitalLearningIntegration.Infraestructure.Repository.ProvSociety;
 
 namespace DigitalLearningIntegration.Application.Services.Prod
 {
@@ -54,6 +55,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         private readonly IWorkingDayRepository _workDayRepository;
         private readonly IAfpRepository _afpRepository;
         private readonly ILocalRepository _localRepository;
+        private readonly ISocietyTypeRepository _socTypeRepository;
+        private readonly IProvSocietyRepository _provSocietyRepository;
 
         public ProdAppServices(HCMKomatsuProdContext context)
         {
@@ -80,6 +83,8 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _workDayRepository = new WorkingDayRepository(context);
             _afpRepository = new AfpRepository(context);
             _localRepository = new LocalRepository(context);
+            _socTypeRepository = new SocietyTypeRepository(context);
+            _provSocietyRepository = new ProvSocietyRepository(context);
         }
 
         public void AddActiveCurrentJobs(IEnumerable<CurrentJobsDto> jobs)
@@ -1211,6 +1216,56 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 return new PeoplesDto(admin);
             }
             return null;
+        }
+
+        public SocietyTypeDto GetSocietyTypeByName(string name)
+        {
+            var socType = _socTypeRepository.GetByName(name);
+            if (socType != null)
+            {
+                return new SocietyTypeDto(socType);
+            }
+            return null;
+        }
+
+        public LocationDto GetByNameAndType(string name, int type)
+        {
+            var locRes = _locationRepository.GetByNameAndType(name, type);
+            if (locRes != null)
+            {
+                return new LocationDto(locRes);
+            }
+            return null;
+        }
+
+        public ProvSocietyDto GetProvSocBySocProv(int idProv, int idSociedad, int? idSocType)
+        {
+            var provSocRes = _provSocietyRepository.GetBySocietyProv(idSociedad, idProv, idSocType);
+            if (provSocRes != null)
+            {
+                return new ProvSocietyDto(provSocRes);
+            }
+            return null;
+        }
+
+        public int AddProvSociety(ProvSocietyDto provSocietyDto)
+        {
+            try
+            {
+                var entity = new SociedadProveedor
+                {
+                    Activo = provSocietyDto.Activo,
+                    IdProveedor = provSocietyDto.IdProveedor,
+                    IdSociedad = provSocietyDto.IdSociedad,
+                    IdTipoSociedad = provSocietyDto.IdTipoSociedad
+                };
+                _provSocietyRepository.Add(entity);
+                return entity.Id;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

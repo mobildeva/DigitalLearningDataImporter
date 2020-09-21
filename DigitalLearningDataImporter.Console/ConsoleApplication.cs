@@ -420,6 +420,69 @@ namespace DigitalLearningDataImporter.Console
                 }
                 locals = null;
 
+                var societies = entities.Where(i => !string.IsNullOrEmpty(i.Health_company)).Select(item => item.Health_company).Distinct();
+                SocietyDto socDtoAux;
+                ProvSocietyDto provSocietyDtoAux;
+                int locationAuxId = 9999;
+
+                var societyType = _prodServ.GetSocietyTypeByName("Contrante");
+
+                var locationDtoAux2 = _prodServ.GetByNameAndType("Sin Información", 3);
+                if (locationDtoAux2 != null)
+                    locationAuxId = locationDtoAux2.Id;
+
+                foreach (var item in societies)
+                {
+                    socDtoAux = _prodServ.GetSocietyByUniqueId(item);
+                    if (socDtoAux != null)
+                    {
+                        provSocietyDtoAux = _prodServ.GetProvSocBySocProv(socDtoAux.Id, idSociedad, 3);
+
+                        if (provSocietyDtoAux == null)
+                        {
+                            _prodServ.AddProvSociety(new ProvSocietyDto
+                            {
+                                Activo = true,
+                                IdProveedor = socDtoAux.Id,
+                                IdTipoSociedad = 3,
+                                IdSociedad = idSociedad
+                            });
+                        }
+
+                        if (!societyDic.ContainsKey(item))
+                            societyDic.Add(item, socDtoAux);
+                    }
+                    else
+                    {
+                        if (societyType != null)
+                        {
+                            socDtoAux = new SocietyDto
+                            {
+                                Activo = true,
+                                Nombre = item,
+                                IdentificacionUnica = item,
+                                Logo = string.Empty,
+                                Direccion = string.Empty,
+                                IdUbicacion = locationAuxId,
+                                CorreoContacto = string.Empty,
+                                SiglaSociedad = string.Empty
+                            };
+                            socDtoAux.Id = _prodServ.AddSociety(socDtoAux);
+
+                            societyDic.Add(item, socDtoAux);
+
+                            _prodServ.AddProvSociety(new ProvSocietyDto
+                            {
+                                Activo = true,
+                                IdProveedor = idSociedad,
+                                IdTipoSociedad = 3,
+                                IdSociedad = socDtoAux.Id
+                            });
+                        }
+                    }
+                }
+                societies = null;
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
                     var user = _segServ.GetUserByRUTUserName(item.Rut);
@@ -1723,7 +1786,8 @@ namespace DigitalLearningDataImporter.Console
                     }
                 }
 
-                _prodServ.AddActiveCurrentJobs(jobToAdd);
+                if (jobToAdd.Any())
+                    _prodServ.AddActiveCurrentJobs(jobToAdd);
 
                 Log.Debug("Updated current jobs: " + updatesJobLog);
 
