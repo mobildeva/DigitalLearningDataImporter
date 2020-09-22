@@ -1049,6 +1049,10 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             _peopleRepository.Commit();
             _pInfoRepository.Commit();
             _jobRepository.Commit();
+            //_societyRepository.Commit();
+            //_socTypeRepository.Commit();
+            //_costCentRepository.Commit();
+            //_provSocietyRepository.Commit();
         }
 
         public void UpdateCurrentJob(CurrentJobsDto currentJobsDto)
@@ -1058,27 +1062,70 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             if (cj != null)
             {
                 cj.Activo = currentJobsDto.Activo;
-                cj.IdUnidadOrganizacional = currentJobsDto.IdUnidadOrganizacional;
-                cj.IdUnidadNegocio = currentJobsDto.IdUnidadNegocio;
-                cj.IdUbicacion = currentJobsDto.IdUbicacion;
-                cj.IdCargo = currentJobsDto.IdCargo;
-                cj.IdEscolaridadSence = currentJobsDto.IdEscolaridadSence;
-                cj.IdNivelOcupacional = currentJobsDto.IdNivelOcupacional;
-                cj.FranquiciaSence = currentJobsDto.FranquiciaSence;
-                cj.IdTipoContrato = currentJobsDto.IdTipoContrato;
-                cj.FechaInicioContrato = currentJobsDto.FechaInicioContrato;
-                cj.FechaTerminoContrato = currentJobsDto.FechaTerminoContrato;
-                cj.IdPersonaJefe = currentJobsDto.IdPersonaJefe;
-                cj.IdSociedadContratante = currentJobsDto.IdSociedadContratante;
-                cj.IdCentroCosto = currentJobsDto.IdCentroCosto;
-                cj.IdSociedad = currentJobsDto.IdSociedad;
-                cj.IdTipoPosicion = currentJobsDto.IdTipoPosicion;
-                cj.IdTipoCambioPosicion = currentJobsDto.IdTipoCambioPosicion;
+
+                if (currentJobsDto.IdUnidadOrganizacional.HasValue && currentJobsDto.IdUnidadOrganizacional.Value > 0)
+                {
+                    cj.IdUnidadOrganizacional = currentJobsDto.IdUnidadOrganizacional;
+                }
+                if (currentJobsDto.IdUnidadNegocio.HasValue && currentJobsDto.IdUnidadNegocio.Value > 0)
+                {
+                    cj.IdUnidadNegocio = currentJobsDto.IdUnidadNegocio;
+                }
+                if (currentJobsDto.IdUbicacion.HasValue && currentJobsDto.IdUbicacion.Value > 0)
+                {
+                    cj.IdUbicacion = currentJobsDto.IdUbicacion;
+                }
+                if (currentJobsDto.IdCargo.HasValue && currentJobsDto.IdCargo.Value > 0)
+                {
+                    cj.IdCargo = currentJobsDto.IdCargo;
+                }
+                if (currentJobsDto.IdEscolaridadSence.HasValue && currentJobsDto.IdEscolaridadSence.Value > 0)
+                {
+                    cj.IdEscolaridadSence = currentJobsDto.IdEscolaridadSence;
+                }
+                if (currentJobsDto.IdNivelOcupacional.HasValue && currentJobsDto.IdNivelOcupacional.Value > 0)
+                {
+                    cj.IdNivelOcupacional = currentJobsDto.IdNivelOcupacional;
+                }
+                if (!string.IsNullOrEmpty(currentJobsDto.FranquiciaSence))
+                {
+                    cj.FranquiciaSence = currentJobsDto.FranquiciaSence;
+                }
+                if (currentJobsDto.IdTipoContrato.HasValue && currentJobsDto.IdTipoContrato.Value > 0)
+                {
+                    cj.IdTipoContrato = currentJobsDto.IdTipoContrato;
+                }
+                if (currentJobsDto.FechaInicioContrato.HasValue)
+                {
+                    cj.FechaInicioContrato = currentJobsDto.FechaInicioContrato;
+                }
+                if (currentJobsDto.FechaTerminoContrato.HasValue)
+                {
+                    cj.FechaTerminoContrato = currentJobsDto.FechaTerminoContrato;
+                }
+                if (currentJobsDto.IdPersonaJefe.HasValue)
+                {
+                    cj.IdPersonaJefe = currentJobsDto.IdPersonaJefe;
+                }
+                if (currentJobsDto.IdSociedadContratante.HasValue)
+                    cj.IdSociedadContratante = currentJobsDto.IdSociedadContratante;
+                if (currentJobsDto.IdCentroCosto > 0)
+                    cj.IdCentroCosto = currentJobsDto.IdCentroCosto;
+                if (currentJobsDto.IdSociedad.HasValue && currentJobsDto.IdSociedad.Value > 0)
+                    cj.IdSociedad = currentJobsDto.IdSociedad;
+                if (currentJobsDto.IdTipoPosicion.HasValue && currentJobsDto.IdTipoPosicion.Value > 0)
+                    cj.IdTipoPosicion = currentJobsDto.IdTipoPosicion;
+                if (currentJobsDto.IdTipoCambioPosicion.HasValue && currentJobsDto.IdTipoCambioPosicion.Value > 0)
+                    cj.IdTipoCambioPosicion = currentJobsDto.IdTipoCambioPosicion;
                 cj.Estado = currentJobsDto.Estado;
-                cj.IdPosicionOrigen = currentJobsDto.IdPosicionOrigen;
-                cj.NombrePosicion = currentJobsDto.NombrePosicion;
-                cj.NombrePosicionAnterior = currentJobsDto.NombrePosicionAnterior;
-                cj.IdPersonaCambio = currentJobsDto.IdPersonaCambio;
+                if (currentJobsDto.IdPosicionOrigen.HasValue && currentJobsDto.IdPosicionOrigen.Value > 0)
+                    cj.IdPosicionOrigen = currentJobsDto.IdPosicionOrigen;
+                if (!string.IsNullOrEmpty(currentJobsDto.NombrePosicion))
+                    cj.NombrePosicion = currentJobsDto.NombrePosicion;
+                if (!string.IsNullOrEmpty(currentJobsDto.NombrePosicionAnterior))
+                    cj.NombrePosicionAnterior = currentJobsDto.NombrePosicionAnterior;
+                if (currentJobsDto.IdPersonaCambio.HasValue && currentJobsDto.IdPersonaCambio.Value > 0)
+                    cj.IdPersonaCambio = currentJobsDto.IdPersonaCambio;
 
                 _cuJobRepository.Update(cj);
             }
@@ -1096,11 +1143,17 @@ namespace DigitalLearningIntegration.Application.Services.Prod
                 p.Nombre = people.Nombre;
                 p.IdentificacionUnica = people.IdentificacionUnica;
                 p.Dv = people.Dv;
-                p.Email = people.Email;
-                p.Fono = people.Fono;
-                p.Celular = people.Celular;
 
-                if (people.IdCodigoArea.HasValue && p.IdCodigoArea != people.IdCodigoArea)
+                if (!string.IsNullOrEmpty(people.Email))
+                    p.Email = people.Email;
+
+                if (!string.IsNullOrEmpty(people.Fono))
+                    p.Fono = people.Fono;
+
+                if (!string.IsNullOrEmpty(people.Celular))
+                    p.Celular = people.Celular;
+
+                if (people.IdCodigoArea.HasValue && people.IdCodigoArea.Value > 0 && p.IdCodigoArea != people.IdCodigoArea)
                     p.IdCodigoArea = people.IdCodigoArea;
 
                 //p.ClaveSence = people.ClaveSence;
@@ -1179,6 +1232,7 @@ namespace DigitalLearningIntegration.Application.Services.Prod
 
                 if (personalInfo.IdGrupoEtnico.HasValue && personalInfo.IdGrupoEtnico.Value > 0)
                     pi.IdGrupoEtnico = personalInfo.IdGrupoEtnico;
+
 
                 //pi.Discapacitado = personalInfo.Discapacitado;
                 //pi.TallaPantalon = personalInfo.TallaPantalon;
@@ -1265,6 +1319,59 @@ namespace DigitalLearningIntegration.Application.Services.Prod
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        public void UpdateSocietyWhitSave(SocietyDto socDtoAux)
+        {
+            var s = _societyRepository.GetByIdSingle(socDtoAux.Id);
+
+            if (s != null)
+            {
+                s.IdentificacionUnica = socDtoAux.IdentificacionUnica;
+                s.IdUbicacion = socDtoAux.IdUbicacion;
+                s.Logo = socDtoAux.Logo;
+                s.Nombre = socDtoAux.Nombre;
+                s.NombreContacto = socDtoAux.NombreContacto;
+                s.Portal = socDtoAux.Portal;
+                s.SiglaSociedad = socDtoAux.SiglaSociedad;
+                s.Skin = socDtoAux.Skin;
+
+                _societyRepository.Update(s);
+                _socTypeRepository.Commit();
+            }
+        }
+
+        public void UpdateProvSocietyWhitSave(ProvSocietyDto provSocietyDto)
+        {
+            var provSoc = _provSocietyRepository.GetByIdSingle(provSocietyDto.Id);
+
+            if (provSoc != null)
+            {
+                provSoc.IdProveedor = provSocietyDto.IdProveedor;
+                provSoc.IdSociedad = provSocietyDto.IdSociedad;
+                provSoc.IdTipoSociedad = provSocietyDto.IdTipoSociedad;
+                provSocietyDto.Activo = provSocietyDto.Activo;
+
+                _provSocietyRepository.Update(provSoc);
+
+                _provSocietyRepository.Commit();
+            }
+        }
+
+        public void UpdateCostCenterWhitSave(CostCenterDto costCenterDto)
+        {
+            var provSoc = _costCentRepository.GetByIdSingle(costCenterDto.Id);
+
+            if (provSoc != null)
+            {
+                provSoc.IdSociedad = costCenterDto.IdSociedad;
+                provSoc.Activo = costCenterDto.Activo;
+                provSoc.Codigo = costCenterDto.Codigo;
+                provSoc.Nombre = provSoc.Nombre;
+
+                _costCentRepository.Update(provSoc);
+                _costCentRepository.Commit();
             }
         }
     }

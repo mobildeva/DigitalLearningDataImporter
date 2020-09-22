@@ -71,7 +71,7 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                Log.Information("Starting the app. Version: 1.9.1");
+                Log.Information("Starting the app. Version: 2.1");
 
                 var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
@@ -428,6 +428,7 @@ namespace DigitalLearningDataImporter.Console
                 var societyType = _prodServ.GetSocietyTypeByName("Contrante");
 
                 var locationDtoAux2 = _prodServ.GetByNameAndType("Sin Información", 3);
+
                 if (locationDtoAux2 != null)
                     locationAuxId = locationDtoAux2.Id;
 
@@ -436,7 +437,24 @@ namespace DigitalLearningDataImporter.Console
                     socDtoAux = _prodServ.GetSocietyByUniqueId(item);
                     if (socDtoAux != null)
                     {
-                        provSocietyDtoAux = _prodServ.GetProvSocBySocProv(socDtoAux.Id, idSociedad, 3);
+                        if (socDtoAux.IdUbicacion == 0)
+                        {
+                            socDtoAux.IdUbicacion = locationAuxId;
+                            _prodServ.UpdateSocietyWhitSave(socDtoAux);
+                        }
+
+                        //Start Repair
+                        provSocietyDtoAux = _prodServ.GetProvSocBySocProv(3240, idSociedad, 3);
+
+                        if (provSocietyDtoAux != null && societyType != null && provSocietyDtoAux.IdTipoSociedad != societyType.Id)
+                        {
+                            provSocietyDtoAux.IdTipoSociedad = societyType.Id;
+                            _prodServ.UpdateProvSocietyWhitSave(provSocietyDtoAux);
+                            //_prodServ.SaveChanges();
+                        }
+                        //End Repair
+
+                        provSocietyDtoAux = _prodServ.GetProvSocBySocProv(socDtoAux.Id, idSociedad, societyType != null ? new int?(societyType.Id) : null);
 
                         if (provSocietyDtoAux == null)
                         {
@@ -444,10 +462,21 @@ namespace DigitalLearningDataImporter.Console
                             {
                                 Activo = true,
                                 IdProveedor = socDtoAux.Id,
-                                IdTipoSociedad = 3,
+                                IdTipoSociedad = societyType != null ? new int?(societyType.Id) : null, //2,
                                 IdSociedad = idSociedad
                             });
                         }
+                        //else if(provSocietyDtoAux.IdTipoSociedad)
+                        //{
+                        //    _prodServ.UpdateProvSocietyWhitSave(new ProvSocietyDto
+                        //    {
+                        //        Id = provSocietyDtoAux.Id,
+                        //        Activo = true,
+                        //        IdProveedor = provSocietyDtoAux.IdProveedor,
+                        //        IdTipoSociedad = societyType != null ? new int?(societyType.Id) : null, //2,
+                        //        IdSociedad = idSociedad
+                        //    });
+                        //}
 
                         if (!societyDic.ContainsKey(item))
                             societyDic.Add(item, socDtoAux);
@@ -475,12 +504,13 @@ namespace DigitalLearningDataImporter.Console
                             {
                                 Activo = true,
                                 IdProveedor = idSociedad,
-                                IdTipoSociedad = 3,
+                                IdTipoSociedad = societyType != null ? new int?(societyType.Id) : null,//3,
                                 IdSociedad = socDtoAux.Id
                             });
                         }
                     }
                 }
+                _prodServ.SaveChanges();
                 societies = null;
 
                 foreach (GopEntityDtoExpand item in entities)
@@ -1161,19 +1191,34 @@ namespace DigitalLearningDataImporter.Console
                             {
                                 if (costCenter.Activo != true)
                                     _prodServ.ReActiveCostCenter(costCenter.Id);
+
+                                if (string.IsNullOrEmpty(costCenter.Codigo))
+                                {
+                                    costCenter.Codigo = costCenter.Nombre;
+                                    _prodServ.UpdateCostCenterWhitSave(costCenter);
+                                    _prodServ.SaveChanges();
+                                }
+
                                 costCenterDic.Add(item.CurrentJob.CostCenter, costCenter);
                             }
                         }
                         else
                         {
                             costCenter = costCenterDic[item.CurrentJob.CostCenter];
+
+                            if (string.IsNullOrEmpty(costCenter.Codigo))
+                            {
+                                costCenter.Codigo = costCenter.Nombre;
+                                _prodServ.UpdateCostCenterWhitSave(costCenter);
+                                _prodServ.SaveChanges();
+                            }
                         }
                         if (costCenter == null)
                         {
                             costCenter = new CostCenterDto
                             {
                                 Activo = true,
-                                Codigo = string.Empty,//item.CurrentJob.CostCenter,
+                                Codigo = item.CurrentJob.CostCenter,
                                 IdSociedad = idSociedad,
                                 Nombre = item.CurrentJob.CostCenter
                             };
@@ -1463,7 +1508,7 @@ namespace DigitalLearningDataImporter.Console
 
                     var people = _prodServ.GetPeopleByRUT(item.Rut);
 
-                    var newPeople = new PeoplesDto()
+                    var newPeople = new PeoplesDto
                     {
                         Activo = true,
                         ApellidoMaterno = item.Second_surname,
@@ -1509,7 +1554,7 @@ namespace DigitalLearningDataImporter.Console
                     else if ((!string.IsNullOrEmpty(newPeople.Fono) && newPeople.Fono != people.Fono)
                         || (!string.IsNullOrEmpty(newPeople.Celular) && newPeople.Celular != people.Celular)
                         || (newPeople.IdConexion.HasValue && newPeople.IdConexion != defaultValue && newPeople.IdConexion != people.IdConexion)
-                        || newPeople.Activo != people.Activo
+                        || (newPeople.Activo.HasValue && newPeople.Activo != people.Activo)
                         || (!string.IsNullOrEmpty(newPeople.ApellidoMaterno) && newPeople.ApellidoMaterno != people.ApellidoMaterno)
                         || (!string.IsNullOrEmpty(newPeople.ApellidoPaterno) && newPeople.ApellidoPaterno != people.ApellidoPaterno)
                         || (!string.IsNullOrEmpty(newPeople.Nombre) && newPeople.Nombre != people.Nombre)
@@ -1692,11 +1737,11 @@ namespace DigitalLearningDataImporter.Console
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? admin.Id : -1);
+                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? new int?(admin.Id) : null);
 
                     var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
 
-                    var newCurrentJob = new CurrentJobsDto()
+                    var newCurrentJob = new CurrentJobsDto
                     {
                         Activo = true,
                         IdPersona = item.PeopleId.Value,
@@ -1708,7 +1753,7 @@ namespace DigitalLearningDataImporter.Console
                         IdNivelOcupacional = item.OcupLevelId,
                         FranquiciaSence = item.FranchiseSence,
                         IdTipoContrato = item.ContTypeId,
-                        FechaInicioContrato = item.CurrentJob.DstartDate ?? DateTime.Now,
+                        FechaInicioContrato = item.CurrentJob.DstartDate,
                         FechaTerminoContrato = item.CurrentJob.DendDate,
                         IdPersonaJefe = bossIdAux != -1 ? bossIdAux : null,
                         IdSociedadContratante = item.ContSocId,
@@ -1736,8 +1781,8 @@ namespace DigitalLearningDataImporter.Console
                         || (newCurrentJob.IdSociedadContratante.HasValue && newCurrentJob.IdSociedadContratante.Value != defaultValue && currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante)
                         || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
                         || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
-                        || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato != newCurrentJob.FechaInicioContrato)
-                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato))
+                        || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.Value.Date != newCurrentJob.FechaInicioContrato.Value.Date)
+                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato.Value.Date != newCurrentJob.FechaTerminoContrato.Value.Date))
                     {
                         item.CurrentJobId = currentJob.Id;
 

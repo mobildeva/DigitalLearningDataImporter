@@ -93,6 +93,9 @@ namespace DigitalLearningIntegration.Application.Services.Prod
         LocationDto GetByNameAndType(string name, int type);
         ProvSocietyDto GetProvSocBySocProv(int idProv, int idSociedad, int? idSocType);
         int AddProvSociety(ProvSocietyDto provSocietyDto);
+        void UpdateSocietyWhitSave(SocietyDto socDtoAux);
+        void UpdateProvSocietyWhitSave(ProvSocietyDto provSocietyDto);
+        void UpdateCostCenterWhitSave(CostCenterDto costCenterDto);
 
         //void UpdateEntity(InformacionPersonal informacionPersonal);
     }

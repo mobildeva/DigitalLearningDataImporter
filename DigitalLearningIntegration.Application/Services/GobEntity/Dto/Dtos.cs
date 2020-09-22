@@ -237,8 +237,10 @@ namespace DigitalLearningIntegration.Application.GobEntity.Dto
                     var res = new DateTime(int.Parse(splitDate[2]), int.Parse(splitDate[1]), int.Parse(splitDate[0]));
                     return res;
                 }
-
-                return null;
+                else
+                {
+                    return null;
+                }
             }
         }
 

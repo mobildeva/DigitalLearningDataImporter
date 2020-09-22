@@ -40,8 +40,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
 
                     if (entity.FechaInicioContrato.HasValue && !entity.FechaTerminoContrato.HasValue)
                     {
-                        lastJob = lastjobs.Last();
-                        if ((lastJob.FechaInicioContrato != entity.FechaInicioContrato) || (entity.IdTipoCambioPosicion.HasValue && entity.IdTipoCambioPosicion.Value > 0 && entity.IdTipoCambioPosicion.Value != 14))
+                        if (lastJob != null && (lastJob.FechaInicioContrato.Value.Date != entity.FechaInicioContrato.Value.Date) || (entity.IdTipoCambioPosicion.HasValue && entity.IdTipoCambioPosicion.Value > 0 && entity.IdTipoCambioPosicion.Value != 14))
                         {
                             if (!lastJob.FechaTerminoPosicion.HasValue && !lastJob.FechaTerminoContrato.HasValue)
                             {
@@ -66,7 +65,7 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
 
                             AddWhitOutSave(entity);
                         }
-                        else if (lastJob.Estado != 2 && lastJob.Activo != true)
+                        else if (lastJob != null && lastJob.Estado != 2 && lastJob.Activo != true)
                         {
                             lastJob.Estado = 2;
                             lastJob.Activo = true;
@@ -75,11 +74,11 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
                             _context.PosicionLaboral.Update(lastJob);
                         }
                     }
-                    else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue && (!lastJob.FechaTerminoContrato.HasValue || entity.FechaTerminoContrato.Value != lastJob.FechaTerminoContrato.Value))
+                    else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue && (!lastJob.FechaTerminoContrato.HasValue || entity.FechaTerminoContrato.Value.Date != lastJob.FechaTerminoContrato.Value.Date))
                     {
                         lastJob.Estado = 2;
                         lastJob.Activo = false;
-                        lastJob.FechaTerminoContrato = entity.FechaTerminoContrato.Value;
+                        lastJob.FechaTerminoContrato = entity.FechaTerminoContrato.Value.Date;
                         lastJob.FechaTerminoPosicion = now;
 
                         _context.Entry(lastJob).State = EntityState.Modified;
