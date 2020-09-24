@@ -71,7 +71,7 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                Log.Information("Starting the app. Version: 2.1");
+                Log.Information("Starting the app. Version: 2.5");
 
                 var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
@@ -1782,7 +1782,7 @@ namespace DigitalLearningDataImporter.Console
                         || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
                         || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
                         || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.Value.Date != newCurrentJob.FechaInicioContrato.Value.Date)
-                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato.Value.Date != newCurrentJob.FechaTerminoContrato.Value.Date))
+                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato))
                     {
                         item.CurrentJobId = currentJob.Id;
 
@@ -1834,7 +1834,8 @@ namespace DigitalLearningDataImporter.Console
                 if (jobToAdd.Any())
                     _prodServ.AddActiveCurrentJobs(jobToAdd);
 
-                Log.Debug("Updated current jobs: " + updatesJobLog);
+                if (!string.IsNullOrEmpty(updatesJobLog))
+                    Log.Debug("Updated current jobs: " + updatesJobLog);
 
                 var info = new ImportLogInfo
                 {
