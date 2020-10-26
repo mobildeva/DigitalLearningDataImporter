@@ -71,13 +71,15 @@ namespace DigitalLearningDataImporter.Console
 
                 Log.Information("------------------------------------------------");
 
-                Log.Information("Starting the app. Version: 2.8");
+                Log.Information("Starting the app. Version: 3.0");
 
                 var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
                 var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\";// + DateTime.Now.Ticks + "_" + excelFileName;
 
                 var resultu = SftpManager.GetLastExcelFile(sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
+
+                //var strValue = GetCellValue();  
 
                 var dataTable = ReadWriteExcel.ReadExcelSheet(resultu, true);
 
@@ -529,6 +531,11 @@ namespace DigitalLearningDataImporter.Console
                     }
 
                     var boosExist = entities.Any(e => e.Rut == item.BossRut);
+                    var boosAux = _prodServ.GetPeopleByRUT(item.BossRut);
+                    if (boosAux != null)
+                        item.BoosId = boosAux.Id;
+                    boosExist = !string.IsNullOrEmpty(item.BossRut) && boosAux != null;
+
                     item.HasBoss = boosExist;
 
                     var idGenre = defaultValue;
@@ -1399,7 +1406,7 @@ namespace DigitalLearningDataImporter.Console
                     item.HasBoss = boosExist;
                     if (!item.HasBoss)
                         item.BoosId = null;
-                    else item.BoosId = -1;
+                    else item.BoosId = boosAux != null ? boosAux.Id : -1;
                 }
 
                 Log.Debug("Creating / Updating entities");
@@ -1579,7 +1586,7 @@ namespace DigitalLearningDataImporter.Console
                     if (item.PeopleId.HasValue)
                         persInfo = _prodServ.GetPersonalInfoByPersona(item.PeopleId.Value);
 
-                    var newPersonalInf = new PersonalInfoDto()
+                    var newPersonalInf = new PersonalInfoDto
                     {
                         Activo = true,
                         FechaNacimiento = item.Dbirthday,
@@ -1737,7 +1744,17 @@ namespace DigitalLearningDataImporter.Console
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? new int?(admin.Id) : null);
+                    //int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? new int?(admin.Id) : null);
+                    int? bossIdAux = null;
+                    if (item.BoosId.HasValue && item.BoosId.Value != -1)
+                        bossIdAux = item.BoosId;
+                    else
+                    {
+                        var boosInsideExcel = entities.FirstOrDefault(e => e.Rut == item.BossRut);
+                        if (boosInsideExcel != null)
+                            bossIdAux = boosInsideExcel.PeopleId;
+                        else bossIdAux = null;
+                    }                   
 
                     var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
 
@@ -1755,7 +1772,7 @@ namespace DigitalLearningDataImporter.Console
                         IdTipoContrato = item.ContTypeId,
                         FechaInicioContrato = item.CurrentJob.DstartDate,
                         FechaTerminoContrato = item.CurrentJob.DendDate,
-                        IdPersonaJefe = bossIdAux != -1 ? bossIdAux : null,
+                        IdPersonaJefe = (bossIdAux.HasValue && bossIdAux.Value != -1) ? bossIdAux : null,
                         IdSociedadContratante = item.ContSocId,
                         IdSociedad = idSociedad,
                         IdCentroCosto = item.CostCenterId,
@@ -1782,7 +1799,8 @@ namespace DigitalLearningDataImporter.Console
                         || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
                         || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
                         || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.Value.Date != newCurrentJob.FechaInicioContrato.Value.Date)
-                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato))
+                        || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato)
+                        || (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe != -1 && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe))
                     {
                         item.CurrentJobId = currentJob.Id;
 
@@ -1820,7 +1838,13 @@ namespace DigitalLearningDataImporter.Console
                             newCurrentJob.IdTipoCambioPosicion = 11;
                             updatesCount++;
                         }
-                        if (updatesCount > 0)
+                        if (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe.Value != -1 && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 12;
+                            updatesCount++;
+                        }
+
+                        if (updatesCount > 1)
                         {
                             newCurrentJob.IdTipoCambioPosicion = 6;
                         }

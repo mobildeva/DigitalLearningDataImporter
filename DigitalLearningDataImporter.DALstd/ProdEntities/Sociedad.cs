@@ -12,6 +12,7 @@ namespace DigitalLearningDataImporter.DALstd.ProdEntities
             Cargos = new HashSet<Cargos>();
             FamiliaCargo = new HashSet<FamiliaCargo>();
             SociedadProveedor = new HashSet<SociedadProveedor>();
+            UnidadesNegocio = new HashSet<UnidadesNegocio>();
         }
 
         public int Id { get; set; }
