@@ -73,6 +73,8 @@ namespace DigitalLearningIntegration.Application.Services.GobEntity
                     BossRut = r[37].ToString()
                 };
                 result.Add(aux);
+
+                Console.Write("Convert row to db entity: " + aux.Rut + "; ");
             }
 
             return result;

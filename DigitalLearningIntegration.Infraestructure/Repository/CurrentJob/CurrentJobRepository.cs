@@ -84,6 +84,22 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.CurrentJob
                         _context.Entry(lastJob).State = EntityState.Modified;
                         _context.PosicionLaboral.Update(lastJob);
                     }
+                    else if (entity.FechaInicioContrato.HasValue && entity.FechaTerminoContrato.HasValue && (lastJob.FechaTerminoContrato.HasValue && entity.FechaTerminoContrato.Value.Date == lastJob.FechaTerminoContrato.Value.Date))
+                    {
+                        lastJob.Estado = 1;
+                        lastJob.Activo = true;
+                        //lastJob.FechaTerminoPosicion = now;
+                        _context.Entry(lastJob).State = EntityState.Modified;
+                        _context.PosicionLaboral.Update(lastJob);
+
+                        entity.Estado = 2;
+                        entity.FechaInicioPosicion = now;
+                        entity.FechaTerminoPosicion = now.AddHours(2);
+                        entity.Activo = false;
+                        entity.IdPosicionOrigen = lastJob.Id;
+
+                        AddWhitOutSave(entity);
+                    }
                 }
             }
 

@@ -32,6 +32,8 @@ namespace DigitalLearningIntegration.Application.Utils
                 foreach (Row row in rows)
                 {
                     counter += 1;
+                    Console.Write("r: " + counter + "; ");
+
                     //Read the first row as header
                     if (counter == 1)
                     {

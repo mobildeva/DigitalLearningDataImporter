@@ -10,6 +10,8 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace DigitalLearningDataImporter.Console
@@ -55,8 +57,8 @@ namespace DigitalLearningDataImporter.Console
                 logsPath = @ConfigurationManager.AppSettings.Get("logsFullPath");
                 idSociedad = (ConfigurationManager.AppSettings.Get("idSociedad") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("idSociedad")) : -1;
                 deactivateUsersBit = (ConfigurationManager.AppSettings.Get("deactivateUsersBit") != null) ? int.Parse(ConfigurationManager.AppSettings.Get("deactivateUsersBit")) : -1;
+                sftpPathBackup = (ConfigurationManager.AppSettings.Get("sftpBackupPath") != null) ? ConfigurationManager.AppSettings.Get("sftpBackupPath") : sftpPath + "\\Respaldo";
 
-                sftpPathBackup = sftpPath + "\\Respaldo";
 
                 if (string.IsNullOrEmpty(logsPath))
                 {
@@ -70,12 +72,21 @@ namespace DigitalLearningDataImporter.Console
                     .CreateLogger();
 
                 Log.Information("------------------------------------------------");
+                System.Console.Write("");
 
-                Log.Information("Starting the app. Version: 3.0");
+                Log.Information("Starting the app. Version: 3.3");
+                System.Console.Write("..");
 
-                var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
+                Log.Information("Running in Directory: " + @AppDomain.CurrentDomain.BaseDirectory);
+                System.Console.Write("..");
 
-                var xlsDestFilePath = @Environment.CurrentDirectory + "\\App_Data\\Import\\";// + DateTime.Now.Ticks + "_" + excelFileName;
+                System.Console.WriteLine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName));
+
+                var txtFilePath = @AppDomain.CurrentDomain.BaseDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";//@Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
+
+                var xlsDestFilePath = @AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Import\\";// + DateTime.Now.Ticks + "_" + excelFileName;
+
+                //var resultbu = SftpManager.GetBefLastExcelFile(sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
 
                 var resultu = SftpManager.GetLastExcelFile(sftpHost, sftpPort, sftpUserName, sftpPassword, xlsDestFilePath);
 
@@ -86,35 +97,41 @@ namespace DigitalLearningDataImporter.Console
                 var entities = _gopServ.GetEntities(dataTable);
 
                 Log.Debug("Read " + entities.Count() + " entities");
+                System.Console.Write(".....");
 
                 var downUsers = 0;
                 if (deactivateUsersBit == 1)
                 {
-                    var clientUsers = _segServ.GetUsersByClientId(idSociedad).ToList();
-
-                    var usersToDeactivate = new List<ClienteUsersDto>();
-
-                    foreach (var item in clientUsers)
-                    {
-                        if (item.IdUsers != null)
-                        {
-                            var user = _segServ.GetUserById(item.IdUsers.Value);
-                            if (user != null && !entities.Any(e => e.Rut == user.Username) && user.Activo.HasValue && user.Activo.Value)
-                            {
-                                usersToDeactivate.Add(new ClienteUsersDto() { IdUsers = user.Id, IdClientes = idSociedad });
-                            }
-                        }
-                    }
-
-                    if (usersToDeactivate.Any())
-                    {
-                        _segServ.DeactivateUsers(usersToDeactivate);
-
-                        downUsers = usersToDeactivate.Count;
-
-                        Log.Debug("Had been deactivated: " + downUsers + " users.");
-                    }
+                    Log.Debug("It does not posible to do the deactivation process. Sorry, contact to administrators");
+                    System.Console.Write("........");
                 }
+                //if (deactivateUsersBit == 1)
+                //{
+                //    var clientUsers = _segServ.GetUsersByClientId(idSociedad).ToList();
+
+                //    var usersToDeactivate = new List<ClienteUsersDto>();
+
+                //    foreach (var item in clientUsers)
+                //    {
+                //        if (item.IdUsers != null)
+                //        {
+                //            var user = _segServ.GetUserById(item.IdUsers.Value);
+                //            if (user != null && !entities.Any(e => e.Rut == user.Username) && user.Activo.HasValue && user.Activo.Value)
+                //            {
+                //                usersToDeactivate.Add(new ClienteUsersDto() { IdUsers = user.Id, IdClientes = idSociedad });
+                //            }
+                //        }
+                //    }
+
+                //    if (usersToDeactivate.Any())
+                //    {
+                //        _segServ.DeactivateUsers(usersToDeactivate);
+
+                //        downUsers = usersToDeactivate.Count;
+
+                //        Log.Debug("Had been deactivated: " + downUsers + " users.");
+                //    }
+                //}
 
                 var client = _segServ.GetClientBySocietyId(idSociedad);
 
@@ -242,6 +259,8 @@ namespace DigitalLearningDataImporter.Console
                 var defaultValue = 0;
                 var defaultTextValue = "Sin Información";
 
+                System.Console.Write(".");
+
                 var planRuleId = 0;
                 var schedRule = _prodServ.GetSchedRuleByName(defaultTextValue);
                 if (schedRule != null)
@@ -269,6 +288,8 @@ namespace DigitalLearningDataImporter.Console
                     });
                 }
 
+                System.Console.Write(".");
+
                 var areaId = 0;
                 var area = _prodServ.GetAreaByName(defaultTextValue);
                 if (area != null)
@@ -281,6 +302,8 @@ namespace DigitalLearningDataImporter.Console
                         Activo = true
                     });
                 }
+
+                System.Console.Write(".");
 
                 var familyId = 0;
                 var family = _prodServ.GetFamilyByNameSociety(defaultTextValue, idSociedad);
@@ -310,6 +333,8 @@ namespace DigitalLearningDataImporter.Console
                     });
                 }
 
+                System.Console.Write(".");
+
                 var contTypeD = _prodServ.GetContTypeByName(defaultTextValue);
                 if (contTypeD == null)
                 {
@@ -319,6 +344,8 @@ namespace DigitalLearningDataImporter.Console
                         Nombre = defaultTextValue
                     });
                 }
+
+                System.Console.Write(".");
 
                 var socD = _prodServ.GetSocietyByName(defaultTextValue);
                 if (socD == null)
@@ -337,6 +364,7 @@ namespace DigitalLearningDataImporter.Console
                 }
 
                 //Build Entities in BD
+                System.Console.Write(".");
                 var orgUnits = entities.Where(i => !string.IsNullOrEmpty(i.CurrentJob.CustomAttributes.Gerencia)).Select(item => item.CurrentJob.CustomAttributes.Gerencia).Distinct();
                 OrgUnitDto orgUnitDtoAux;
                 foreach (var item in orgUnits)
@@ -364,10 +392,12 @@ namespace DigitalLearningDataImporter.Console
                 }
                 orgUnits = null;
 
+                System.Console.Write(".");
                 var jobs = entities.Where(i => !string.IsNullOrEmpty(i.CurrentJob.Role.Name)).Select(item => item.CurrentJob.Role.Name).Distinct();
                 JobDto jobDtoAux;
                 foreach (var item in jobs)
                 {
+                    System.Console.Write(".");
                     jobDtoAux = _prodServ.GetJobByName(item);
                     if (jobDtoAux != null)
                     {
@@ -396,10 +426,12 @@ namespace DigitalLearningDataImporter.Console
                 }
                 jobs = null;
 
+                System.Console.Write(".");
                 var locals = entities.Where(i => !string.IsNullOrEmpty(i.CurrentJob.CustomAttributes.CodigoLocal)).Select(item => item.CurrentJob.CustomAttributes.CodigoLocal).Distinct();
                 LocalDto localDtoAux;
                 foreach (var item in locals)
                 {
+                    System.Console.Write(".");
                     localDtoAux = _prodServ.GetLocalByCode(item);
                     if (localDtoAux != null)
                     {
@@ -422,6 +454,7 @@ namespace DigitalLearningDataImporter.Console
                 }
                 locals = null;
 
+                System.Console.Write(".");
                 var societies = entities.Where(i => !string.IsNullOrEmpty(i.Health_company)).Select(item => item.Health_company).Distinct();
                 SocietyDto socDtoAux;
                 ProvSocietyDto provSocietyDtoAux;
@@ -436,6 +469,7 @@ namespace DigitalLearningDataImporter.Console
 
                 foreach (var item in societies)
                 {
+                    System.Console.Write(".");
                     socDtoAux = _prodServ.GetSocietyByUniqueId(item);
                     if (socDtoAux != null)
                     {
@@ -515,8 +549,11 @@ namespace DigitalLearningDataImporter.Console
                 _prodServ.SaveChanges();
                 societies = null;
 
+                Log.Debug("Resolving entities db value's ids.");
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
+                    System.Console.Write(".");
                     var user = _segServ.GetUserByRUTUserName(item.Rut);
 
                     if (user != null)
@@ -1324,7 +1361,7 @@ namespace DigitalLearningDataImporter.Console
                         }
                         if (job == null)
                         {
-                            job = new JobDto()
+                            job = new JobDto
                             {
                                 Activo = true,
                                 Nombre = item.CurrentJob.Role.Name,
@@ -1410,6 +1447,7 @@ namespace DigitalLearningDataImporter.Console
                 }
 
                 Log.Debug("Creating / Updating entities");
+                System.Console.Write("..");
 
                 genreDic.Clear();
                 genreDic = null;
@@ -1453,6 +1491,9 @@ namespace DigitalLearningDataImporter.Console
 
                 foreach (GopEntityDtoExpand item in entities)
                 {
+                    Log.Debug("Processing item: " + item.Rut);
+                    System.Console.Write("..");
+
                     if (!item.HasUser)
                     {
                         var user = new UserDto
@@ -1672,6 +1713,9 @@ namespace DigitalLearningDataImporter.Console
 
                 if (usersToAdd.Any())
                 {
+                    Log.Debug("Adding users.");
+                    System.Console.Write("...");
+
                     _segServ.AddUsers(usersToAdd.Select(ua => ua.Key));
 
                     var addUsersRuts = "";
@@ -1694,6 +1738,9 @@ namespace DigitalLearningDataImporter.Console
 
                 if (peoplesToAdd.Any())
                 {
+                    Log.Debug("Adding peolples.");
+                    System.Console.Write("...");
+
                     UserDto aux;
                     foreach (var p in peoplesToAdd.Where(peop => !peop.Key.IdConexion.HasValue))
                     {
@@ -1711,8 +1758,10 @@ namespace DigitalLearningDataImporter.Console
                     {
                         addedPeoplesIds += item.Id + "; ";
                     }
+
                     Log.Debug("Added peoples: " + addedPeoplesIds);
                     Log.Debug("Updated peoples: " + updatesPeoplesLog);
+                    System.Console.Write("...");
 
                     for (int i = 0; i < peoplesToAdd.Count; i++)
                     {
@@ -1728,6 +1777,7 @@ namespace DigitalLearningDataImporter.Console
                     }
                     Log.Debug("Added information of peoples: " + addedPeoplesIds);
                     Log.Debug("Updated information of peoples: " + updatesPersInfoLog);
+                    System.Console.Write("....");
                 }
 
                 foreach (GopEntityDtoExpand item in entities)
@@ -1742,9 +1792,14 @@ namespace DigitalLearningDataImporter.Console
 
                 var admin = _prodServ.GetAdminPeople();
 
+                Log.Debug("Processing laboral's histories.");
+
                 foreach (GopEntityDtoExpand item in entities)
                 {
-                    //int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? new int?(admin.Id) : null);
+                    //int? bossIdAux = item.HasBoss ? entities.FirstOrDefault(e => e.Rut == item.BossRut)?.PeopleId : (admin != null ? new int?(admin.Id) : null);                                        
+                    //Log.Debug("Processing laboral's history.");
+                    System.Console.Write("Processing laboral's history: " + item.Rut + "; ");
+
                     int? bossIdAux = null;
                     if (item.BoosId.HasValue && item.BoosId.Value != -1)
                         bossIdAux = item.BoosId;
@@ -1754,7 +1809,7 @@ namespace DigitalLearningDataImporter.Console
                         if (boosInsideExcel != null)
                             bossIdAux = boosInsideExcel.PeopleId;
                         else bossIdAux = null;
-                    }                   
+                    }
 
                     var currentJob = _prodServ.GetCurrentJobByPeopleSociety(item.PeopleId.Value, idSociedad);
 
@@ -1796,11 +1851,13 @@ namespace DigitalLearningDataImporter.Console
                         //|| newCurrentJob.Estado != currentJob.Estado
                         //|| newCurrentJob.Activo != currentJob.Activo
                         || (newCurrentJob.IdSociedadContratante.HasValue && newCurrentJob.IdSociedadContratante.Value != defaultValue && currentJob.IdSociedadContratante != newCurrentJob.IdSociedadContratante)
-                        || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
+                        || (newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo.Value != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo)
                         || (newCurrentJob.IdCentroCosto != defaultValue && currentJob.IdCentroCosto != newCurrentJob.IdCentroCosto)
                         || (newCurrentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.HasValue && currentJob.FechaInicioContrato.Value.Date != newCurrentJob.FechaInicioContrato.Value.Date)
                         || (newCurrentJob.FechaTerminoContrato.HasValue && currentJob.FechaTerminoContrato != newCurrentJob.FechaTerminoContrato)
-                        || (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe != -1 && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe))
+                        || (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe.Value != -1 && newCurrentJob.IdPersonaJefe.Value != defaultValue && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe)
+                        || (newCurrentJob.IdUnidadNegocio.HasValue && newCurrentJob.IdUnidadNegocio.Value != defaultValue && currentJob.IdUnidadNegocio != newCurrentJob.IdUnidadNegocio)
+                        || (newCurrentJob.IdUnidadOrganizacional.HasValue && newCurrentJob.IdUnidadOrganizacional.Value != defaultValue && currentJob.IdUnidadOrganizacional != newCurrentJob.IdUnidadOrganizacional))
                     {
                         item.CurrentJobId = currentJob.Id;
 
@@ -1818,7 +1875,7 @@ namespace DigitalLearningDataImporter.Console
                             newCurrentJob.IdTipoCambioPosicion = 10;
                             updatesCount++;
                         }
-                        if ((newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo))
+                        if ((newCurrentJob.IdCargo.HasValue && newCurrentJob.IdCargo.Value != defaultValue && currentJob.IdCargo != newCurrentJob.IdCargo))
                         {
                             newCurrentJob.IdTipoCambioPosicion = 2;
                             updatesCount++;
@@ -1838,11 +1895,22 @@ namespace DigitalLearningDataImporter.Console
                             newCurrentJob.IdTipoCambioPosicion = 11;
                             updatesCount++;
                         }
-                        if (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe.Value != -1 && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe)
+                        if (newCurrentJob.IdPersonaJefe.HasValue && newCurrentJob.IdPersonaJefe.Value != -1 && newCurrentJob.IdPersonaJefe.Value != defaultValue && currentJob.IdPersonaJefe != newCurrentJob.IdPersonaJefe)
                         {
                             newCurrentJob.IdTipoCambioPosicion = 12;
                             updatesCount++;
                         }
+                        if (newCurrentJob.IdUnidadNegocio.HasValue && newCurrentJob.IdUnidadNegocio.Value != defaultValue && currentJob.IdUnidadNegocio != newCurrentJob.IdUnidadNegocio)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 4;
+                            updatesCount++;
+                        }
+                        if (newCurrentJob.IdUnidadOrganizacional.HasValue && newCurrentJob.IdUnidadOrganizacional.Value != defaultValue && currentJob.IdUnidadOrganizacional != newCurrentJob.IdUnidadOrganizacional)
+                        {
+                            newCurrentJob.IdTipoCambioPosicion = 3;
+                            updatesCount++;
+                        }
+
 
                         if (updatesCount > 1)
                         {
@@ -1852,6 +1920,9 @@ namespace DigitalLearningDataImporter.Console
                         jobToAdd.Add(newCurrentJob);
 
                         updatesJobLog += item.CurrentJobId + "; ";
+
+                        //Log.Debug("Updating current jobs: " + updatesJobLog);
+                        System.Console.Write(".");
                     }
                 }
 
@@ -1859,12 +1930,14 @@ namespace DigitalLearningDataImporter.Console
                     _prodServ.AddActiveCurrentJobs(jobToAdd);
 
                 if (!string.IsNullOrEmpty(updatesJobLog))
+                {
                     Log.Debug("Updated current jobs: " + updatesJobLog);
+                }
 
                 var info = new ImportLogInfo
                 {
                     CountOfRowsInserted = newUsers,
-                    CountOfRowsUpdates = updatesUsers,
+                    CountOfRowsUpdates = updatesUsers + jobToAdd.Count,
                     CountOfDeactivates = downUsers,
                     Invalids = 0,
                     State = "Procesado"
@@ -1877,16 +1950,21 @@ namespace DigitalLearningDataImporter.Console
                 SftpManager.Send(txtFilePath, sftpHost, sftpPort, sftpUserName, sftpPassword, sftpPathBackup);
 
                 Log.Debug("Entities has been procesed");
+                //System.Console.WriteLine(".");
 
                 Log.Information("End the app. Review logs.");
+                System.Console.WriteLine("...");
             }
             catch (Exception ex)
             {
                 Log.Error(ex, ex.Message);
+                System.Console.WriteLine(ex.Message);
 
                 Log.Information("End the app whit errors. Review errors, fix its and retry.");
+                System.Console.WriteLine(".");
 
                 Log.Information("------------------------------------------------");
+                System.Console.WriteLine("-");
 
                 var info = new ImportLogInfo
                 {
@@ -1897,7 +1975,7 @@ namespace DigitalLearningDataImporter.Console
                     State = "No Procesado"
                 };
 
-                var txtFilePath = @Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
+                var txtFilePath = @AppDomain.CurrentDomain.BaseDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";//@Environment.CurrentDirectory + "\\" + DateTime.Now.ToString("yyyyMMdd") + "_Monitoreo_ImportExcelToDL.txt";
 
                 GopReportManager.GenerateLogMonitorFile(txtFilePath, info);
 
@@ -1908,6 +1986,7 @@ namespace DigitalLearningDataImporter.Console
             finally
             {
                 Log.CloseAndFlush();
+                System.Console.WriteLine("End app and logs.");
             }
         }
     }

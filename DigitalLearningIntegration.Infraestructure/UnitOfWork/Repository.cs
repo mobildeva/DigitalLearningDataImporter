@@ -16,7 +16,9 @@ namespace DigitalLearningIntegration.Infraestructure.UnitOfWork
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly DbContext _context;
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly IHttpContextAccessor _httpContextAccessor;
+#pragma warning restore IDE0052 // Remove unread private members
 
 
         public Repository(IUnitOfWork unitOfWork, DbContext context)
