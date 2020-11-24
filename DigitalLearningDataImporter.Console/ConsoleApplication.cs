@@ -1545,7 +1545,8 @@ namespace DigitalLearningDataImporter.Console
 
                         if (item.IdConexion.HasValue)
                         {
-                            var userProfile = _segServ.GetUserByUserIdAndPerfilId(item.IdConexion.Value, 2);
+                            //var userProfile = _segServ.GetUserByUserIdAndPerfilId(item.IdConexion.Value, 2);
+                            var userProfile = _segServ.GetUserProfileById(item.IdConexion.Value);
 
                             if (userProfile == null)
                             {
