@@ -56,5 +56,10 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.UserProfile
         {
             return _context.UsersPerfil.AsEnumerable().FirstOrDefault(u => u.IdUsers == userId && u.IdPerfil == profileId);
         }
+
+        public UsersPerfil GetUserByUserId(int userId)
+        {
+            return _context.UsersPerfil.AsEnumerable().FirstOrDefault(u => u.IdUsers == userId);
+        }
     }
 }

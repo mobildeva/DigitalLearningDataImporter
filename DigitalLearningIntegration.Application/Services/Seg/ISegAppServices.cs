@@ -20,6 +20,7 @@ namespace DigitalLearningIntegration.Application.Services.Seg
         ClientDto GetClientBySocietyId(int societyId);
         UserProfileDto GetUserByUserIdAndPerfilId(int userId, int profileId);
         UserProfileDto GetUserProfileById(int userProfileId);
+        UserProfileDto GetUserByUserId(int userId);
         void AddProfiles(IEnumerable<UserProfileDto> profilesToAdd);
         UserDto GetUserByName(string userName);
     }

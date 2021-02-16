@@ -74,7 +74,7 @@ namespace DigitalLearningDataImporter.Console
                 Log.Information("------------------------------------------------");
                 System.Console.Write("");
 
-                Log.Information("Starting the app. Version: 3.3");
+                Log.Information("Starting the app. Version: 3.8");
                 System.Console.Write("..");
 
                 Log.Information("Running in Directory: " + @AppDomain.CurrentDomain.BaseDirectory);
@@ -1546,7 +1546,7 @@ namespace DigitalLearningDataImporter.Console
                         if (item.IdConexion.HasValue)
                         {
                             //var userProfile = _segServ.GetUserByUserIdAndPerfilId(item.IdConexion.Value, 2);
-                            var userProfile = _segServ.GetUserProfileById(item.IdConexion.Value);
+                            var userProfile = _segServ.GetUserByUserId(item.IdConexion.Value);
 
                             if (userProfile == null)
                             {

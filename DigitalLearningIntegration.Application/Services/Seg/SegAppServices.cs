@@ -206,6 +206,14 @@ namespace DigitalLearningIntegration.Application.Services.Seg
             else return null;
         }
 
+        public UserProfileDto GetUserByUserId(int userId)
+        {
+            var aux = _userProfRepository.GetUserByUserId(userId);
+            if (aux != null)
+                return new UserProfileDto(aux);
+            else return null;
+        }
+
         public UserProfileDto GetUserProfileById(int userProfileId)
         {
             var aux = _userProfRepository.GetByIdSingle(userProfileId);

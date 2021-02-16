@@ -11,5 +11,6 @@ namespace DigitalLearningIntegration.Infraestructure.Repository.UserProfile
     {
         UsersPerfil GetUserByUserIdAndPerfilId(int userId, int profileId);
         ResultDto CreatedOrUpdate(UsersPerfil entity);
+        UsersPerfil GetUserByUserId(int userId);
     }
 }
